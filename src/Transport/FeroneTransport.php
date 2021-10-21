@@ -107,7 +107,7 @@ class FeroneTransport
             throw ApiException::errorInResponse($jsonPayload);
         }
 
-        return new FeroneResponse($response->getStatusCode(), $jsonPayload);
+        return new FeroneResponse($jsonPayload);
     }
 
     /**

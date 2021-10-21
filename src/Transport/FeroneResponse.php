@@ -9,19 +9,11 @@ namespace SuareSu\FeroneApiConnector\Transport;
  */
 class FeroneResponse
 {
-    private int $statusCode;
-
     private array $payload;
 
-    public function __construct(int $statusCode, array $payload = [])
+    public function __construct(array $payload = [])
     {
-        $this->statusCode = $statusCode;
         $this->payload = $payload;
-    }
-
-    public function getStatusCode(): int
-    {
-        return $this->statusCode;
     }
 
     public function getPayload(): array
