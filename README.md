@@ -14,7 +14,7 @@
 composer req suare-su/suare-ferone_api_connector
 ```
 
-Отдельно необходимо установить какой либо PSR совместимый http клиент, если в проекте еще нет такого. Например, [guzzle http](https://docs.guzzlephp.org/en/stable/).
+Отдельно необходимо установить какой-либо PSR-совместимый http клиент, если в проекте еще нет такого. Например, [guzzle http](https://docs.guzzlephp.org/en/stable/).
 
 ```bash
 composer req guzzlehttp/guzzle
@@ -24,7 +24,7 @@ composer req guzzlehttp/guzzle
 
 ## Использование
 
-Использование библиотеки с guzzle http:
+Использование библиотеки совместно с guzzle http:
 
 ```php
 use GuzzleHttp\Client;
