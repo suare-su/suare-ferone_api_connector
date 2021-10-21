@@ -16,9 +16,9 @@ use Throwable;
 /**
  * Transport object that can create a request, send it to Ferone and parse a response.
  */
-class FeroneTransport
+class Transport
 {
-    private FeroneConfig $config;
+    private TransportConfig $config;
 
     private ClientInterface $client;
 
@@ -27,7 +27,7 @@ class FeroneTransport
     private StreamFactoryInterface $streamFactory;
 
     public function __construct(
-        FeroneConfig $config,
+        TransportConfig $config,
         ClientInterface $client,
         RequestFactoryInterface $requestFactory,
         StreamFactoryInterface $streamFactory
@@ -41,14 +41,14 @@ class FeroneTransport
     /**
      * Send request to API and return parsed response.
      *
-     * @param FeroneRequest $request
+     * @param TransportRequest $request
      *
-     * @return FeroneResponse
+     * @return TransportResponse
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function sendRequest(FeroneRequest $request): FeroneResponse
+    public function sendRequest(TransportRequest $request): TransportResponse
     {
         $response = $this->sendRequestInternal($request);
 
@@ -58,11 +58,11 @@ class FeroneTransport
     /**
      * Send request using underlying client.
      *
-     * @param FeroneRequest $request
+     * @param TransportRequest $request
      *
      * @return ResponseInterface
      */
-    private function sendRequestInternal(FeroneRequest $request): ResponseInterface
+    private function sendRequestInternal(TransportRequest $request): ResponseInterface
     {
         try {
             $payload = $this->createPayloadStream($request);
@@ -85,11 +85,11 @@ class FeroneTransport
      * Parse a response to an array.
      *
      * @param ResponseInterface $response
-     * @param FeroneRequest     $request
+     * @param TransportRequest  $request
      *
-     * @return FeroneResponse
+     * @return TransportResponse
      */
-    private function parseResponse(ResponseInterface $response, FeroneRequest $request): FeroneResponse
+    private function parseResponse(ResponseInterface $response, TransportRequest $request): TransportResponse
     {
         $stringPayload = (string) $response->getBody();
 
@@ -107,17 +107,17 @@ class FeroneTransport
             throw ApiException::errorInResponse($jsonPayload);
         }
 
-        return new FeroneResponse($jsonPayload);
+        return new TransportResponse($jsonPayload);
     }
 
     /**
      * Creates stream for request payload.
      *
-     * @param FeroneRequest $request
+     * @param TransportRequest $request
      *
      * @return StreamInterface
      */
-    private function createPayloadStream(FeroneRequest $request): StreamInterface
+    private function createPayloadStream(TransportRequest $request): StreamInterface
     {
         $payload = ['method' => $request->getMethod()];
 

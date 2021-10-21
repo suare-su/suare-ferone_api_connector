@@ -7,7 +7,7 @@ namespace SuareSu\FeroneApiConnector\Transport;
 /**
  * Object that contains request data for API.
  */
-class FeroneRequest
+class TransportRequest
 {
     private string $method;
 

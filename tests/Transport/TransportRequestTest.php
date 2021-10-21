@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace SuareSu\FeroneApiConnector\Tests\Transport;
 
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
-use SuareSu\FeroneApiConnector\Transport\FeroneRequest;
+use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 
 /**
  * @internal
  */
-class FeroneRequestTest extends BaseTestCase
+class TransportRequestTest extends BaseTestCase
 {
     /**
      * @test
@@ -20,7 +20,7 @@ class FeroneRequestTest extends BaseTestCase
         $method = 'method';
         $params = ['key' => 'value'];
 
-        $request = new FeroneRequest($method, $params);
+        $request = new TransportRequest($method, $params);
 
         $this->assertSame($method, $request->getMethod());
     }
@@ -33,7 +33,7 @@ class FeroneRequestTest extends BaseTestCase
         $method = 'method';
         $params = ['key' => 'value'];
 
-        $request = new FeroneRequest($method, $params);
+        $request = new TransportRequest($method, $params);
 
         $this->assertSame($params, $request->getParams());
     }
