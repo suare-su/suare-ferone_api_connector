@@ -22,7 +22,7 @@ class ConnectorTest extends BaseTestCase
      */
     public function testPingApi(): void
     {
-        $transport = $this->createTransportMock('PingAPI', [], []);
+        $transport = $this->createTransportMock('PingAPI');
 
         $connector = new Connector($transport);
 
@@ -34,11 +34,52 @@ class ConnectorTest extends BaseTestCase
      */
     public function testDoesNotPingApi(): void
     {
-        $transport = $this->createTransportMock('PingAPI', [], new ApiException());
+        $transport = $this->createTransportMock(
+            'PingAPI',
+            [],
+            new ApiException()
+        );
 
         $connector = new Connector($transport);
 
         $this->assertFalse($connector->pingApi());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetTokenExpiry(): void
+    {
+        $date = '2010-10-10 10:10:10';
+        $transport = $this->createTransportMock(
+            'GetTokenExpiry',
+            [],
+            ['ExpiresOn' => $date]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame(
+            $date,
+            $connector->getTokenExpiry()->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function testGetTokenExpiryException(): void
+    {
+        $transport = $this->createTransportMock(
+            'GetTokenExpiry',
+            [],
+            ['ExpiresOn' => 'test']
+        );
+
+        $connector = new Connector($transport);
+
+        $this->expectException(ApiException::class);
+        $connector->getTokenExpiry();
     }
 
     /**
@@ -50,7 +91,7 @@ class ConnectorTest extends BaseTestCase
      *
      * @return Transport
      */
-    private function createTransportMock(string $method, array $params, $result): Transport
+    private function createTransportMock(string $method, array $params = [], $result = []): Transport
     {
         $transport = $this->getMockBuilder(Transport::class)->disableOriginalConstructor()->getMock();
 

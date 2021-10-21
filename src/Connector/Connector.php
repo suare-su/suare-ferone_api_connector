@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Connector;
 
+use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 use SuareSu\FeroneApiConnector\Transport\TransportResponse;
+use Throwable;
 
 /**
  * Object that represents Ferone API methods.
@@ -31,6 +33,19 @@ class Connector
         }
 
         return true;
+    }
+
+    public function getTokenExpiry(): DateTimeImmutable
+    {
+        $responseData = $this->sendRequestInternal('GetTokenExpiry')->getData();
+
+        try {
+            $dateExpire = new DateTimeImmutable((string) ($responseData['ExpiresOn'] ?? ''));
+        } catch (Throwable $e) {
+            throw new ApiException('Date in response for GetTokenExpiry is empty or broken', 0, $e);
+        }
+
+        return $dateExpire;
     }
 
     private function sendRequestInternal(string $method, array $params = []): TransportResponse
