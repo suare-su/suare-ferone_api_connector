@@ -20,10 +20,14 @@ class TransportFactoryTest extends BaseTestCase
     public function testCreateForGuzzleClient(): void
     {
         $url = 'http://test.ru';
+        $authKey = 'test';
         $client = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
 
-        $factory = new TransportFactory();
-        $transport = $factory->setUrl($url)->createForGuzzleClient($client);
+        $transport = (new TransportFactory())
+            ->setUrl($url)
+            ->setAuthKey($authKey)
+            ->createForGuzzleClient($client)
+        ;
 
         $this->assertInstanceOf(Transport::class, $transport);
     }

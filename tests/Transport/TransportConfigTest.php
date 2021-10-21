@@ -19,7 +19,7 @@ class TransportConfigTest extends BaseTestCase
     public function testContructWrongUrlException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new TransportConfig('test');
+        new TransportConfig('test', 'test');
     }
 
     /**
@@ -28,9 +28,23 @@ class TransportConfigTest extends BaseTestCase
     public function testGetUrl(): void
     {
         $url = 'http://test.ru    ';
+        $authKey = 'test';
 
-        $config = new TransportConfig($url);
+        $config = new TransportConfig($url, $authKey);
 
         $this->assertSame('http://test.ru/', $config->getUrl());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetAuthKey(): void
+    {
+        $url = 'http://test.ru';
+        $authKey = 'test';
+
+        $config = new TransportConfig($url, $authKey);
+
+        $this->assertSame($authKey, $config->getAuthKey());
     }
 }

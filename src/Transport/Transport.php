@@ -80,6 +80,10 @@ class Transport
                     'POST',
                     $this->config->getUrl()
                 )
+                ->withHeader(
+                    'Authorization',
+                    $this->config->getAuthKey()
+                )
                 ->withBody($payload)
             ;
             $response = $this->client->sendRequest($psrRequest);

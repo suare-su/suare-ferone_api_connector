@@ -14,6 +14,8 @@ class TransportFactory
 {
     private string $url = '';
 
+    private string $authKey = '';
+
     public function setUrl(string $url): self
     {
         $this->url = $url;
@@ -21,9 +23,16 @@ class TransportFactory
         return $this;
     }
 
+    public function setAuthKey(string $authKey): self
+    {
+        $this->authKey = $authKey;
+
+        return $this;
+    }
+
     public function createForGuzzleClient(Client $client): Transport
     {
-        $config = new TransportConfig($this->url);
+        $config = new TransportConfig($this->url, $this->authKey);
         $factory = new HttpFactory();
 
         return new Transport($config, $client, $factory, $factory);

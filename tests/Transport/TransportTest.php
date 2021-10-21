@@ -29,12 +29,14 @@ class TransportTest extends BaseTestCase
     public function testSendRequest(): void
     {
         $apiUrl = 'http://test.ru/';
+        $authKey = 'auth_key';
         $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
         $config->method('getUrl')->willReturn($apiUrl);
+        $config->method('getAuthKey')->willReturn($authKey);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
-        $TransportRequest = new TransportRequest($method, $params);
+        $transportRequest = new TransportRequest($method, $params);
 
         $encodedRequestPayload = json_encode(['method' => $method, 'params' => $params]);
         $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
@@ -48,6 +50,10 @@ class TransportTest extends BaseTestCase
         $request->expects($this->once())
             ->method('withBody')
             ->with($this->identicalTo($streamRequest))
+            ->willReturnSelf();
+        $request->expects($this->once())
+            ->method('withHeader')
+            ->with($this->identicalTo('Authorization'), $this->identicalTo($authKey))
             ->willReturnSelf();
 
         $requestFactory = $this->getMockBuilder(RequestFactoryInterface::class)->getMock();
@@ -71,7 +77,7 @@ class TransportTest extends BaseTestCase
             ->willReturn($response);
 
         $transport = new Transport($config, $client, $requestFactory, $streamFactory);
-        $response = $transport->sendRequest($TransportRequest);
+        $response = $transport->sendRequest($transportRequest);
 
         $this->assertSame($data, $response->getData());
     }
@@ -81,13 +87,15 @@ class TransportTest extends BaseTestCase
      */
     public function testSendRequestTransportException(): void
     {
-        $apiUrl = 'http://test.ru';
+        $apiUrl = 'http://test.ru/';
+        $authKey = 'auth_key';
         $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
         $config->method('getUrl')->willReturn($apiUrl);
+        $config->method('getAuthKey')->willReturn($authKey);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
-        $TransportRequest = new TransportRequest($method, $params);
+        $transportRequest = new TransportRequest($method, $params);
 
         $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
         $streamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
@@ -95,6 +103,7 @@ class TransportTest extends BaseTestCase
 
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
         $request->method('withBody')->willReturnSelf();
+        $request->method('withHeader')->willReturnSelf();
 
         $requestFactory = $this->getMockBuilder(RequestFactoryInterface::class)->getMock();
         $requestFactory->method('createRequest')->willReturn($request);
@@ -108,7 +117,7 @@ class TransportTest extends BaseTestCase
         $transport = new Transport($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(TransportException::class);
-        $transport->sendRequest($TransportRequest);
+        $transport->sendRequest($transportRequest);
     }
 
     /**
@@ -116,13 +125,15 @@ class TransportTest extends BaseTestCase
      */
     public function testSendRequestBrokenResonseException(): void
     {
-        $apiUrl = 'http://test.ru';
+        $apiUrl = 'http://test.ru/';
+        $authKey = 'auth_key';
         $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
         $config->method('getUrl')->willReturn($apiUrl);
+        $config->method('getAuthKey')->willReturn($authKey);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
-        $TransportRequest = new TransportRequest($method, $params);
+        $transportRequest = new TransportRequest($method, $params);
 
         $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
         $streamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
@@ -130,6 +141,7 @@ class TransportTest extends BaseTestCase
 
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
         $request->method('withBody')->willReturnSelf();
+        $request->method('withHeader')->willReturnSelf();
 
         $requestFactory = $this->getMockBuilder(RequestFactoryInterface::class)->getMock();
         $requestFactory->method('createRequest')->willReturn($request);
@@ -146,7 +158,7 @@ class TransportTest extends BaseTestCase
         $transport = new Transport($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(TransportException::class);
-        $transport->sendRequest($TransportRequest);
+        $transport->sendRequest($transportRequest);
     }
 
     /**
@@ -154,13 +166,15 @@ class TransportTest extends BaseTestCase
      */
     public function testSendRequestStatusCodeException(): void
     {
-        $apiUrl = 'http://test.ru';
+        $apiUrl = 'http://test.ru/';
+        $authKey = 'auth_key';
         $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
         $config->method('getUrl')->willReturn($apiUrl);
+        $config->method('getAuthKey')->willReturn($authKey);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
-        $TransportRequest = new TransportRequest($method, $params);
+        $transportRequest = new TransportRequest($method, $params);
 
         $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
         $streamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
@@ -168,6 +182,7 @@ class TransportTest extends BaseTestCase
 
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
         $request->method('withBody')->willReturnSelf();
+        $request->method('withHeader')->willReturnSelf();
 
         $requestFactory = $this->getMockBuilder(RequestFactoryInterface::class)->getMock();
         $requestFactory->method('createRequest')->willReturn($request);
@@ -184,7 +199,7 @@ class TransportTest extends BaseTestCase
         $transport = new Transport($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(ApiException::class);
-        $transport->sendRequest($TransportRequest);
+        $transport->sendRequest($transportRequest);
     }
 
     /**
@@ -192,13 +207,15 @@ class TransportTest extends BaseTestCase
      */
     public function testSendRequestApiErrorException(): void
     {
-        $apiUrl = 'http://test.ru';
+        $apiUrl = 'http://test.ru/';
+        $authKey = 'auth_key';
         $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
         $config->method('getUrl')->willReturn($apiUrl);
+        $config->method('getAuthKey')->willReturn($authKey);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
-        $TransportRequest = new TransportRequest($method, $params);
+        $transportRequest = new TransportRequest($method, $params);
 
         $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
         $streamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
@@ -206,6 +223,7 @@ class TransportTest extends BaseTestCase
 
         $request = $this->getMockBuilder(RequestInterface::class)->getMock();
         $request->method('withBody')->willReturnSelf();
+        $request->method('withHeader')->willReturnSelf();
 
         $requestFactory = $this->getMockBuilder(RequestFactoryInterface::class)->getMock();
         $requestFactory->method('createRequest')->willReturn($request);
@@ -222,6 +240,6 @@ class TransportTest extends BaseTestCase
         $transport = new Transport($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(ApiException::class);
-        $transport->sendRequest($TransportRequest);
+        $transport->sendRequest($transportRequest);
     }
 }
