@@ -29,4 +29,19 @@ class TransportResponse
 
         return [];
     }
+
+    public function hasError(): bool
+    {
+        return !empty($this->payload['error']);
+    }
+
+    public function getError(): int
+    {
+        return (int) ($this->payload['error'] ?? 0);
+    }
+
+    public function getErrorDescription(): string
+    {
+        return (string) ($this->payload['errorDescription'] ?? '');
+    }
 }

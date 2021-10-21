@@ -48,4 +48,54 @@ class TransportResponseTest extends BaseTestCase
 
         $this->assertSame([], $response->getData());
     }
+
+    /**
+     * @test
+     */
+    public function testHasError(): void
+    {
+        $payload = ['key' => 'value', 'error' => 2];
+
+        $response = new TransportResponse($payload);
+
+        $this->assertTrue($response->hasError());
+    }
+
+    /**
+     * @test
+     */
+    public function testDoesNotHaveError(): void
+    {
+        $payload = ['key' => 'value', 'error' => 0];
+
+        $response = new TransportResponse($payload);
+
+        $this->assertFalse($response->hasError());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetError(): void
+    {
+        $error = 123;
+        $payload = ['key' => 'value', 'error' => $error];
+
+        $response = new TransportResponse($payload);
+
+        $this->assertSame($error, $response->getError());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetErrorDescription(): void
+    {
+        $errorDescription = 'test error';
+        $payload = ['key' => 'value', 'errorDescription' => $errorDescription];
+
+        $response = new TransportResponse($payload);
+
+        $this->assertSame($errorDescription, $response->getErrorDescription());
+    }
 }
