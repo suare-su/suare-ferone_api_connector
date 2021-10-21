@@ -61,7 +61,7 @@ class Transport
     {
         $response = $this->sendRequestInternal($request);
 
-        return $this->parseResponse($response, $request);
+        return $this->parseResponse($response);
     }
 
     /**
@@ -94,14 +94,14 @@ class Transport
      * Parse a response to an array.
      *
      * @param ResponseInterface $response
-     * @param TransportRequest  $request
      *
      * @return TransportResponse
      */
-    private function parseResponse(ResponseInterface $response, TransportRequest $request): TransportResponse
+    private function parseResponse(ResponseInterface $response): TransportResponse
     {
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() > 300) {
-            throw new ApiException($this->createBadStatusCodeMessage($response->getStatusCode()));
+        $statusCode = $response->getStatusCode();
+        if ($statusCode < 200 || $statusCode > 300) {
+            throw new ApiException($this->createBadStatusCodeMessage($statusCode));
         }
 
         try {
@@ -129,11 +129,10 @@ class Transport
      */
     private function createPayloadStream(TransportRequest $request): StreamInterface
     {
-        $payload = ['method' => $request->getMethod()];
-
-        if (!empty($request->getParams())) {
-            $payload['params'] = $request->getParams();
-        }
+        $payload = [
+            'method' => $request->getMethod(),
+            'params' => $request->getParams(),
+        ];
 
         $payloadJson = json_encode($payload, \JSON_THROW_ON_ERROR);
 
