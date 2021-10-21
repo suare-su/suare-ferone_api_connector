@@ -25,26 +25,16 @@ class ApiException extends Exception
             $message .= '(' . self::ERROR_STSTUSES[$statusCode] . ')';
         }
 
-        $errorDescription = $payload['errorDescription'] ?? '';
-        if (!empty($errorDescription)) {
-            $message .= ": {$errorDescription}";
-        }
+        $message .= !empty($payload['errorDescription']) ? ": {$payload['errorDescription']}" : '';
 
         return new self($message);
     }
 
     public static function errorInResponse(array $payload): self
     {
-        $error = $payload['error'] ?? 0;
-        $errorDescription = $payload['errorDescription'] ?? '';
-
         $message = 'API has returned an error';
-        if ($error > 0) {
-            $message .= "({$error})";
-        }
-        if ($errorDescription !== '') {
-            $message .= ": {$errorDescription}";
-        }
+        $message .= !empty($payload['error']) ? "({$payload['error']})" : '';
+        $message .= !empty($payload['errorDescription']) ? ": {$payload['errorDescription']}" : '';
 
         return new self($message);
     }
