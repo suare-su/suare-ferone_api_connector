@@ -41,5 +41,8 @@
             "vendor/bin/phpcpd ./ --exclude vendor --exclude tests",
             "vendor/bin/psalm --show-info=true"
         ]
+    },
+    "suggest": {
+        "guzzlehttp/guzzle": "Http client"
     }
 }
