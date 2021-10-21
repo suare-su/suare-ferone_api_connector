@@ -27,10 +27,10 @@ class TransportConfigTest extends BaseTestCase
      */
     public function testGetUrl(): void
     {
-        $url = 'http://test.ru';
+        $url = 'http://test.ru    ';
 
         $config = new TransportConfig($url);
 
-        $this->assertSame($url, $config->getUrl());
+        $this->assertSame('http://test.ru/', $config->getUrl());
     }
 }

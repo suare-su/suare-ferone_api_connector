@@ -18,6 +18,15 @@ use Throwable;
  */
 class Transport
 {
+    private const ERROR_STATUSES = [
+        400 => 'Bad or poorly structured request',
+        401 => 'Request isn\'t authorized',
+        403 => 'Method is forbidden',
+        404 => 'Method isn\'t found',
+        500 => 'Server side error',
+        503 => 'API is unavailable',
+    ];
+
     private TransportConfig $config;
 
     private ClientInterface $client;
@@ -75,7 +84,7 @@ class Transport
             ;
             $response = $this->client->sendRequest($psrRequest);
         } catch (Throwable $e) {
-            throw TransportException::wrapException($e, $request);
+            throw new TransportException($e->getMessage(), 0, $e);
         }
 
         return $response;
@@ -91,23 +100,24 @@ class Transport
      */
     private function parseResponse(ResponseInterface $response, TransportRequest $request): TransportResponse
     {
-        $stringPayload = (string) $response->getBody();
+        if ($response->getStatusCode() < 200 || $response->getStatusCode() > 300) {
+            throw new ApiException($this->createBadStatusCodeMessage($response->getStatusCode()));
+        }
 
         try {
+            $stringPayload = (string) $response->getBody();
             $jsonPayload = json_decode($stringPayload, true, 512, \JSON_THROW_ON_ERROR);
         } catch (Throwable $e) {
-            throw TransportException::wrapException($e, $request);
+            throw new TransportException($e->getMessage(), 0, $e);
         }
 
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() > 300) {
-            throw ApiException::invalidStatusCode($response->getStatusCode(), $jsonPayload);
+        $feroneResponse = new TransportResponse($jsonPayload);
+
+        if ($feroneResponse->hasError()) {
+            throw new ApiException($this->createApiErrorMessage($feroneResponse));
         }
 
-        if (!empty($jsonPayload['error'])) {
-            throw ApiException::errorInResponse($jsonPayload);
-        }
-
-        return new TransportResponse($jsonPayload);
+        return $feroneResponse;
     }
 
     /**
@@ -128,5 +138,37 @@ class Transport
         $payloadJson = json_encode($payload, \JSON_THROW_ON_ERROR);
 
         return $this->streamFactory->createStream($payloadJson);
+    }
+
+    /**
+     * Create an error message when API returns a bad status code.
+     *
+     * @param int $statusCode
+     *
+     * @return string
+     */
+    private function createBadStatusCodeMessage(int $statusCode): string
+    {
+        return sprintf(
+            'Bad status code in response %s (%s)',
+            $statusCode,
+            self::ERROR_STATUSES[$statusCode] ?? ''
+        );
+    }
+
+    /**
+     * Create an error message when API returns an error.
+     *
+     * @param TransportResponse $response
+     *
+     * @return string
+     */
+    private function createApiErrorMessage(TransportResponse $response): string
+    {
+        return sprintf(
+            'API error #%s (%s)',
+            $response->getError(),
+            $response->getErrorDescription()
+        );
     }
 }

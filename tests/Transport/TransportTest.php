@@ -28,8 +28,9 @@ class TransportTest extends BaseTestCase
      */
     public function testSendRequest(): void
     {
-        $apiUrl = 'http://test.ru';
-        $config = new TransportConfig($apiUrl);
+        $apiUrl = 'http://test.ru/';
+        $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
+        $config->method('getUrl')->willReturn($apiUrl);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
@@ -81,7 +82,8 @@ class TransportTest extends BaseTestCase
     public function testSendRequestTransportException(): void
     {
         $apiUrl = 'http://test.ru';
-        $config = new TransportConfig($apiUrl);
+        $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
+        $config->method('getUrl')->willReturn($apiUrl);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
@@ -115,7 +117,8 @@ class TransportTest extends BaseTestCase
     public function testSendRequestBrokenResonseException(): void
     {
         $apiUrl = 'http://test.ru';
-        $config = new TransportConfig($apiUrl);
+        $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
+        $config->method('getUrl')->willReturn($apiUrl);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
@@ -152,7 +155,8 @@ class TransportTest extends BaseTestCase
     public function testSendRequestStatusCodeException(): void
     {
         $apiUrl = 'http://test.ru';
-        $config = new TransportConfig($apiUrl);
+        $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
+        $config->method('getUrl')->willReturn($apiUrl);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
@@ -189,7 +193,8 @@ class TransportTest extends BaseTestCase
     public function testSendRequestApiErrorException(): void
     {
         $apiUrl = 'http://test.ru';
-        $config = new TransportConfig($apiUrl);
+        $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
+        $config->method('getUrl')->willReturn($apiUrl);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];

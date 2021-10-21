@@ -16,11 +16,11 @@ class TransportConfig
     public function __construct(string $url)
     {
         if (!preg_match('#^https?://[^\.]+\.[^\.]+.*#', $url)) {
-            $message = "Correct absolute url is required. Got: {$url}";
+            $message = sprintf('Correct absolute url is required. Got: %s', $url);
             throw new InvalidArgumentException($message);
         }
 
-        $this->url = $url;
+        $this->url = trim($url, " \n\r\t\v\0/\\") . '/';
     }
 
     public function getUrl(): string
