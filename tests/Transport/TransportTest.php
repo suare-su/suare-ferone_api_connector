@@ -14,14 +14,14 @@ use Psr\Http\Message\StreamInterface;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
-use SuareSu\FeroneApiConnector\Transport\FeroneConfig;
-use SuareSu\FeroneApiConnector\Transport\FeroneRequest;
-use SuareSu\FeroneApiConnector\Transport\FeroneTransport;
+use SuareSu\FeroneApiConnector\Transport\Transport;
+use SuareSu\FeroneApiConnector\Transport\TransportConfig;
+use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 
 /**
  * @internal
  */
-class FeroneTransportTest extends BaseTestCase
+class TransportTest extends BaseTestCase
 {
     /**
      * @test
@@ -29,11 +29,11 @@ class FeroneTransportTest extends BaseTestCase
     public function testSendRequest(): void
     {
         $apiUrl = 'http://test.ru';
-        $config = new FeroneConfig($apiUrl);
+        $config = new TransportConfig($apiUrl);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
-        $feroneRequest = new FeroneRequest($method, $params);
+        $TransportRequest = new TransportRequest($method, $params);
 
         $encodedRequestPayload = json_encode(['method' => $method, 'params' => $params]);
         $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
@@ -69,8 +69,8 @@ class FeroneTransportTest extends BaseTestCase
             ->with($this->identicalTo($request))
             ->willReturn($response);
 
-        $transport = new FeroneTransport($config, $client, $requestFactory, $streamFactory);
-        $response = $transport->sendRequest($feroneRequest);
+        $transport = new Transport($config, $client, $requestFactory, $streamFactory);
+        $response = $transport->sendRequest($TransportRequest);
 
         $this->assertSame($data, $response->getData());
     }
@@ -81,11 +81,11 @@ class FeroneTransportTest extends BaseTestCase
     public function testSendRequestTransportException(): void
     {
         $apiUrl = 'http://test.ru';
-        $config = new FeroneConfig($apiUrl);
+        $config = new TransportConfig($apiUrl);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
-        $feroneRequest = new FeroneRequest($method, $params);
+        $TransportRequest = new TransportRequest($method, $params);
 
         $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
         $streamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
@@ -103,10 +103,10 @@ class FeroneTransportTest extends BaseTestCase
             ->with($this->identicalTo($request))
             ->willThrowException(new InvalidArgumentException('test'));
 
-        $transport = new FeroneTransport($config, $client, $requestFactory, $streamFactory);
+        $transport = new Transport($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(TransportException::class);
-        $transport->sendRequest($feroneRequest);
+        $transport->sendRequest($TransportRequest);
     }
 
     /**
@@ -115,11 +115,11 @@ class FeroneTransportTest extends BaseTestCase
     public function testSendRequestBrokenResonseException(): void
     {
         $apiUrl = 'http://test.ru';
-        $config = new FeroneConfig($apiUrl);
+        $config = new TransportConfig($apiUrl);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
-        $feroneRequest = new FeroneRequest($method, $params);
+        $TransportRequest = new TransportRequest($method, $params);
 
         $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
         $streamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
@@ -140,10 +140,10 @@ class FeroneTransportTest extends BaseTestCase
         $client = $this->getMockBuilder(ClientInterface::class)->getMock();
         $client->method('sendRequest')->willReturn($response);
 
-        $transport = new FeroneTransport($config, $client, $requestFactory, $streamFactory);
+        $transport = new Transport($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(TransportException::class);
-        $transport->sendRequest($feroneRequest);
+        $transport->sendRequest($TransportRequest);
     }
 
     /**
@@ -152,11 +152,11 @@ class FeroneTransportTest extends BaseTestCase
     public function testSendRequestStatusCodeException(): void
     {
         $apiUrl = 'http://test.ru';
-        $config = new FeroneConfig($apiUrl);
+        $config = new TransportConfig($apiUrl);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
-        $feroneRequest = new FeroneRequest($method, $params);
+        $TransportRequest = new TransportRequest($method, $params);
 
         $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
         $streamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
@@ -177,10 +177,10 @@ class FeroneTransportTest extends BaseTestCase
         $client = $this->getMockBuilder(ClientInterface::class)->getMock();
         $client->method('sendRequest')->willReturn($response);
 
-        $transport = new FeroneTransport($config, $client, $requestFactory, $streamFactory);
+        $transport = new Transport($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(ApiException::class);
-        $transport->sendRequest($feroneRequest);
+        $transport->sendRequest($TransportRequest);
     }
 
     /**
@@ -189,11 +189,11 @@ class FeroneTransportTest extends BaseTestCase
     public function testSendRequestApiErrorException(): void
     {
         $apiUrl = 'http://test.ru';
-        $config = new FeroneConfig($apiUrl);
+        $config = new TransportConfig($apiUrl);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];
-        $feroneRequest = new FeroneRequest($method, $params);
+        $TransportRequest = new TransportRequest($method, $params);
 
         $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
         $streamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
@@ -214,9 +214,9 @@ class FeroneTransportTest extends BaseTestCase
         $client = $this->getMockBuilder(ClientInterface::class)->getMock();
         $client->method('sendRequest')->willReturn($response);
 
-        $transport = new FeroneTransport($config, $client, $requestFactory, $streamFactory);
+        $transport = new Transport($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(ApiException::class);
-        $transport->sendRequest($feroneRequest);
+        $transport->sendRequest($TransportRequest);
     }
 }

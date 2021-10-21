@@ -9,7 +9,7 @@ use InvalidArgumentException;
 /**
  * Object that contains all data required for transport.
  */
-class FeroneConfig
+class TransportConfig
 {
     private string $url;
 

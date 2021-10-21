@@ -6,12 +6,12 @@ namespace SuareSu\FeroneApiConnector\Tests\Transport;
 
 use InvalidArgumentException;
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
-use SuareSu\FeroneApiConnector\Transport\FeroneConfig;
+use SuareSu\FeroneApiConnector\Transport\TransportConfig;
 
 /**
  * @internal
  */
-class FeroneConfigTest extends BaseTestCase
+class TransportConfigTest extends BaseTestCase
 {
     /**
      * @test
@@ -19,7 +19,7 @@ class FeroneConfigTest extends BaseTestCase
     public function testContructWrongUrlException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new FeroneConfig('test');
+        new TransportConfig('test');
     }
 
     /**
@@ -29,7 +29,7 @@ class FeroneConfigTest extends BaseTestCase
     {
         $url = 'http://test.ru';
 
-        $config = new FeroneConfig($url);
+        $config = new TransportConfig($url);
 
         $this->assertSame($url, $config->getUrl());
     }

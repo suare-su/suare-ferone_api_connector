@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace SuareSu\FeroneApiConnector\Tests\Transport;
 
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
-use SuareSu\FeroneApiConnector\Transport\FeroneResponse;
+use SuareSu\FeroneApiConnector\Transport\TransportResponse;
 
 /**
  * @internal
  */
-class FeroneResponseTest extends BaseTestCase
+class TransportResponseTest extends BaseTestCase
 {
     /**
      * @test
@@ -19,7 +19,7 @@ class FeroneResponseTest extends BaseTestCase
     {
         $payload = ['key' => 'value'];
 
-        $response = new FeroneResponse($payload);
+        $response = new TransportResponse($payload);
 
         $this->assertSame($payload, $response->getPayload());
     }
@@ -32,7 +32,7 @@ class FeroneResponseTest extends BaseTestCase
         $data = ['data_key' => 'data value'];
         $payload = ['key' => 'value', 'data' => $data];
 
-        $response = new FeroneResponse($payload);
+        $response = new TransportResponse($payload);
 
         $this->assertSame($data, $response->getData());
     }
@@ -44,7 +44,7 @@ class FeroneResponseTest extends BaseTestCase
     {
         $payload = ['key' => 'value'];
 
-        $response = new FeroneResponse($payload);
+        $response = new TransportResponse($payload);
 
         $this->assertSame([], $response->getData());
     }

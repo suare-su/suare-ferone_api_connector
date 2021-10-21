@@ -7,7 +7,7 @@ namespace SuareSu\FeroneApiConnector\Transport;
 /**
  * Object that contains response data from API.
  */
-class FeroneResponse
+class TransportResponse
 {
     private array $payload;
 
