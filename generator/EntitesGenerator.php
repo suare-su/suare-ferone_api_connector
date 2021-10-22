@@ -53,7 +53,6 @@ class EntitesGenerator extends AbstarctGeneartor
         $properties = (array) ($description['properties'] ?? []);
 
         foreach ($properties as $propertyName => $propertyDescription) {
-            $unifiedPropertyName = $this->unifyFieldName($propertyName);
             $type = $this->getPhpType($propertyDescription, $namespaceName);
 
             if ($propertyDescription['type'] === self::TYPE_OBJECT) {
@@ -84,6 +83,7 @@ class EntitesGenerator extends AbstarctGeneartor
                 throw new RuntimeException("Can't recognize '" . ($propertyDescription['type'] ?? '') . "' type");
             }
 
+            $unifiedPropertyName = $this->unifyFieldName($propertyName);
             $isRequired = \in_array($propertyName, $requiredProperties) || $propertyDescription['type'] === self::TYPE_ARRAY;
 
             $property = $class->addProperty($unifiedPropertyName)
@@ -136,6 +136,12 @@ class EntitesGenerator extends AbstarctGeneartor
                 } else {
                     $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$propertyName}']) ? new {$type['class']}(\$apiResponse['{$propertyName}']) : null;\n";
                 }
+            }
+
+            $enums = $propertyDescription['enum'] ?? [];
+            foreach ($enums as $enum) {
+                $name = $this->unifyConstantName($unifiedPropertyName . '_' . $this->transliterate($enum));
+                $class->addConstant($name, $enum)->setPublic();
             }
         }
 

@@ -6,6 +6,15 @@ namespace SuareSu\FeroneApiConnector\Entity;
 
 class Product
 {
+    public const TYPE_PRODUCT = 'product';
+    public const TYPE_MODIFIER = 'modifier';
+    public const SHOP_TYPE_DELIVERY = 'delivery';
+    public const SHOP_TYPE_STORE = 'store';
+    public const UNITS_KG = 'кг';
+    public const UNITS_L = 'л';
+    public const UNITS_SHT = 'шт.';
+    public const UNITS_PORTS = 'порц.';
+
     /** Id */
     private int $id;
 
