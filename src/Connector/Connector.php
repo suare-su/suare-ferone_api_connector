@@ -6,6 +6,7 @@ namespace SuareSu\FeroneApiConnector\Connector;
 
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Entity\City;
+use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
@@ -110,6 +111,32 @@ class Connector
     public function getShopsLastChanged(): DateTimeImmutable
     {
         $data = $this->sendRequestInternal('GetShopsLastChanged')->getData();
+
+        return new DateTimeImmutable($data['Changed'] ?? '');
+    }
+
+    /**
+     * @return MenuItem[]
+     */
+    public function getMenu(int $cityId, bool $onlyVisible = true): array
+    {
+        $response = $this->sendRequestInternal(
+            'GetMenu',
+            [
+                'CityID' => $cityId,
+                'OnlyVisible' => $onlyVisible,
+            ]
+        );
+
+        $data = $response->getData();
+        $callback = fn (array $item): MenuItem => new MenuItem($item);
+
+        return array_map($callback, $data);
+    }
+
+    public function getMenuLastChanged(): DateTimeImmutable
+    {
+        $data = $this->sendRequestInternal('GetMenuLastChanged')->getData();
 
         return new DateTimeImmutable($data['Changed'] ?? '');
     }

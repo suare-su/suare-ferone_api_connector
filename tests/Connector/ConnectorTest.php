@@ -224,6 +224,59 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testGetMenu(): void
+    {
+        $cityId = 333;
+        $onlyVisible = false;
+        $id = 123;
+        $id1 = 321;
+        $transport = $this->createTransportMock(
+            'GetMenu',
+            [
+                'CityID' => $cityId,
+                'OnlyVisible' => $onlyVisible,
+            ],
+            [
+                [
+                    'Group' => ['ID' => $id],
+                ],
+                [
+                    'Group' => ['ID' => $id1],
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $menuItems = $connector->getMenu($cityId, $onlyVisible);
+
+        $this->assertCount(2, $menuItems);
+        $this->assertSame($id, $menuItems[0]->getGroup()->getId());
+        $this->assertSame($id1, $menuItems[1]->getGroup()->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetMenuLastChanged(): void
+    {
+        $date = '2010-10-10 10:10:10';
+        $transport = $this->createTransportMock(
+            'GetMenuLastChanged',
+            [],
+            ['Changed' => $date]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame(
+            $date,
+            $connector->getMenuLastChanged()->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method

@@ -20,6 +20,10 @@ $entitiesGenerator = new EntitesGenerator(
     [
         'City',
         'Shop',
+        'Product',
+        'Group',
+        'GroupModifier',
+        'MenuItem',
     ]
 );
 $entitiesGenerator->generate(
