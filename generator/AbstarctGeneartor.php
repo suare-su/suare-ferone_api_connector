@@ -7,6 +7,7 @@ namespace SuareSu\FeroneApiConnector\Generator;
 use Marvin255\FileSystemHelper\FileSystemHelperInterface;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PsrPrinter;
+use RuntimeException;
 use SplFileInfo;
 
 /**
@@ -19,11 +20,13 @@ abstract class AbstarctGeneartor
     public const TYPE_STRING = 'string';
     public const TYPE_BOOLEAN = 'boolean';
     public const TYPE_NUMBER = 'number';
+    public const TYPE_ARRAY = 'array';
     public const PHP_TYPE_MAP = [
         self::TYPE_INTEGER => 'int',
         self::TYPE_STRING => 'string',
         self::TYPE_BOOLEAN => 'bool',
         self::TYPE_NUMBER => 'float',
+        self::TYPE_ARRAY => 'array',
     ];
 
     protected FileSystemHelperInterface $fs;
@@ -93,11 +96,35 @@ abstract class AbstarctGeneartor
     {
         $type = $description['type'] ?? null;
 
-        if (!empty($description['$ref']) && preg_match('#.*/([^/]+)$#', $description['$ref'], $matches)) {
+        if ($type === self::TYPE_ARRAY) {
+            $return = [
+                'isPrimitive' => false,
+                'php' => 'array',
+            ];
+            if (!empty($description['items']['$ref']) && preg_match('#.*/([^/]+)$#', $description['items']['$ref'], $matches)) {
+                $fqcn = $this->unifyNamespace($namespace) . '\\' . $this->unifyClassName($matches[1]);
+                $cn = $this->unifyClassName($matches[1]);
+                $return['phpDoc'] = "{$cn}[]";
+                $return['ref'] = $matches[1];
+                $return['class'] = $cn;
+                $return['use'] = $fqcn;
+            } elseif (isset(self::PHP_TYPE_MAP[$description['items']['type']])) {
+                $return['phpDoc'] = self::PHP_TYPE_MAP[$description['items']['type']] . '[]';
+                $return['primitive'] = self::PHP_TYPE_MAP[$description['items']['type']];
+            } else {
+                throw new RuntimeException("Can't recognize array type");
+            }
+
+            return $return;
+        } elseif (!empty($description['$ref']) && preg_match('#.*/([^/]+)$#', $description['$ref'], $matches)) {
+            $fqcn = $this->unifyNamespace($namespace) . '\\' . $this->unifyClassName($matches[1]);
+            $cn = $this->unifyClassName($matches[1]);
+
             return [
                 'isPrimitive' => false,
-                'php' => $this->unifyNamespace($namespace) . '\\' . $this->unifyClassName($matches[1]),
-                'class' => $this->unifyClassName($matches[1]),
+                'php' => $fqcn,
+                'use' => $fqcn,
+                'class' => $cn,
                 'ref' => $matches[1],
             ];
         } elseif (isset(self::PHP_TYPE_MAP[$type])) {
