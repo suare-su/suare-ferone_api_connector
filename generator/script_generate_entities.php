@@ -24,6 +24,7 @@ $entitiesGenerator = new EntitesGenerator(
         'Group',
         'GroupModifier',
         'MenuItem',
+        'Client',
     ]
 );
 $entitiesGenerator->generate(

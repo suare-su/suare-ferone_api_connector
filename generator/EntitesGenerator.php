@@ -66,7 +66,11 @@ class EntitesGenerator extends AbstarctGeneartor
                 );
             }
 
-            if (!empty($otherEntites[$type['ref']]['enum'])) {
+            if (
+                !empty($otherEntites[$type['ref']])
+                && $otherEntites[$type['ref']]['type'] !== self::TYPE_OBJECT
+                && $otherEntites[$type['ref']]['type'] !== self::TYPE_ARRAY
+            ) {
                 // php7 doesn't have enums so suppose it's just a string
                 $propertyDescription = $otherEntites[$type['ref']];
                 $type = $this->getPhpType($propertyDescription, $namespaceName);
