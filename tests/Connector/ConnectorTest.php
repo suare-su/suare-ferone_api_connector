@@ -68,23 +68,6 @@ class ConnectorTest extends BaseTestCase
     /**
      * @test
      */
-    public function testGetTokenExpiryException(): void
-    {
-        $transport = $this->createTransportMock(
-            'GetTokenExpiry',
-            [],
-            ['ExpiresOn' => 'test']
-        );
-
-        $connector = new Connector($transport);
-
-        $this->expectException(ApiException::class);
-        $connector->getTokenExpiry();
-    }
-
-    /**
-     * @test
-     */
     public function testSendSMS(): void
     {
         $phoneNumber = '79999999999';
@@ -168,6 +151,75 @@ class ConnectorTest extends BaseTestCase
         $this->assertSame(
             $date,
             $connector->getCitiesLastChanged()->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function testGetShopsList(): void
+    {
+        $id = 123;
+        $id1 = 321;
+        $transport = $this->createTransportMock(
+            'GetShopsList',
+            [],
+            [
+                [
+                    'ID' => $id,
+                ],
+                [
+                    'ID' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $shops = $connector->getShopsList();
+
+        $this->assertCount(2, $shops);
+        $this->assertSame($id, $shops[0]->getId());
+        $this->assertSame($id1, $shops[1]->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetShopInfo(): void
+    {
+        $id = 123;
+        $transport = $this->createTransportMock(
+            'GetShopInfo',
+            [
+                'ShopID' => $id,
+            ],
+            [
+                'ID' => $id,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($id, $connector->getShopInfo($id)->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetShopsLastChanged(): void
+    {
+        $date = '2010-10-10 10:10:10';
+        $transport = $this->createTransportMock(
+            'GetShopsLastChanged',
+            [],
+            ['Changed' => $date]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame(
+            $date,
+            $connector->getShopsLastChanged()->format('Y-m-d H:i:s')
         );
     }
 
