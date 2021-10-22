@@ -48,6 +48,17 @@ class Connector
         return $dateExpire;
     }
 
+    public function sendSMS(string $phoneNumber, string $message): void
+    {
+        $this->sendRequestInternal(
+            'SendSMS',
+            [
+                'Phone' => $phoneNumber,
+                'Message' => $message,
+            ]
+        );
+    }
+
     private function sendRequestInternal(string $method, array $params = []): TransportResponse
     {
         $request = new TransportRequest($method, $params);

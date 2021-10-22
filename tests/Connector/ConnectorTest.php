@@ -83,6 +83,26 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testSendSMS(): void
+    {
+        $phoneNumber = '79999999999';
+        $message = 'test';
+        $transport = $this->createTransportMock(
+            'SendSMS',
+            [
+                'Phone' => $phoneNumber,
+                'Message' => $message,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $connector->sendSMS($phoneNumber, $message);
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method
