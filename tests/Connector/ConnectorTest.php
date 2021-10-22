@@ -277,6 +277,109 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testGetClientsList(): void
+    {
+        $cityId = 333;
+        $sex = 'male';
+        $birth = '0404';
+        $limit = 1;
+        $offset = 2;
+        $id = 123;
+        $id1 = 321;
+        $transport = $this->createTransportMock(
+            'GetClientsList',
+            [
+                'CityID' => $cityId,
+                'Sex' => $sex,
+                'Birth' => $birth,
+                'Limit' => $limit,
+                'Offset' => $offset,
+            ],
+            [
+                [
+                    'ID' => $id,
+                ],
+                [
+                    'ID' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $clients = $connector->getClientsList($cityId, $sex, $birth, $limit, $offset);
+
+        $this->assertCount(2, $clients);
+        $this->assertSame($id, $clients[0]->getId());
+        $this->assertSame($id1, $clients[1]->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetClientInfo(): void
+    {
+        $id = 123;
+        $transport = $this->createTransportMock(
+            'GetClientInfo',
+            [
+                'ClientID' => $id,
+            ],
+            [
+                'ID' => $id,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($id, $connector->getClientInfo($id)->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetClientBonus(): void
+    {
+        $phone = '79999999999';
+        $balance = 234;
+        $transport = $this->createTransportMock(
+            'GetClientBonus',
+            ['Phone' => $phone],
+            ['Balance' => $balance]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame(
+            $balance,
+            $connector->getClientBonus($phone)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function testUpdateClientInfo(): void
+    {
+        $clientId = 234;
+        $name = 'test';
+        $birth = '0404';
+        $transport = $this->createTransportMock(
+            'UpdateClientInfo',
+            [
+                'ClientID' => $clientId,
+                'Name' => $name,
+                'Birth' => $birth,
+            ],
+            []
+        );
+
+        $connector = new Connector($transport);
+        $connector->updateClientInfo($clientId, $name, $birth);
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method

@@ -6,6 +6,7 @@ namespace SuareSu\FeroneApiConnector\Connector;
 
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Entity\City;
+use SuareSu\FeroneApiConnector\Entity\Client;
 use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
@@ -60,10 +61,12 @@ class Connector
      */
     public function getCitiesList(): array
     {
-        $data = $this->sendRequestInternal('GetCitiesList')->getData();
-        $callback = fn (array $item): City => new City($item);
+        $response = $this->sendRequestInternal('GetCitiesList');
 
-        return array_map($callback, $data);
+        return array_map(
+            fn (array $item): City => new City($item),
+            $response->getData()
+        );
     }
 
     public function getCityInfo(int $id): City
@@ -90,10 +93,12 @@ class Connector
      */
     public function getShopsList(): array
     {
-        $data = $this->sendRequestInternal('GetShopsList')->getData();
-        $callback = fn (array $item): Shop => new Shop($item);
+        $response = $this->sendRequestInternal('GetShopsList');
 
-        return array_map($callback, $data);
+        return array_map(
+            fn (array $item): Shop => new Shop($item),
+            $response->getData()
+        );
     }
 
     public function getShopInfo(int $id): Shop
@@ -128,10 +133,10 @@ class Connector
             ]
         );
 
-        $data = $response->getData();
-        $callback = fn (array $item): MenuItem => new MenuItem($item);
-
-        return array_map($callback, $data);
+        return array_map(
+            fn (array $item): MenuItem => new MenuItem($item),
+            $response->getData()
+        );
     }
 
     public function getMenuLastChanged(): DateTimeImmutable
@@ -139,6 +144,66 @@ class Connector
         $data = $this->sendRequestInternal('GetMenuLastChanged')->getData();
 
         return new DateTimeImmutable($data['Changed'] ?? '');
+    }
+
+    /**
+     * @return Client[]
+     */
+    public function getClientsList(?int $cityId = null, ?string $sex = null, ?string $birth = null, int $limit = 100, int $offset = 0): array
+    {
+        $params = [
+            'CityID' => $cityId,
+            'Sex' => $sex,
+            'Birth' => $birth,
+            'Limit' => $limit,
+            'Offset' => $offset,
+        ];
+        $params = array_filter($params, fn ($item): bool => $item !== null);
+
+        $response = $this->sendRequestInternal('GetClientsList', $params);
+
+        return array_map(
+            fn (array $item): Client => new Client($item),
+            $response->getData()
+        );
+    }
+
+    public function getClientInfo(int $id): Client
+    {
+        $response = $this->sendRequestInternal(
+            'GetClientInfo',
+            [
+                'ClientID' => $id,
+            ]
+        );
+
+        return new Client($response->getData());
+    }
+
+    public function getClientBonus(string $phoneNumber): int
+    {
+        $response = $this->sendRequestInternal(
+            'GetClientBonus',
+            [
+                'Phone' => $phoneNumber,
+            ]
+        );
+        $data = $response->getData();
+
+        return (int) ($data['Balance'] ?? 0);
+    }
+
+    public function updateClientInfo(int $clientId, string $name, ?string $birth = null): void
+    {
+        $params = [
+            'ClientID' => $clientId,
+            'Name' => $name,
+        ];
+        if ($birth !== null) {
+            $params['Birth'] = $birth;
+        }
+
+        $this->sendRequestInternal('UpdateClientInfo', $params);
     }
 
     private function sendRequestInternal(string $method, array $params = []): TransportResponse
