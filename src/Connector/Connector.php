@@ -6,12 +6,12 @@ namespace SuareSu\FeroneApiConnector\Connector;
 
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Entity\City;
+use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 use SuareSu\FeroneApiConnector\Transport\TransportResponse;
-use Throwable;
 
 /**
  * Object that represents Ferone API methods.
@@ -38,15 +38,9 @@ class Connector
 
     public function getTokenExpiry(): DateTimeImmutable
     {
-        $responseData = $this->sendRequestInternal('GetTokenExpiry')->getData();
+        $data = $this->sendRequestInternal('GetTokenExpiry')->getData();
 
-        try {
-            $dateExpire = new DateTimeImmutable((string) ($responseData['ExpiresOn'] ?? ''));
-        } catch (Throwable $e) {
-            throw new ApiException('Date in response for GetTokenExpiry is empty or broken', 0, $e);
-        }
-
-        return $dateExpire;
+        return new DateTimeImmutable($data['ExpiresOn'] ?? '');
     }
 
     public function sendSMS(string $phoneNumber, string $message): void
@@ -87,13 +81,37 @@ class Connector
     {
         $data = $this->sendRequestInternal('GetCitiesLastChanged')->getData();
 
-        try {
-            $dateChanged = new DateTimeImmutable((string) ($data['Changed'] ?? ''));
-        } catch (Throwable $e) {
-            throw new ApiException('Date in response for GetTokenExpiry is empty or broken', 0, $e);
-        }
+        return new DateTimeImmutable($data['Changed'] ?? '');
+    }
 
-        return $dateChanged;
+    /**
+     * @return Shop[]
+     */
+    public function getShopsList(): array
+    {
+        $data = $this->sendRequestInternal('GetShopsList')->getData();
+        $callback = fn (array $item): Shop => new Shop($item);
+
+        return array_map($callback, $data);
+    }
+
+    public function getShopInfo(int $id): Shop
+    {
+        $response = $this->sendRequestInternal(
+            'GetShopInfo',
+            [
+                'ShopID' => $id,
+            ]
+        );
+
+        return new Shop($response->getData());
+    }
+
+    public function getShopsLastChanged(): DateTimeImmutable
+    {
+        $data = $this->sendRequestInternal('GetShopsLastChanged')->getData();
+
+        return new DateTimeImmutable($data['Changed'] ?? '');
     }
 
     private function sendRequestInternal(string $method, array $params = []): TransportResponse

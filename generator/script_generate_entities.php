@@ -19,6 +19,7 @@ $entitiesGenerator = new EntitesGenerator(
     $fsHelper,
     [
         'City',
+        'Shop',
     ]
 );
 $entitiesGenerator->generate(
