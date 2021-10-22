@@ -6,6 +6,9 @@ namespace SuareSu\FeroneApiConnector\Tests\Connector;
 
 use SuareSu\FeroneApiConnector\Connector\Connector;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
+use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
+use SuareSu\FeroneApiConnector\Query\ClientListQuery;
+use SuareSu\FeroneApiConnector\Query\MenuQuery;
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
@@ -54,7 +57,9 @@ class ConnectorTest extends BaseTestCase
         $transport = $this->createTransportMock(
             'GetTokenExpiry',
             [],
-            ['ExpiresOn' => $date]
+            [
+                'ExpiresOn' => $date,
+            ]
         );
 
         $connector = new Connector($transport);
@@ -63,6 +68,26 @@ class ConnectorTest extends BaseTestCase
             $date,
             $connector->getTokenExpiry()->format('Y-m-d H:i:s')
         );
+    }
+
+    /**
+     * @test
+     */
+    public function testGetTokenExpiryException(): void
+    {
+        $date = 'test';
+        $transport = $this->createTransportMock(
+            'GetTokenExpiry',
+            [],
+            [
+                'ExpiresOn' => $date,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->expectException(ApiException::class);
+        $connector->getTokenExpiry();
     }
 
     /**
@@ -143,7 +168,9 @@ class ConnectorTest extends BaseTestCase
         $transport = $this->createTransportMock(
             'GetCitiesLastChanged',
             [],
-            ['Changed' => $date]
+            [
+                'Changed' => $date,
+            ]
         );
 
         $connector = new Connector($transport);
@@ -212,7 +239,9 @@ class ConnectorTest extends BaseTestCase
         $transport = $this->createTransportMock(
             'GetShopsLastChanged',
             [],
-            ['Changed' => $date]
+            [
+                'Changed' => $date,
+            ]
         );
 
         $connector = new Connector($transport);
@@ -230,6 +259,7 @@ class ConnectorTest extends BaseTestCase
     {
         $cityId = 333;
         $onlyVisible = false;
+        $query = MenuQuery::new()->setCityId($cityId)->setOnlyVisible($onlyVisible);
         $id = 123;
         $id1 = 321;
         $transport = $this->createTransportMock(
@@ -240,16 +270,20 @@ class ConnectorTest extends BaseTestCase
             ],
             [
                 [
-                    'Group' => ['ID' => $id],
+                    'Group' => [
+                        'ID' => $id,
+                    ],
                 ],
                 [
-                    'Group' => ['ID' => $id1],
+                    'Group' => [
+                        'ID' => $id1,
+                    ],
                 ],
             ]
         );
 
         $connector = new Connector($transport);
-        $menuItems = $connector->getMenu($cityId, $onlyVisible);
+        $menuItems = $connector->getMenu($query);
 
         $this->assertCount(2, $menuItems);
         $this->assertSame($id, $menuItems[0]->getGroup()->getId());
@@ -265,7 +299,9 @@ class ConnectorTest extends BaseTestCase
         $transport = $this->createTransportMock(
             'GetMenuLastChanged',
             [],
-            ['Changed' => $date]
+            [
+                'Changed' => $date,
+            ]
         );
 
         $connector = new Connector($transport);
@@ -286,6 +322,12 @@ class ConnectorTest extends BaseTestCase
         $birth = '0404';
         $limit = 1;
         $offset = 2;
+        $query = ClientListQuery::new()
+            ->setCityId($cityId)
+            ->setSex($sex)
+            ->setBirth($birth)
+            ->setLimit($limit)
+            ->setOffset($offset);
         $id = 123;
         $id1 = 321;
         $transport = $this->createTransportMock(
@@ -308,7 +350,7 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-        $clients = $connector->getClientsList($cityId, $sex, $birth, $limit, $offset);
+        $clients = $connector->getClientsList($query);
 
         $this->assertCount(2, $clients);
         $this->assertSame($id, $clients[0]->getId());
@@ -342,18 +384,23 @@ class ConnectorTest extends BaseTestCase
     public function testGetClientBonus(): void
     {
         $phone = '79999999999';
+        $query = ClientBonusQuery::new()->setPhone($phone);
         $balance = 234;
         $transport = $this->createTransportMock(
             'GetClientBonus',
-            ['Phone' => $phone],
-            ['Balance' => $balance]
+            [
+                'Phone' => $phone,
+            ],
+            [
+                'Balance' => $balance,
+            ]
         );
 
         $connector = new Connector($transport);
 
         $this->assertSame(
             $balance,
-            $connector->getClientBonus($phone)
+            $connector->getClientBonus($query)
         );
     }
 

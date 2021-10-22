@@ -11,9 +11,14 @@ use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
+use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
+use SuareSu\FeroneApiConnector\Query\ClientListQuery;
+use SuareSu\FeroneApiConnector\Query\MenuQuery;
+use SuareSu\FeroneApiConnector\Query\Query;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 use SuareSu\FeroneApiConnector\Transport\TransportResponse;
+use Throwable;
 
 /**
  * Object that represents Ferone API methods.
@@ -22,11 +27,19 @@ class Connector
 {
     private Transport $transport;
 
+    /**
+     * @param Transport $transport
+     */
     public function __construct(Transport $transport)
     {
         $this->transport = $transport;
     }
 
+    /**
+     * PingAPI method implementation.
+     *
+     * @return bool
+     */
     public function pingApi(): bool
     {
         try {
@@ -38,13 +51,30 @@ class Connector
         return true;
     }
 
+    /**
+     * GetTokenExpiry method implementation.
+     *
+     * @return DateTimeImmutable
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
     public function getTokenExpiry(): DateTimeImmutable
     {
         $data = $this->sendRequestInternal('GetTokenExpiry')->getData();
 
-        return new DateTimeImmutable($data['ExpiresOn'] ?? '');
+        return $this->instantiateDateTimeObject($data['ExpiresOn'] ?? '');
     }
 
+    /**
+     * SendSMS method implementation.
+     *
+     * @param string $phoneNumber
+     * @param string $message
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
     public function sendSMS(string $phoneNumber, string $message): void
     {
         $this->sendRequestInternal(
@@ -57,7 +87,12 @@ class Connector
     }
 
     /**
+     * GetCitiesList method implementation.
+     *
      * @return City[]
+     *
+     * @throws ApiException
+     * @throws TransportException
      */
     public function getCitiesList(): array
     {
@@ -69,6 +104,16 @@ class Connector
         );
     }
 
+    /**
+     * GetCitiesList method implementation.
+     *
+     * @param int $id
+     *
+     * @return City
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
     public function getCityInfo(int $id): City
     {
         $response = $this->sendRequestInternal(
@@ -81,15 +126,28 @@ class Connector
         return new City($response->getData());
     }
 
+    /**
+     * GetCitiesLastChanged method implementation.
+     *
+     * @return DateTimeImmutable
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
     public function getCitiesLastChanged(): DateTimeImmutable
     {
         $data = $this->sendRequestInternal('GetCitiesLastChanged')->getData();
 
-        return new DateTimeImmutable($data['Changed'] ?? '');
+        return $this->instantiateDateTimeObject($data['Changed'] ?? '');
     }
 
     /**
+     * GetShopsList method implementation.
+     *
      * @return Shop[]
+     *
+     * @throws ApiException
+     * @throws TransportException
      */
     public function getShopsList(): array
     {
@@ -101,6 +159,16 @@ class Connector
         );
     }
 
+    /**
+     * GetShopInfo method implementation.
+     *
+     * @param int $id
+     *
+     * @return Shop
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
     public function getShopInfo(int $id): Shop
     {
         $response = $this->sendRequestInternal(
@@ -113,25 +181,34 @@ class Connector
         return new Shop($response->getData());
     }
 
+    /**
+     * GetShopsLastChanged method implementation.
+     *
+     * @return DateTimeImmutable
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
     public function getShopsLastChanged(): DateTimeImmutable
     {
         $data = $this->sendRequestInternal('GetShopsLastChanged')->getData();
 
-        return new DateTimeImmutable($data['Changed'] ?? '');
+        return $this->instantiateDateTimeObject($data['Changed'] ?? '');
     }
 
     /**
+     * GetMenu method implementation.
+     *
+     * @param MenuQuery $query
+     *
      * @return MenuItem[]
+     *
+     * @throws ApiException
+     * @throws TransportException
      */
-    public function getMenu(int $cityId, bool $onlyVisible = true): array
+    public function getMenu(MenuQuery $query): array
     {
-        $response = $this->sendRequestInternal(
-            'GetMenu',
-            [
-                'CityID' => $cityId,
-                'OnlyVisible' => $onlyVisible,
-            ]
-        );
+        $response = $this->sendRequestInternal('GetMenu', $query);
 
         return array_map(
             fn (array $item): MenuItem => new MenuItem($item),
@@ -139,6 +216,14 @@ class Connector
         );
     }
 
+    /**
+     * GetMenuLastChanged method implementation.
+     *
+     * @return DateTimeImmutable
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
     public function getMenuLastChanged(): DateTimeImmutable
     {
         $data = $this->sendRequestInternal('GetMenuLastChanged')->getData();
@@ -147,20 +232,18 @@ class Connector
     }
 
     /**
+     * GetClientsList method implementation.
+     *
+     * @param ClientListQuery $query
+     *
      * @return Client[]
+     *
+     * @throws ApiException
+     * @throws TransportException
      */
-    public function getClientsList(?int $cityId = null, ?string $sex = null, ?string $birth = null, int $limit = 100, int $offset = 0): array
+    public function getClientsList(ClientListQuery $query): array
     {
-        $params = [
-            'CityID' => $cityId,
-            'Sex' => $sex,
-            'Birth' => $birth,
-            'Limit' => $limit,
-            'Offset' => $offset,
-        ];
-        $params = array_filter($params, fn ($item): bool => $item !== null);
-
-        $response = $this->sendRequestInternal('GetClientsList', $params);
+        $response = $this->sendRequestInternal('GetClientsList', $query);
 
         return array_map(
             fn (array $item): Client => new Client($item),
@@ -168,6 +251,16 @@ class Connector
         );
     }
 
+    /**
+     * GetClientInfo method implementation.
+     *
+     * @param int $id
+     *
+     * @return Client
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
     public function getClientInfo(int $id): Client
     {
         $response = $this->sendRequestInternal(
@@ -180,19 +273,33 @@ class Connector
         return new Client($response->getData());
     }
 
-    public function getClientBonus(string $phoneNumber): int
+    /**
+     * GetClientBonus method implementation.
+     *
+     * @param ClientBonusQuery $query
+     *
+     * @return int
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getClientBonus(ClientBonusQuery $query): int
     {
-        $response = $this->sendRequestInternal(
-            'GetClientBonus',
-            [
-                'Phone' => $phoneNumber,
-            ]
-        );
-        $data = $response->getData();
+        $data = $this->sendRequestInternal('GetClientBonus', $query)->getData();
 
         return (int) ($data['Balance'] ?? 0);
     }
 
+    /**
+     * UpdateClientInfo method implementation.
+     *
+     * @param int         $clientId
+     * @param string      $name
+     * @param string|null $birth
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
     public function updateClientInfo(int $clientId, string $name, ?string $birth = null): void
     {
         $params = [
@@ -206,10 +313,42 @@ class Connector
         $this->sendRequestInternal('UpdateClientInfo', $params);
     }
 
-    private function sendRequestInternal(string $method, array $params = []): TransportResponse
+    /**
+     * Create and send request using transport.
+     *
+     * @param string      $method
+     * @param array|Query $params
+     *
+     * @return TransportResponse
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    private function sendRequestInternal(string $method, $params = []): TransportResponse
     {
+        if ($params instanceof Query) {
+            $params = $params->getParams();
+        }
+
         $request = new TransportRequest($method, $params);
 
         return $this->transport->sendRequest($request);
+    }
+
+    /**
+     * Instantiate new DateTimeImmutable from string.
+     *
+     * @param string $dateTime
+     *
+     * @return DateTimeImmutable
+     */
+    private function instantiateDateTimeObject(string $dateTime): DateTimeImmutable
+    {
+        try {
+            return new DateTimeImmutable($dateTime);
+        } catch (Throwable $e) {
+            $message = sprintf('Error while dateTime instantiation: %s', $e->getMessage());
+            throw new ApiException($message, 0, $e);
+        }
     }
 }
