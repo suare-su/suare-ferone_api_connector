@@ -6,6 +6,13 @@ namespace SuareSu\FeroneApiConnector\Entity;
 
 class Client
 {
+    public const SEX_UNDEFINED = 'undefined';
+    public const SEX_MALE = 'male';
+    public const SEX_FEMALE = 'female';
+    public const STATUS_NORMAL = 'normal';
+    public const STATUS_VIP = 'vip';
+    public const STATUS_BLACKLIST = 'blacklist';
+
     /** Id */
     private int $id;
 

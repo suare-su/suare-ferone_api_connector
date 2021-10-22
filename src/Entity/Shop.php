@@ -6,6 +6,9 @@ namespace SuareSu\FeroneApiConnector\Entity;
 
 class Shop
 {
+    public const TYPE_DELIVERY = 'delivery';
+    public const TYPE_STORE = 'store';
+
     /** Id */
     private int $id;
 
