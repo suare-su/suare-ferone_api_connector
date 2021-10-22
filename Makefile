@@ -29,3 +29,6 @@ test: ## Run tests
 
 coverage: ## Run tests with coverage
 	$(php_composer_script) coverage
+
+generate-entities: ## Generate list of entites from swagger file
+	$(php_composer_script) generate-entities

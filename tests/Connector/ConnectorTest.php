@@ -103,6 +103,75 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testGetCitiesList(): void
+    {
+        $id = 123;
+        $id1 = 321;
+        $transport = $this->createTransportMock(
+            'GetCitiesList',
+            [],
+            [
+                [
+                    'ID' => $id,
+                ],
+                [
+                    'ID' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $cities = $connector->getCitiesList();
+
+        $this->assertCount(2, $cities);
+        $this->assertSame($id, $cities[0]->getId());
+        $this->assertSame($id1, $cities[1]->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetCityInfo(): void
+    {
+        $id = 123;
+        $transport = $this->createTransportMock(
+            'GetCityInfo',
+            [
+                'CityID' => $id,
+            ],
+            [
+                'ID' => $id,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($id, $connector->getCityInfo($id)->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetCitiesLastChanged(): void
+    {
+        $date = '2010-10-10 10:10:10';
+        $transport = $this->createTransportMock(
+            'GetCitiesLastChanged',
+            [],
+            ['Changed' => $date]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame(
+            $date,
+            $connector->getCitiesLastChanged()->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method
