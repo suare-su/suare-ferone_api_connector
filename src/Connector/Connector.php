@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SuareSu\FeroneApiConnector\Connector;
 
 use DateTimeImmutable;
+use SuareSu\FeroneApiConnector\Entity\City;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
 use SuareSu\FeroneApiConnector\Transport\Transport;
@@ -46,6 +47,53 @@ class Connector
         }
 
         return $dateExpire;
+    }
+
+    public function sendSMS(string $phoneNumber, string $message): void
+    {
+        $this->sendRequestInternal(
+            'SendSMS',
+            [
+                'Phone' => $phoneNumber,
+                'Message' => $message,
+            ]
+        );
+    }
+
+    /**
+     * @return City[]
+     */
+    public function getCitiesList(): array
+    {
+        $data = $this->sendRequestInternal('GetCitiesList')->getData();
+        $callback = fn (array $item): City => new City($item);
+
+        return array_map($callback, $data);
+    }
+
+    public function getCityInfo(int $id): City
+    {
+        $response = $this->sendRequestInternal(
+            'GetCityInfo',
+            [
+                'CityID' => $id,
+            ]
+        );
+
+        return new City($response->getData());
+    }
+
+    public function getCitiesLastChanged(): DateTimeImmutable
+    {
+        $data = $this->sendRequestInternal('GetCitiesLastChanged')->getData();
+
+        try {
+            $dateChanged = new DateTimeImmutable((string) ($data['Changed'] ?? ''));
+        } catch (Throwable $e) {
+            throw new ApiException('Date in response for GetTokenExpiry is empty or broken', 0, $e);
+        }
+
+        return $dateChanged;
     }
 
     private function sendRequestInternal(string $method, array $params = []): TransportResponse
