@@ -13,6 +13,10 @@ abstract class PageredQuery extends AbstractQuery
     public const PARAM_OFFSET = 'Offset';
 
     /**
+     * Set limit parameter.
+     *
+     * @param int $limit
+     *
      * @return $this
      */
     public function setLimit(int $limit): self
@@ -21,6 +25,10 @@ abstract class PageredQuery extends AbstractQuery
     }
 
     /**
+     * Set offset parameter.
+     *
+     * @param int $offset
+     *
      * @return $this
      */
     public function setOffset(int $offset): self

@@ -6,9 +6,12 @@ namespace SuareSu\FeroneApiConnector\Transport;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
+use InvalidArgumentException;
 
 /**
  * Factory object that can create a transport object using different clients.
+ *
+ * @psalm-consistent-constructor
  */
 class TransportFactory
 {
@@ -16,6 +19,23 @@ class TransportFactory
 
     private string $authKey = '';
 
+    /**
+     * Create and return new instance of fabric.
+     *
+     * @return TransportFactory
+     */
+    public static function new(): self
+    {
+        return new static();
+    }
+
+    /**
+     * Set API url for transport object that will be created.
+     *
+     * @param string $url
+     *
+     * @return $this
+     */
     public function setUrl(string $url): self
     {
         $this->url = $url;
@@ -23,6 +43,13 @@ class TransportFactory
         return $this;
     }
 
+    /**
+     * Set authorization key for transport object that will be created.
+     *
+     * @param string $url
+     *
+     * @return $this
+     */
     public function setAuthKey(string $authKey): self
     {
         $this->authKey = $authKey;
@@ -30,6 +57,15 @@ class TransportFactory
         return $this;
     }
 
+    /**
+     * Create new transport based on guzzle http client.
+     *
+     * @param Client $client
+     *
+     * @return Transport
+     *
+     * @throws InvalidArgumentException
+     */
     public function createForGuzzleClient(Client $client): Transport
     {
         $config = new TransportConfig($this->url, $this->authKey);

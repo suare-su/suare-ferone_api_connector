@@ -76,16 +76,9 @@ class Transport
         try {
             $payload = $this->createPayloadStream($request);
             $psrRequest = $this->requestFactory
-                ->createRequest(
-                    'POST',
-                    $this->config->getUrl()
-                )
-                ->withHeader(
-                    'Authorization',
-                    $this->config->getAuthKey()
-                )
-                ->withBody($payload)
-            ;
+                ->createRequest('POST', $this->config->getUrl())
+                ->withHeader('Authorization', $this->config->getAuthKey())
+                ->withBody($payload);
             $response = $this->client->sendRequest($psrRequest);
         } catch (Throwable $e) {
             throw new TransportException($e->getMessage(), 0, $e);

@@ -9,5 +9,10 @@ namespace SuareSu\FeroneApiConnector\Query;
  */
 interface Query
 {
+    /**
+     * Returns list of params for current query.
+     *
+     * @return array
+     */
     public function getParams(): array;
 }

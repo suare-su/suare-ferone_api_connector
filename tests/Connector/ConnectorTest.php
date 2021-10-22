@@ -57,7 +57,9 @@ class ConnectorTest extends BaseTestCase
         $transport = $this->createTransportMock(
             'GetTokenExpiry',
             [],
-            ['ExpiresOn' => $date]
+            [
+                'ExpiresOn' => $date,
+            ]
         );
 
         $connector = new Connector($transport);
@@ -66,6 +68,26 @@ class ConnectorTest extends BaseTestCase
             $date,
             $connector->getTokenExpiry()->format('Y-m-d H:i:s')
         );
+    }
+
+    /**
+     * @test
+     */
+    public function testGetTokenExpiryException(): void
+    {
+        $date = 'test';
+        $transport = $this->createTransportMock(
+            'GetTokenExpiry',
+            [],
+            [
+                'ExpiresOn' => $date,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->expectException(ApiException::class);
+        $connector->getTokenExpiry();
     }
 
     /**
@@ -146,7 +168,9 @@ class ConnectorTest extends BaseTestCase
         $transport = $this->createTransportMock(
             'GetCitiesLastChanged',
             [],
-            ['Changed' => $date]
+            [
+                'Changed' => $date,
+            ]
         );
 
         $connector = new Connector($transport);
@@ -215,7 +239,9 @@ class ConnectorTest extends BaseTestCase
         $transport = $this->createTransportMock(
             'GetShopsLastChanged',
             [],
-            ['Changed' => $date]
+            [
+                'Changed' => $date,
+            ]
         );
 
         $connector = new Connector($transport);
@@ -244,10 +270,14 @@ class ConnectorTest extends BaseTestCase
             ],
             [
                 [
-                    'Group' => ['ID' => $id],
+                    'Group' => [
+                        'ID' => $id,
+                    ],
                 ],
                 [
-                    'Group' => ['ID' => $id1],
+                    'Group' => [
+                        'ID' => $id1,
+                    ],
                 ],
             ]
         );
@@ -269,7 +299,9 @@ class ConnectorTest extends BaseTestCase
         $transport = $this->createTransportMock(
             'GetMenuLastChanged',
             [],
-            ['Changed' => $date]
+            [
+                'Changed' => $date,
+            ]
         );
 
         $connector = new Connector($transport);
@@ -352,12 +384,16 @@ class ConnectorTest extends BaseTestCase
     public function testGetClientBonus(): void
     {
         $phone = '79999999999';
-        $query = (new ClientBonusQuery())->setPhone($phone);
+        $query = ClientBonusQuery::new()->setPhone($phone);
         $balance = 234;
         $transport = $this->createTransportMock(
             'GetClientBonus',
-            ['Phone' => $phone],
-            ['Balance' => $balance]
+            [
+                'Phone' => $phone,
+            ],
+            [
+                'Balance' => $balance,
+            ]
         );
 
         $connector = new Connector($transport);

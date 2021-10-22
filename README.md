@@ -35,11 +35,10 @@ use SuareSu\FeroneApiConnector\Transport\TransportFactory;
 $guzzleClient = new Client();
 
 // создаем транспорт с помощью фабрики
-$transport = (new TransportFactory())
+$transport = TransportFactory::new()
     ->setUrl('http://api.url/api/v2')
     ->setAuthKey('api_auth_key')
-    ->createForGuzzleClient($guzzleClient)
-;
+    ->createForGuzzleClient($guzzleClient);
 
 // создаем коннектор и передаем в него объект транспорта
 $connector = new Connector($transport);
