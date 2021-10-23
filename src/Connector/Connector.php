@@ -404,6 +404,24 @@ class Connector
     }
 
     /**
+     * GetOrderStatus method implementation.
+     *
+     * @param int $id
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function deleteOrder(int $id): void
+    {
+        $this->sendRequestInternal(
+            'DeleteOrder',
+            [
+                'OrderID' => $id,
+            ]
+        );
+    }
+
+    /**
      * Create and send request using transport.
      *
      * @param string      $method

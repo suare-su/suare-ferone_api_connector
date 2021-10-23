@@ -566,6 +566,23 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testDeleteOrder(): void
+    {
+        $id = 321;
+        $transport = $this->createTransportMock(
+            'DeleteOrder',
+            [
+                'OrderID' => $id,
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $connector->deleteOrder($id);
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method
