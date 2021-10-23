@@ -359,6 +359,28 @@ class Connector
     }
 
     /**
+     * GetOrderInfo method implementation.
+     *
+     * @param int $id
+     *
+     * @return Order
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getOrderInfo(int $id): Order
+    {
+        $response = $this->sendRequestInternal(
+            'GetOrderInfo',
+            [
+                'OrderID' => $id,
+            ]
+        );
+
+        return new Order($response->getData());
+    }
+
+    /**
      * Create and send request using transport.
      *
      * @param string      $method
