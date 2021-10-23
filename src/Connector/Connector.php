@@ -7,6 +7,7 @@ namespace SuareSu\FeroneApiConnector\Connector;
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Entity\City;
 use SuareSu\FeroneApiConnector\Entity\Client;
+use SuareSu\FeroneApiConnector\Entity\FindCitiesResponse;
 use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Order;
 use SuareSu\FeroneApiConnector\Entity\OrderStatus;
@@ -644,6 +645,26 @@ class Connector
         $data = $this->sendRequestInternal('GetPayOnlineStatus')->getData();
 
         return (bool) ($data['Status'] ?? false);
+    }
+
+    /**
+     * GetReviewsQuestions method implementation.
+     *
+     * @param string $city
+     *
+     * @return FindCitiesResponse[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function findCities(string $city): array
+    {
+        $response = $this->sendRequestInternal('SearchCitiesInKLADR', ['City' => $city]);
+
+        return array_map(
+            fn (array $item): FindCitiesResponse => new FindCitiesResponse($item),
+            $response->getData()
+        );
     }
 
     /**
