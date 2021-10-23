@@ -11,6 +11,7 @@ use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Order;
 use SuareSu\FeroneApiConnector\Entity\OrderStatus;
 use SuareSu\FeroneApiConnector\Entity\Review;
+use SuareSu\FeroneApiConnector\Entity\ReviewQuestion;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
@@ -484,6 +485,26 @@ class Connector
         );
 
         return new Review($response->getData());
+    }
+
+    /**
+     * GetReviewsQuestions method implementation.
+     *
+     * @param ClientReviewsListQuery $query
+     *
+     * @return ReviewQuestion[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getReviewsQuestions(): array
+    {
+        $response = $this->sendRequestInternal('GetReviewsQuestions');
+
+        return array_map(
+            fn (array $item): ReviewQuestion => new ReviewQuestion($item),
+            $response->getData()
+        );
     }
 
     /**
