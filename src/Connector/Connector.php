@@ -17,6 +17,7 @@ use SuareSu\FeroneApiConnector\Exception\TransportException;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
+use SuareSu\FeroneApiConnector\Query\ClientReviewsListQuery;
 use SuareSu\FeroneApiConnector\Query\MenuQuery;
 use SuareSu\FeroneApiConnector\Query\OrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\Query;
@@ -436,6 +437,26 @@ class Connector
     public function getReviewsList(ReviewsListQuery $query): array
     {
         $response = $this->sendRequestInternal('GetReviewsList', $query);
+
+        return array_map(
+            fn (array $item): Review => new Review($item),
+            $response->getData()
+        );
+    }
+
+    /**
+     * GetReviewsList method implementation.
+     *
+     * @param ClientReviewsListQuery $query
+     *
+     * @return Review[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getClientReviewsList(ClientReviewsListQuery $query): array
+    {
+        $response = $this->sendRequestInternal('GetClientReviewsList', $query);
 
         return array_map(
             fn (array $item): Review => new Review($item),
