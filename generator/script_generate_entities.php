@@ -25,6 +25,10 @@ $entitiesGenerator = new EntitesGenerator(
         'GroupModifier',
         'MenuItem',
         'Client',
+        'Order',
+        'OrderProduct',
+        'OrderChange',
+        'OrderSourceType',
     ]
 );
 $entitiesGenerator->generate(
