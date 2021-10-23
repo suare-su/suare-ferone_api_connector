@@ -22,6 +22,16 @@ $rawEntites['FindCitiesResponse'] = [
         'value' => ['type' => 'string'],
     ],
 ];
+$rawEntites['FindStreetsResponse'] = [
+    'type' => 'object',
+    'required' => ['id', 'city', 'label', 'value'],
+    'properties' => [
+        'id' => ['type' => 'string'],
+        'city' => ['type' => 'string'],
+        'label' => ['type' => 'string'],
+        'value' => ['type' => 'string'],
+    ],
+];
 
 $fsHelper = FileSystemFactory::create();
 $entitiesGenerator = new EntitesGenerator(
@@ -42,6 +52,7 @@ $entitiesGenerator = new EntitesGenerator(
         'Review',
         'ReviewQuestion',
         'FindCitiesResponse',
+        'FindStreetsResponse',
     ]
 );
 $entitiesGenerator->generate(

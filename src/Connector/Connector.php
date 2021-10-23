@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Entity\City;
 use SuareSu\FeroneApiConnector\Entity\Client;
 use SuareSu\FeroneApiConnector\Entity\FindCitiesResponse;
+use SuareSu\FeroneApiConnector\Entity\FindStreetsResponse;
 use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Order;
 use SuareSu\FeroneApiConnector\Entity\OrderStatus;
@@ -659,10 +660,42 @@ class Connector
      */
     public function findCities(string $city): array
     {
-        $response = $this->sendRequestInternal('SearchCitiesInKLADR', ['City' => $city]);
+        $response = $this->sendRequestInternal(
+            'SearchCitiesInKLADR',
+            [
+                'City' => $city,
+            ]
+        );
 
         return array_map(
             fn (array $item): FindCitiesResponse => new FindCitiesResponse($item),
+            $response->getData()
+        );
+    }
+
+    /**
+     * GetReviewsQuestions method implementation.
+     *
+     * @param int    $cityId
+     * @param string $street
+     *
+     * @return FindStreetsResponse[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function findStreets(int $cityId, string $street): array
+    {
+        $response = $this->sendRequestInternal(
+            'SearchStreetsInCity',
+            [
+                'CityID' => $cityId,
+                'Street' => $street,
+            ]
+        );
+
+        return array_map(
+            fn (array $item): FindStreetsResponse => new FindStreetsResponse($item),
             $response->getData()
         );
     }
