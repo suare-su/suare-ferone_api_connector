@@ -926,6 +926,39 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testFindHouses(): void
+    {
+        $streetId = '123';
+        $number = '23';
+        $id = '123';
+        $id1 = '321';
+        $transport = $this->createTransportMock(
+            'SearchHouseOnStreet',
+            [
+                'StreetID' => $streetId,
+                'Street' => $number,
+            ],
+            [
+                [
+                    'id' => $id,
+                ],
+                [
+                    'id' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $houses = $connector->findHouses($streetId, $number);
+
+        $this->assertCount(2, $houses);
+        $this->assertSame($id, $houses[0]->getId());
+        $this->assertSame($id1, $houses[1]->getId());
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method

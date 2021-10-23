@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Entity\City;
 use SuareSu\FeroneApiConnector\Entity\Client;
 use SuareSu\FeroneApiConnector\Entity\FindCitiesResponse;
+use SuareSu\FeroneApiConnector\Entity\FindHousesResponse;
 use SuareSu\FeroneApiConnector\Entity\FindStreetsResponse;
 use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Order;
@@ -696,6 +697,33 @@ class Connector
 
         return array_map(
             fn (array $item): FindStreetsResponse => new FindStreetsResponse($item),
+            $response->getData()
+        );
+    }
+
+    /**
+     * GetReviewsQuestions method implementation.
+     *
+     * @param string $streetId
+     * @param string $street
+     *
+     * @return FindHousesResponse[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function findHouses(string $streetId, string $number): array
+    {
+        $response = $this->sendRequestInternal(
+            'SearchHouseOnStreet',
+            [
+                'StreetID' => $streetId,
+                'Street' => $number,
+            ]
+        );
+
+        return array_map(
+            fn (array $item): FindHousesResponse => new FindHousesResponse($item),
             $response->getData()
         );
     }
