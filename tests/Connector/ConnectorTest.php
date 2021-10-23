@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Tests\Connector;
 
+use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Connector\Connector;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
+use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\MenuQuery;
+use SuareSu\FeroneApiConnector\Query\OrdersListQuery;
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
@@ -424,6 +427,99 @@ class ConnectorTest extends BaseTestCase
 
         $connector = new Connector($transport);
         $connector->updateClientInfo($clientId, $name, $birth);
+    }
+
+    /**
+     * @test
+     */
+    public function testGetOrdersList(): void
+    {
+        $from = '10.10.2020';
+        $to = '10.10.2021';
+        $cities = [333, 444];
+        $types = ['delivery'];
+        $shops = [555, 666];
+        $callback = true;
+        $plaziusOff = true;
+        $notInIIKO = false;
+        $notInPBI = true;
+        $hiddenMenu = false;
+        $external = true;
+        $query = OrdersListQuery::new()
+            ->setPeriod(new DateTimeImmutable($from), new DateTimeImmutable($to))
+            ->setCitiesIDs($cities)
+            ->setOrdersTypes($types)
+            ->setShopsIDs($shops)
+            ->setCallback($callback)
+            ->setPlaziusOff($plaziusOff)
+            ->setNotInIIKO($notInIIKO)
+            ->setNotInPBI($notInPBI)
+            ->setHiddenMenu($hiddenMenu)
+            ->setExternal($external);
+        $id = 123;
+        $id1 = 321;
+        $transport = $this->createTransportMock(
+            'GetOrdersList',
+            [
+                'Period' => ['From' => $from, 'To' => $to],
+                'CitiesIDs' => $cities,
+                'OrdersTypes' => $types,
+                'ShopsIDs' => $shops,
+                'Callback' => $callback,
+                'PlaziusOff' => $plaziusOff,
+                'NotInIIKO' => $notInIIKO,
+                'NotInPBI' => $notInPBI,
+                'HiddenMenu' => $hiddenMenu,
+                'External' => $external,
+            ],
+            [
+                [
+                    'ID' => $id,
+                ],
+                [
+                    'ID' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $menuItems = $connector->getOrdersList($query);
+
+        $this->assertCount(2, $menuItems);
+        $this->assertSame($id, $menuItems[0]->getId());
+        $this->assertSame($id1, $menuItems[1]->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetClientOrdersList(): void
+    {
+        $clientId = 333;
+        $query = ClientOrdersListQuery::new()->setClientId($clientId);
+        $id = 123;
+        $id1 = 321;
+        $transport = $this->createTransportMock(
+            'GetClientOrdersList',
+            [
+                'ClientID' => $clientId,
+            ],
+            [
+                [
+                    'ID' => $id,
+                ],
+                [
+                    'ID' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $menuItems = $connector->getClientOrdersList($query);
+
+        $this->assertCount(2, $menuItems);
+        $this->assertSame($id, $menuItems[0]->getId());
+        $this->assertSame($id1, $menuItems[1]->getId());
     }
 
     /**

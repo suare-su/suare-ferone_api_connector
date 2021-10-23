@@ -8,12 +8,15 @@ use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Entity\City;
 use SuareSu\FeroneApiConnector\Entity\Client;
 use SuareSu\FeroneApiConnector\Entity\MenuItem;
+use SuareSu\FeroneApiConnector\Entity\Order;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
+use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\MenuQuery;
+use SuareSu\FeroneApiConnector\Query\OrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\Query;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
@@ -311,6 +314,48 @@ class Connector
         }
 
         $this->sendRequestInternal('UpdateClientInfo', $params);
+    }
+
+    /**
+     * GetOrdersList method implementation.
+     *
+     * @param OrdersListQuery $query
+     *
+     * @return Order[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getOrdersList(OrdersListQuery $query): array
+    {
+        $response = $this->sendRequestInternal('GetOrdersList', $query);
+
+        return array_map(
+            fn (array $item): Order => new Order($item),
+            $response->getData()
+        );
+    }
+
+    /**
+     * GetClientOrdersList method implementation.
+     *
+     * @param ClientOrdersListQuery $query
+     *
+     * @return Order[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     *
+     * @TODO Source property has string type for this method - issue on API side - so it fails on every call
+     */
+    public function getClientOrdersList(ClientOrdersListQuery $query): array
+    {
+        $response = $this->sendRequestInternal('GetClientOrdersList', $query);
+
+        return array_map(
+            fn (array $item): Order => new Order($item),
+            $response->getData()
+        );
     }
 
     /**
