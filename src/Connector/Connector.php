@@ -465,6 +465,28 @@ class Connector
     }
 
     /**
+     * GetReviewInfo method implementation.
+     *
+     * @param int $id
+     *
+     * @return Review
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getReviewInfo(int $id): Review
+    {
+        $response = $this->sendRequestInternal(
+            'GetReviewInfo',
+            [
+                'ReviewID' => $id,
+            ]
+        );
+
+        return new Review($response->getData());
+    }
+
+    /**
      * Create and send request using transport.
      *
      * @param string      $method
