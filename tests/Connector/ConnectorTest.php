@@ -485,11 +485,11 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-        $menuItems = $connector->getOrdersList($query);
+        $orders = $connector->getOrdersList($query);
 
-        $this->assertCount(2, $menuItems);
-        $this->assertSame($id, $menuItems[0]->getId());
-        $this->assertSame($id1, $menuItems[1]->getId());
+        $this->assertCount(2, $orders);
+        $this->assertSame($id, $orders[0]->getId());
+        $this->assertSame($id1, $orders[1]->getId());
     }
 
     /**
@@ -517,11 +517,11 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-        $menuItems = $connector->getClientOrdersList($query);
+        $orders = $connector->getClientOrdersList($query);
 
-        $this->assertCount(2, $menuItems);
-        $this->assertSame($id, $menuItems[0]->getId());
-        $this->assertSame($id1, $menuItems[1]->getId());
+        $this->assertCount(2, $orders);
+        $this->assertSame($id, $orders[0]->getId());
+        $this->assertSame($id1, $orders[1]->getId());
     }
 
     /**
@@ -619,11 +619,11 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-        $menuItems = $connector->getReviewsList($query);
+        $reviews = $connector->getReviewsList($query);
 
-        $this->assertCount(2, $menuItems);
-        $this->assertSame($id, $menuItems[0]->getId());
-        $this->assertSame($id1, $menuItems[1]->getId());
+        $this->assertCount(2, $reviews);
+        $this->assertSame($id, $reviews[0]->getId());
+        $this->assertSame($id1, $reviews[1]->getId());
     }
 
     /**
@@ -651,11 +651,11 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-        $menuItems = $connector->getClientReviewsList($query);
+        $reviews = $connector->getClientReviewsList($query);
 
-        $this->assertCount(2, $menuItems);
-        $this->assertSame($id, $menuItems[0]->getId());
-        $this->assertSame($id1, $menuItems[1]->getId());
+        $this->assertCount(2, $reviews);
+        $this->assertSame($id, $reviews[0]->getId());
+        $this->assertSame($id1, $reviews[1]->getId());
     }
 
     /**
@@ -700,11 +700,11 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-        $menuItems = $connector->getReviewsQuestions();
+        $reviews = $connector->getReviewsQuestions();
 
-        $this->assertCount(2, $menuItems);
-        $this->assertSame($id, $menuItems[0]->getId());
-        $this->assertSame($id1, $menuItems[1]->getId());
+        $this->assertCount(2, $reviews);
+        $this->assertSame($id, $reviews[0]->getId());
+        $this->assertSame($id1, $reviews[1]->getId());
     }
 
     /**
@@ -859,6 +859,103 @@ class ConnectorTest extends BaseTestCase
         $connector = new Connector($transport);
 
         $this->assertTrue($connector->getPayOnlineStatus());
+    }
+
+    /**
+     * @test
+     */
+    public function testFindCities(): void
+    {
+        $city = 'test';
+        $id = '123';
+        $id1 = '321';
+        $transport = $this->createTransportMock(
+            'SearchCitiesInKLADR',
+            [
+                'City' => $city,
+            ],
+            [
+                [
+                    'id' => $id,
+                ],
+                [
+                    'id' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $cities = $connector->findCities($city);
+
+        $this->assertCount(2, $cities);
+        $this->assertSame($id, $cities[0]->getId());
+        $this->assertSame($id1, $cities[1]->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testFindStreets(): void
+    {
+        $cityId = 22;
+        $street = 'test';
+        $id = '123';
+        $id1 = '321';
+        $transport = $this->createTransportMock(
+            'SearchStreetsInCity',
+            [
+                'CityID' => $cityId,
+                'Street' => $street,
+            ],
+            [
+                [
+                    'id' => $id,
+                ],
+                [
+                    'id' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $streets = $connector->findStreets($cityId, $street);
+
+        $this->assertCount(2, $streets);
+        $this->assertSame($id, $streets[0]->getId());
+        $this->assertSame($id1, $streets[1]->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testFindHouses(): void
+    {
+        $streetId = '123';
+        $number = '23';
+        $id = '123';
+        $id1 = '321';
+        $transport = $this->createTransportMock(
+            'SearchHouseOnStreet',
+            [
+                'StreetID' => $streetId,
+                'Street' => $number,
+            ],
+            [
+                [
+                    'id' => $id,
+                ],
+                [
+                    'id' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $houses = $connector->findHouses($streetId, $number);
+
+        $this->assertCount(2, $houses);
+        $this->assertSame($id, $houses[0]->getId());
+        $this->assertSame($id1, $houses[1]->getId());
     }
 
     /**

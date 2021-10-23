@@ -13,8 +13,37 @@ $guzzleClient = new Client();
 $extractor = new RemoteSwaggerExtractor($guzzleClient);
 $rawEntites = $extractor->extractFrom('https://api.swaggerhub.com/apis/idmitrio/ferone-api/2.0');
 
-$fsHelper = FileSystemFactory::create();
+$rawEntites['FindCitiesResponse'] = [
+    'type' => 'object',
+    'required' => ['id', 'label', 'value'],
+    'properties' => [
+        'id' => ['type' => 'string'],
+        'label' => ['type' => 'string'],
+        'value' => ['type' => 'string'],
+    ],
+];
+$rawEntites['FindStreetsResponse'] = [
+    'type' => 'object',
+    'required' => ['id', 'city', 'label', 'value'],
+    'properties' => [
+        'id' => ['type' => 'string'],
+        'city' => ['type' => 'string'],
+        'label' => ['type' => 'string'],
+        'value' => ['type' => 'string'],
+    ],
+];
+$rawEntites['FindHousesResponse'] = [
+    'type' => 'object',
+    'required' => ['id', 'addr', 'label', 'value'],
+    'properties' => [
+        'id' => ['type' => 'string'],
+        'addr' => ['type' => 'string'],
+        'label' => ['type' => 'string'],
+        'value' => ['type' => 'string'],
+    ],
+];
 
+$fsHelper = FileSystemFactory::create();
 $entitiesGenerator = new EntitesGenerator(
     $fsHelper,
     [
@@ -32,6 +61,9 @@ $entitiesGenerator = new EntitesGenerator(
         'OrderStatus',
         'Review',
         'ReviewQuestion',
+        'FindCitiesResponse',
+        'FindStreetsResponse',
+        'FindHousesResponse',
     ]
 );
 $entitiesGenerator->generate(
