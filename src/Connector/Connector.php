@@ -508,6 +508,33 @@ class Connector
     }
 
     /**
+     * AddReview method implementation.
+     *
+     * @param int    $orderId
+     * @param string $review
+     *
+     * @return int
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function addReviewRating(int $orderId, string $review, int $rating, ?string $photo = null): int
+    {
+        $params = [
+            'OrderID' => $orderId,
+            'Review' => $review,
+            'Rating' => $rating,
+        ];
+        if ($photo !== null) {
+            $params['Photo'] = $photo;
+        }
+
+        $data = $this->sendRequestInternal('AddReview', $params)->getData();
+
+        return (int) ($data['ID'] ?? 0);
+    }
+
+    /**
      * Create and send request using transport.
      *
      * @param string      $method
