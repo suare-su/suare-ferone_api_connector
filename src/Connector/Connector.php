@@ -10,6 +10,7 @@ use SuareSu\FeroneApiConnector\Entity\Client;
 use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Order;
 use SuareSu\FeroneApiConnector\Entity\OrderStatus;
+use SuareSu\FeroneApiConnector\Entity\Review;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
@@ -19,6 +20,7 @@ use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\MenuQuery;
 use SuareSu\FeroneApiConnector\Query\OrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\Query;
+use SuareSu\FeroneApiConnector\Query\ReviewsListQuery;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 use SuareSu\FeroneApiConnector\Transport\TransportResponse;
@@ -418,6 +420,26 @@ class Connector
             [
                 'OrderID' => $id,
             ]
+        );
+    }
+
+    /**
+     * GetReviewsList method implementation.
+     *
+     * @param ReviewsListQuery $query
+     *
+     * @return Review[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getReviewsList(ReviewsListQuery $query): array
+    {
+        $response = $this->sendRequestInternal('GetReviewsList', $query);
+
+        return array_map(
+            fn (array $item): Review => new Review($item),
+            $response->getData()
         );
     }
 

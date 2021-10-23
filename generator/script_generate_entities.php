@@ -30,6 +30,7 @@ $entitiesGenerator = new EntitesGenerator(
         'OrderChange',
         'OrderSourceType',
         'OrderStatus',
+        'Review',
     ]
 );
 $entitiesGenerator->generate(

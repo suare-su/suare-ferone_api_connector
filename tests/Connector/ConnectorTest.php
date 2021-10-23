@@ -12,6 +12,7 @@ use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\MenuQuery;
 use SuareSu\FeroneApiConnector\Query\OrdersListQuery;
+use SuareSu\FeroneApiConnector\Query\ReviewsListQuery;
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
@@ -580,6 +581,48 @@ class ConnectorTest extends BaseTestCase
 
         $connector = new Connector($transport);
         $connector->deleteOrder($id);
+    }
+
+    /**
+     * @test
+     */
+    public function testGetReviewsList(): void
+    {
+        $cities = [333, 444];
+        $shops = [555, 666];
+        $rating = 3;
+        $report = false;
+        $query = ReviewsListQuery::new()
+            ->setCitiesIDs($cities)
+            ->setShopsIDs($shops)
+            ->setRating($rating)
+            ->setReport($report);
+        $id = 123;
+        $id1 = 321;
+        $transport = $this->createTransportMock(
+            'GetReviewsList',
+            [
+                'CitiesIDs' => $cities,
+                'ShopsIDs' => $shops,
+                'Rating' => $rating,
+                'Report' => $report,
+            ],
+            [
+                [
+                    'ID' => $id,
+                ],
+                [
+                    'ID' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $menuItems = $connector->getReviewsList($query);
+
+        $this->assertCount(2, $menuItems);
+        $this->assertSame($id, $menuItems[0]->getId());
+        $this->assertSame($id1, $menuItems[1]->getId());
     }
 
     /**
