@@ -772,6 +772,96 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testGetStreetAutocompleteStatus(): void
+    {
+        $transport = $this->createTransportMock(
+            'GetStreetAutocompleteStatus',
+            [],
+            [
+                'Status' => true,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertTrue($connector->getStreetAutocompleteStatus());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetOrderOnlineStatus(): void
+    {
+        $transport = $this->createTransportMock(
+            'GetOrderOnlineStatus',
+            [],
+            [
+                'Status' => true,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertTrue($connector->getOrderOnlineStatus());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetOrderOnTimeStatus(): void
+    {
+        $transport = $this->createTransportMock(
+            'GetOrderOnTimeStatus',
+            [],
+            [
+                'Status' => true,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertTrue($connector->getOrderOnTimeStatus());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetPayCardStatus(): void
+    {
+        $transport = $this->createTransportMock(
+            'GetPayCardStatus',
+            [],
+            [
+                'Status' => true,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertTrue($connector->getPayCardStatus());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetPayOnlineStatus(): void
+    {
+        $transport = $this->createTransportMock(
+            'GetPayOnlineStatus',
+            [],
+            [
+                'Status' => true,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertTrue($connector->getPayOnlineStatus());
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method
