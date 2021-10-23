@@ -508,10 +508,12 @@ class Connector
     }
 
     /**
-     * AddReview method implementation.
+     * AddReview method implementation with rating.
      *
-     * @param int    $orderId
-     * @param string $review
+     * @param int         $orderId
+     * @param string      $review
+     * @param int         $rating
+     * @param string|null $photo
      *
      * @return int
      *
@@ -525,6 +527,41 @@ class Connector
             'Review' => $review,
             'Rating' => $rating,
         ];
+        if ($photo !== null) {
+            $params['Photo'] = $photo;
+        }
+
+        $data = $this->sendRequestInternal('AddReview', $params)->getData();
+
+        return (int) ($data['ID'] ?? 0);
+    }
+
+    /**
+     * AddReview method implementation with questions.
+     *
+     * @param int             $orderId
+     * @param string          $review
+     * @param array<int, int> $questions
+     * @param string|null     $photo
+     *
+     * @return int
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function addReviewQuestions(int $orderId, string $review, array $questions, ?string $photo = null): int
+    {
+        $params = [
+            'OrderID' => $orderId,
+            'Review' => $review,
+            'Questions' => [],
+        ];
+        foreach ($questions as $id => $rating) {
+            $params['Questions'][] = [
+                'ID' => $id,
+                'Rating' => $rating,
+            ];
+        }
         if ($photo !== null) {
             $params['Photo'] = $photo;
         }
