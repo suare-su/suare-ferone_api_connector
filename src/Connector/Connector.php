@@ -572,6 +572,81 @@ class Connector
     }
 
     /**
+     * GetStreetAutocompleteStatus method implementation.
+     *
+     * @return bool
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getStreetAutocompleteStatus(): bool
+    {
+        $data = $this->sendRequestInternal('GetStreetAutocompleteStatus')->getData();
+
+        return (bool) ($data['Status'] ?? false);
+    }
+
+    /**
+     * GetOrderOnlineStatus method implementation.
+     *
+     * @return bool
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getOrderOnlineStatus(): bool
+    {
+        $data = $this->sendRequestInternal('GetOrderOnlineStatus')->getData();
+
+        return (bool) ($data['Status'] ?? false);
+    }
+
+    /**
+     * GetOrderOnTimeStatus method implementation.
+     *
+     * @return bool
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getOrderOnTimeStatus(): bool
+    {
+        $data = $this->sendRequestInternal('GetOrderOnTimeStatus')->getData();
+
+        return (bool) ($data['Status'] ?? false);
+    }
+
+    /**
+     * GetPayCardStatus method implementation.
+     *
+     * @return bool
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getPayCardStatus(): bool
+    {
+        $data = $this->sendRequestInternal('GetPayCardStatus')->getData();
+
+        return (bool) ($data['Status'] ?? false);
+    }
+
+    /**
+     * GetPayOnlineStatus method implementation.
+     *
+     * @return bool
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getPayOnlineStatus(): bool
+    {
+        $data = $this->sendRequestInternal('GetPayOnlineStatus')->getData();
+
+        return (bool) ($data['Status'] ?? false);
+    }
+
+    /**
      * Create and send request using transport.
      *
      * @param string      $method
