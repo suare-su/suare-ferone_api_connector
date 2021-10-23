@@ -9,6 +9,7 @@ use SuareSu\FeroneApiConnector\Entity\City;
 use SuareSu\FeroneApiConnector\Entity\Client;
 use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Order;
+use SuareSu\FeroneApiConnector\Entity\OrderStatus;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
@@ -378,6 +379,28 @@ class Connector
         );
 
         return new Order($response->getData());
+    }
+
+    /**
+     * GetOrderStatus method implementation.
+     *
+     * @param int $id
+     *
+     * @return OrderStatus
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getOrderStatus(int $id): OrderStatus
+    {
+        $response = $this->sendRequestInternal(
+            'GetOrderStatus',
+            [
+                'OrderID' => $id,
+            ]
+        );
+
+        return new OrderStatus($response->getData());
     }
 
     /**
