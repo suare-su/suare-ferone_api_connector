@@ -10,8 +10,10 @@ use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
+use SuareSu\FeroneApiConnector\Query\ClientReviewsListQuery;
 use SuareSu\FeroneApiConnector\Query\MenuQuery;
 use SuareSu\FeroneApiConnector\Query\OrdersListQuery;
+use SuareSu\FeroneApiConnector\Query\ReviewsListQuery;
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
@@ -580,6 +582,193 @@ class ConnectorTest extends BaseTestCase
 
         $connector = new Connector($transport);
         $connector->deleteOrder($id);
+    }
+
+    /**
+     * @test
+     */
+    public function testGetReviewsList(): void
+    {
+        $cities = [333, 444];
+        $shops = [555, 666];
+        $rating = 3;
+        $report = false;
+        $query = ReviewsListQuery::new()
+            ->setCitiesIDs($cities)
+            ->setShopsIDs($shops)
+            ->setRating($rating)
+            ->setReport($report);
+        $id = 123;
+        $id1 = 321;
+        $transport = $this->createTransportMock(
+            'GetReviewsList',
+            [
+                'CitiesIDs' => $cities,
+                'ShopsIDs' => $shops,
+                'Rating' => $rating,
+                'Report' => $report,
+            ],
+            [
+                [
+                    'ID' => $id,
+                ],
+                [
+                    'ID' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $menuItems = $connector->getReviewsList($query);
+
+        $this->assertCount(2, $menuItems);
+        $this->assertSame($id, $menuItems[0]->getId());
+        $this->assertSame($id1, $menuItems[1]->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetClientReviewsList(): void
+    {
+        $clientId = 123;
+        $query = ClientReviewsListQuery::new()->setClientId($clientId);
+        $id = 123;
+        $id1 = 321;
+        $transport = $this->createTransportMock(
+            'GetClientReviewsList',
+            [
+                'ClientID' => $clientId,
+            ],
+            [
+                [
+                    'ID' => $id,
+                ],
+                [
+                    'ID' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $menuItems = $connector->getClientReviewsList($query);
+
+        $this->assertCount(2, $menuItems);
+        $this->assertSame($id, $menuItems[0]->getId());
+        $this->assertSame($id1, $menuItems[1]->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetReviewInfo(): void
+    {
+        $id = 123;
+        $transport = $this->createTransportMock(
+            'GetReviewInfo',
+            [
+                'ReviewID' => $id,
+            ],
+            [
+                'ID' => $id,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($id, $connector->getReviewInfo($id)->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetReviewsQuestions(): void
+    {
+        $id = 123;
+        $id1 = 321;
+        $transport = $this->createTransportMock(
+            'GetReviewsQuestions',
+            [],
+            [
+                [
+                    'ID' => $id,
+                ],
+                [
+                    'ID' => $id1,
+                ],
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $menuItems = $connector->getReviewsQuestions();
+
+        $this->assertCount(2, $menuItems);
+        $this->assertSame($id, $menuItems[0]->getId());
+        $this->assertSame($id1, $menuItems[1]->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testAddReviewRating(): void
+    {
+        $orderId = 123;
+        $review = 'test';
+        $rating = 1;
+        $photo = 'test.png';
+        $reviewId = 321;
+        $transport = $this->createTransportMock(
+            'AddReview',
+            [
+                'OrderID' => $orderId,
+                'Review' => $review,
+                'Rating' => $rating,
+                'Photo' => $photo,
+            ],
+            [
+                'ID' => $reviewId,
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $testReviewId = $connector->addReviewRating($orderId, $review, $rating, $photo);
+
+        $this->assertSame($reviewId, $testReviewId);
+    }
+
+    /**
+     * @test
+     */
+    public function testAddReviewQuestions(): void
+    {
+        $orderId = 123;
+        $review = 'test';
+        $questionId = 3;
+        $rating = 1;
+        $photo = 'test.png';
+        $reviewId = 321;
+        $transport = $this->createTransportMock(
+            'AddReview',
+            [
+                'OrderID' => $orderId,
+                'Review' => $review,
+                'Questions' => [
+                    [
+                        'ID' => $questionId,
+                        'Rating' => $rating,
+                    ],
+                ],
+                'Photo' => $photo,
+            ],
+            [
+                'ID' => $reviewId,
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $testReviewId = $connector->addReviewQuestions($orderId, $review, [$questionId => $rating], $photo);
+
+        $this->assertSame($reviewId, $testReviewId);
     }
 
     /**

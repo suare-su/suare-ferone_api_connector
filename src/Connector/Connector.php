@@ -10,15 +10,19 @@ use SuareSu\FeroneApiConnector\Entity\Client;
 use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Order;
 use SuareSu\FeroneApiConnector\Entity\OrderStatus;
+use SuareSu\FeroneApiConnector\Entity\Review;
+use SuareSu\FeroneApiConnector\Entity\ReviewQuestion;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
+use SuareSu\FeroneApiConnector\Query\ClientReviewsListQuery;
 use SuareSu\FeroneApiConnector\Query\MenuQuery;
 use SuareSu\FeroneApiConnector\Query\OrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\Query;
+use SuareSu\FeroneApiConnector\Query\ReviewsListQuery;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 use SuareSu\FeroneApiConnector\Transport\TransportResponse;
@@ -419,6 +423,152 @@ class Connector
                 'OrderID' => $id,
             ]
         );
+    }
+
+    /**
+     * GetReviewsList method implementation.
+     *
+     * @param ReviewsListQuery $query
+     *
+     * @return Review[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getReviewsList(ReviewsListQuery $query): array
+    {
+        $response = $this->sendRequestInternal('GetReviewsList', $query);
+
+        return array_map(
+            fn (array $item): Review => new Review($item),
+            $response->getData()
+        );
+    }
+
+    /**
+     * GetReviewsList method implementation.
+     *
+     * @param ClientReviewsListQuery $query
+     *
+     * @return Review[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getClientReviewsList(ClientReviewsListQuery $query): array
+    {
+        $response = $this->sendRequestInternal('GetClientReviewsList', $query);
+
+        return array_map(
+            fn (array $item): Review => new Review($item),
+            $response->getData()
+        );
+    }
+
+    /**
+     * GetReviewInfo method implementation.
+     *
+     * @param int $id
+     *
+     * @return Review
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getReviewInfo(int $id): Review
+    {
+        $response = $this->sendRequestInternal(
+            'GetReviewInfo',
+            [
+                'ReviewID' => $id,
+            ]
+        );
+
+        return new Review($response->getData());
+    }
+
+    /**
+     * GetReviewsQuestions method implementation.
+     *
+     * @param ClientReviewsListQuery $query
+     *
+     * @return ReviewQuestion[]
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getReviewsQuestions(): array
+    {
+        $response = $this->sendRequestInternal('GetReviewsQuestions');
+
+        return array_map(
+            fn (array $item): ReviewQuestion => new ReviewQuestion($item),
+            $response->getData()
+        );
+    }
+
+    /**
+     * AddReview method implementation with rating.
+     *
+     * @param int         $orderId
+     * @param string      $review
+     * @param int         $rating
+     * @param string|null $photo
+     *
+     * @return int
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function addReviewRating(int $orderId, string $review, int $rating, ?string $photo = null): int
+    {
+        $params = [
+            'OrderID' => $orderId,
+            'Review' => $review,
+            'Rating' => $rating,
+        ];
+        if ($photo !== null) {
+            $params['Photo'] = $photo;
+        }
+
+        $data = $this->sendRequestInternal('AddReview', $params)->getData();
+
+        return (int) ($data['ID'] ?? 0);
+    }
+
+    /**
+     * AddReview method implementation with questions.
+     *
+     * @param int             $orderId
+     * @param string          $review
+     * @param array<int, int> $questions
+     * @param string|null     $photo
+     *
+     * @return int
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function addReviewQuestions(int $orderId, string $review, array $questions, ?string $photo = null): int
+    {
+        $params = [
+            'OrderID' => $orderId,
+            'Review' => $review,
+            'Questions' => [],
+        ];
+        foreach ($questions as $id => $rating) {
+            $params['Questions'][] = [
+                'ID' => $id,
+                'Rating' => $rating,
+            ];
+        }
+        if ($photo !== null) {
+            $params['Photo'] = $photo;
+        }
+
+        $data = $this->sendRequestInternal('AddReview', $params)->getData();
+
+        return (int) ($data['ID'] ?? 0);
     }
 
     /**
