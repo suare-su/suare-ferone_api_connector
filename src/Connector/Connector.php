@@ -857,6 +857,26 @@ class Connector
     }
 
     /**
+     * BonusPayOrder method implementation.
+     *
+     * @param int $orderId
+     * @param int $bonus
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function bonusPayOrder(int $orderId, int $bonus): void
+    {
+        $this->sendRequestInternal(
+            'BonusPayOrder',
+            [
+                'OrderID' => $orderId,
+                'Bonus' => $bonus,
+            ]
+        );
+    }
+
+    /**
      * Create and send request using transport.
      *
      * @param string      $method

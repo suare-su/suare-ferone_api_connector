@@ -1159,6 +1159,26 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testBonusPayOrder(): void
+    {
+        $orderId = 12;
+        $bonus = 123;
+
+        $transport = $this->createTransportMock(
+            'BonusPayOrder',
+            [
+                'OrderID' => $orderId,
+                'Bonus' => $bonus,
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $connector->bonusPayOrder($orderId, $bonus);
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method
