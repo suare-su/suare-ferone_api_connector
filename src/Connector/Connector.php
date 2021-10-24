@@ -7,6 +7,7 @@ namespace SuareSu\FeroneApiConnector\Connector;
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Entity\City;
 use SuareSu\FeroneApiConnector\Entity\Client;
+use SuareSu\FeroneApiConnector\Entity\ClientAddrs;
 use SuareSu\FeroneApiConnector\Entity\FindCitiesResponse;
 use SuareSu\FeroneApiConnector\Entity\FindHousesResponse;
 use SuareSu\FeroneApiConnector\Entity\FindStreetsResponse;
@@ -18,6 +19,7 @@ use SuareSu\FeroneApiConnector\Entity\ReviewQuestion;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
+use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
@@ -750,6 +752,23 @@ class Connector
         $data = $response->getData();
 
         return (string) ($data['Address'] ?? '');
+    }
+
+    /**
+     * GetClientLastAddr method implementation.
+     *
+     * @param ClientAddrsQuery $query
+     *
+     * @return ClientAddrs
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getClientAddrs(ClientAddrsQuery $query): ClientAddrs
+    {
+        $response = $this->sendRequestInternal('GetClientAddrs', $query);
+
+        return new ClientAddrs($response->getData());
     }
 
     /**

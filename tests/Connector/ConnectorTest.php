@@ -7,6 +7,7 @@ namespace SuareSu\FeroneApiConnector\Tests\Connector;
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Connector\Connector;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
+use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
@@ -978,6 +979,31 @@ class ConnectorTest extends BaseTestCase
         $connector = new Connector($transport);
 
         $this->assertSame($address, $connector->getClientLastAddr($phone));
+    }
+
+    /**
+     * @test
+     */
+    public function testGetClientAddrs(): void
+    {
+        $orderId = 12;
+        $phone = '79999999999';
+        $query = ClientAddrsQuery::new()->setOrderId($orderId)->setPhone($phone);
+        $city = 'test';
+        $transport = $this->createTransportMock(
+            'GetClientAddrs',
+            [
+                'OrderID' => $orderId,
+                'Phone' => $phone,
+            ],
+            [
+                'City' => $city,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($city, $connector->getClientAddrs($query)->getCity());
     }
 
     /**
