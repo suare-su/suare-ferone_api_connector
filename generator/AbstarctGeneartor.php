@@ -116,6 +116,12 @@ abstract class AbstarctGeneartor
             }
 
             return $return;
+        } elseif (!empty($description['oneOf'])) {
+            return [
+                'isPrimitive' => true,
+                'php' => '',
+                'phpDoc' => 'mixed',
+            ];
         } elseif (!empty($description['$ref']) && preg_match('#.*/([^/]+)$#', $description['$ref'], $matches)) {
             $fqcn = $this->unifyNamespace($namespace) . '\\' . $this->unifyClassName($matches[1]);
             $cn = $this->unifyClassName($matches[1]);

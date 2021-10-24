@@ -7,17 +7,20 @@ namespace SuareSu\FeroneApiConnector\Connector;
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Entity\City;
 use SuareSu\FeroneApiConnector\Entity\Client;
+use SuareSu\FeroneApiConnector\Entity\ClientAddrs;
 use SuareSu\FeroneApiConnector\Entity\FindCitiesResponse;
 use SuareSu\FeroneApiConnector\Entity\FindHousesResponse;
 use SuareSu\FeroneApiConnector\Entity\FindStreetsResponse;
 use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Order;
+use SuareSu\FeroneApiConnector\Entity\OrderFinal;
 use SuareSu\FeroneApiConnector\Entity\OrderStatus;
 use SuareSu\FeroneApiConnector\Entity\Review;
 use SuareSu\FeroneApiConnector\Entity\ReviewQuestion;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
+use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
@@ -726,6 +729,131 @@ class Connector
             fn (array $item): FindHousesResponse => new FindHousesResponse($item),
             $response->getData()
         );
+    }
+
+    /**
+     * GetClientLastAddr method implementation.
+     *
+     * @param string $phone
+     *
+     * @return string
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getClientLastAddr(string $phone): string
+    {
+        $response = $this->sendRequestInternal(
+            'GetClientLastAddr',
+            [
+                'Phone' => $phone,
+            ]
+        );
+
+        $data = $response->getData();
+
+        return (string) ($data['Address'] ?? '');
+    }
+
+    /**
+     * GetClientLastAddr method implementation.
+     *
+     * @param ClientAddrsQuery $query
+     *
+     * @return ClientAddrs
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getClientAddrs(ClientAddrsQuery $query): ClientAddrs
+    {
+        $response = $this->sendRequestInternal('GetClientAddrs', $query);
+
+        return new ClientAddrs($response->getData());
+    }
+
+    /**
+     * GetBaseShop method implementation.
+     *
+     * @param int    $cityId
+     * @param string $address
+     *
+     * @return int|null
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getBaseShop(int $cityId, string $address): ?int
+    {
+        try {
+            $response = $this->sendRequestInternal(
+                'GetBaseShop',
+                [
+                    'CityID' => $cityId,
+                    'Address' => $address,
+                ]
+            );
+        } catch (ApiException $e) {
+            if ($e->getCode() === 70) {
+                return null;
+            }
+            throw $e;
+        }
+
+        return (int) ($response->getData()['ShopID'] ?? 0);
+    }
+
+    /**
+     * CheckAddressInZones method implementation.
+     *
+     * @param int    $orderId
+     * @param string $address
+     *
+     * @return bool
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function checkAddressInZones(int $orderId, string $address): bool
+    {
+        try {
+            $this->sendRequestInternal(
+                'CheckAddressInZones',
+                [
+                    'OrderID' => $orderId,
+                    'Address' => $address,
+                ]
+            );
+        } catch (ApiException $e) {
+            if ($e->getCode() === 70) {
+                return false;
+            }
+            throw $e;
+        }
+
+        return true;
+    }
+
+    /**
+     * GetOrderFinalInfo method implementation.
+     *
+     * @param int $orderId
+     *
+     * @return OrderFinal
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getOrderFinalInfo(int $orderId): OrderFinal
+    {
+        $response = $this->sendRequestInternal(
+            'GetOrderFinalInfo',
+            [
+                'OrderID' => $orderId,
+            ]
+        );
+
+        return new OrderFinal($response->getData());
     }
 
     /**

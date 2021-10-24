@@ -53,8 +53,6 @@ class EntitesGenerator extends AbstarctGeneartor
         $properties = (array) ($description['properties'] ?? []);
 
         foreach ($properties as $propertyName => $propertyDescription) {
-            $type = $this->getPhpType($propertyDescription, $namespaceName);
-
             if ($propertyDescription['type'] === self::TYPE_OBJECT) {
                 $nestedObjectName = $className . $this->unifyClassName($propertyName);
                 $nestedClasses = $this->createFile($nestedObjectName, $propertyDescription, $namespaceName, $otherEntites);
@@ -63,6 +61,21 @@ class EntitesGenerator extends AbstarctGeneartor
                     ['$ref' => '#/components/schemas/' . $nestedObjectName],
                     $namespaceName
                 );
+            } elseif ($propertyDescription['type'] === self::TYPE_ARRAY && $propertyDescription['items']['type'] === self::TYPE_OBJECT) {
+                $nestedObjectName = $className . $this->unifyClassName($propertyName);
+                $nestedClasses = $this->createFile($nestedObjectName, $propertyDescription['items'], $namespaceName, $otherEntites);
+                $result = array_merge($result, $nestedClasses);
+                $type = $this->getPhpType(
+                    [
+                        'type' => self::TYPE_ARRAY,
+                        'items' => [
+                            '$ref' => '#/components/schemas/' . $nestedObjectName,
+                        ],
+                    ],
+                    $namespaceName
+                );
+            } else {
+                $type = $this->getPhpType($propertyDescription, $namespaceName);
             }
 
             if (
@@ -115,9 +128,9 @@ class EntitesGenerator extends AbstarctGeneartor
 
             if ($type['isPrimitive']) {
                 if ($isRequired) {
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = ({$type['php']}) (\$apiResponse['{$propertyName}'] ?? null);\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = " . ($type['php'] ? "({$type['php']})" : '') . " (\$apiResponse['{$propertyName}'] ?? null);\n";
                 } else {
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$propertyName}']) ? ({$type['php']}) \$apiResponse['{$propertyName}'] : null;\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$propertyName}']) ? " . ($type['php'] ? "({$type['php']})" : '') . " \$apiResponse['{$propertyName}'] : null;\n";
                 }
             } elseif ($propertyDescription['type'] === self::TYPE_ARRAY) {
                 $constructorBody .= "\$this->{$unifiedPropertyName} = [];\n";

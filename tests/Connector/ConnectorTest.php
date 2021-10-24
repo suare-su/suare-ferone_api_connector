@@ -7,6 +7,7 @@ namespace SuareSu\FeroneApiConnector\Tests\Connector;
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Connector\Connector;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
+use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
@@ -956,6 +957,205 @@ class ConnectorTest extends BaseTestCase
         $this->assertCount(2, $houses);
         $this->assertSame($id, $houses[0]->getId());
         $this->assertSame($id1, $houses[1]->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetClientLastAddr(): void
+    {
+        $phone = '79999999999';
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'GetClientLastAddr',
+            [
+                'Phone' => $phone,
+            ],
+            [
+                'Address' => $address,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($address, $connector->getClientLastAddr($phone));
+    }
+
+    /**
+     * @test
+     */
+    public function testGetClientAddrs(): void
+    {
+        $orderId = 12;
+        $phone = '79999999999';
+        $query = ClientAddrsQuery::new()->setOrderId($orderId)->setPhone($phone);
+        $city = 'test';
+        $transport = $this->createTransportMock(
+            'GetClientAddrs',
+            [
+                'OrderID' => $orderId,
+                'Phone' => $phone,
+            ],
+            [
+                'City' => $city,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($city, $connector->getClientAddrs($query)->getCity());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetBaseShop(): void
+    {
+        $cityId = 12;
+        $address = 'test';
+        $shopId = 123;
+        $transport = $this->createTransportMock(
+            'GetBaseShop',
+            [
+                'CityID' => $cityId,
+                'Address' => $address,
+            ],
+            [
+                'ShopID' => $shopId,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($shopId, $connector->getBaseShop($cityId, $address));
+    }
+
+    /**
+     * @test
+     */
+    public function testGetBaseShop70Exception(): void
+    {
+        $cityId = 12;
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'GetBaseShop',
+            [
+                'CityID' => $cityId,
+                'Address' => $address,
+            ],
+            new ApiException('test', 70)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertNull($connector->getBaseShop($cityId, $address));
+    }
+
+    /**
+     * @test
+     */
+    public function testGetBaseShopNon70Exception(): void
+    {
+        $cityId = 12;
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'GetBaseShop',
+            [
+                'CityID' => $cityId,
+                'Address' => $address,
+            ],
+            new ApiException('test', 321)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->expectException(ApiException::class);
+        $connector->getBaseShop($cityId, $address);
+    }
+
+    /**
+     * @test
+     */
+    public function testCheckAddressInZones(): void
+    {
+        $orderId = 12;
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'CheckAddressInZones',
+            [
+                'OrderID' => $orderId,
+                'Address' => $address,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertTrue($connector->checkAddressInZones($orderId, $address));
+    }
+
+    /**
+     * @test
+     */
+    public function testCheckAddressInZonesCode70Exception(): void
+    {
+        $orderId = 12;
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'CheckAddressInZones',
+            [
+                'OrderID' => $orderId,
+                'Address' => $address,
+            ],
+            new ApiException('test', 70)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertFalse($connector->checkAddressInZones($orderId, $address));
+    }
+
+    /**
+     * @test
+     */
+    public function testCheckAddressInZonesCodeNon70Exception(): void
+    {
+        $orderId = 12;
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'CheckAddressInZones',
+            [
+                'OrderID' => $orderId,
+                'Address' => $address,
+            ],
+            new ApiException('test', 123)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->expectException(ApiException::class);
+        $connector->checkAddressInZones($orderId, $address);
+    }
+
+    /**
+     * @test
+     */
+    public function testGetOrderFinalInfo(): void
+    {
+        $orderId = 12;
+
+        $transport = $this->createTransportMock(
+            'GetOrderFinalInfo',
+            [
+                'OrderID' => $orderId,
+            ],
+            [
+                'ID' => $orderId,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($orderId, $connector->getOrderFinalInfo($orderId)->getId());
     }
 
     /**

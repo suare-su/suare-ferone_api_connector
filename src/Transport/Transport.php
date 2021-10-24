@@ -98,7 +98,9 @@ class Transport
     {
         $statusCode = $response->getStatusCode();
         if ($statusCode < 200 || $statusCode > 300) {
-            throw new ApiException($this->createBadStatusCodeMessage($statusCode));
+            throw new ApiException(
+                $this->createBadStatusCodeMessage($statusCode)
+            );
         }
 
         try {
@@ -111,7 +113,10 @@ class Transport
         $feroneResponse = new TransportResponse($jsonPayload);
 
         if ($feroneResponse->hasError()) {
-            throw new ApiException($this->createApiErrorMessage($feroneResponse));
+            throw new ApiException(
+                $this->createApiErrorMessage($feroneResponse),
+                $feroneResponse->getError()
+            );
         }
 
         return $feroneResponse;
