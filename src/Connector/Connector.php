@@ -20,6 +20,7 @@ use SuareSu\FeroneApiConnector\Entity\ReviewQuestion;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
+use SuareSu\FeroneApiConnector\Query\AcceptOrderQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
@@ -874,6 +875,19 @@ class Connector
                 'Bonus' => $bonus,
             ]
         );
+    }
+
+    /**
+     * AcceptOrder method implementation.
+     *
+     * @param AcceptOrderQuery $query
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function acceptOrder(AcceptOrderQuery $query): void
+    {
+        $this->sendRequestInternal('AcceptOrder', $query);
     }
 
     /**

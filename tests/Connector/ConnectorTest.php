@@ -7,6 +7,7 @@ namespace SuareSu\FeroneApiConnector\Tests\Connector;
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Connector\Connector;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
+use SuareSu\FeroneApiConnector\Query\AcceptOrderQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
@@ -1176,6 +1177,43 @@ class ConnectorTest extends BaseTestCase
 
         $connector = new Connector($transport);
         $connector->bonusPayOrder($orderId, $bonus);
+    }
+
+    /**
+     * @test
+     */
+    public function testAcceptOrder(): void
+    {
+        $orderId = 12;
+        $pay = 'external';
+        $confirm = true;
+        $cashChange = 123123;
+        $time = '23:32';
+        $onTime = new DateTimeImmutable("2020-10-10 {$time}");
+        $comment = 'test';
+
+        $query = AcceptOrderQuery::new()
+            ->setOrderId($orderId)
+            ->setPay($pay)
+            ->setConfirm($confirm)
+            ->setCashChange($cashChange)
+            ->setOnTime($onTime)
+            ->setComment($comment);
+
+        $transport = $this->createTransportMock(
+            'AcceptOrder',
+            [
+                'OrderID' => $orderId,
+                'Pay' => $pay,
+                'Confirmation' => $confirm,
+                'CashChange' => $cashChange,
+                'OnTime' => $time,
+                'Comment' => $comment,
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $connector->acceptOrder($query);
     }
 
     /**
