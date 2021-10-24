@@ -213,34 +213,36 @@ class OrderFinal
 
     public function __construct(array $apiResponse)
     {
-        $this->id = (int) ($apiResponse['ID'] ?? null);
-        $this->cityId = (int) ($apiResponse['CityID'] ?? null);
-        $this->clientId = (int) ($apiResponse['ClientID'] ?? null);
-        $this->clientName = (string) ($apiResponse['ClientName'] ?? null);
-        $this->clientPhone = (string) ($apiResponse['ClientPhone'] ?? null);
-        $this->type = (string) ($apiResponse['Type'] ?? null);
-        $this->city = isset($apiResponse['City']) ? (string) $apiResponse['City'] : null;
-        $this->street = isset($apiResponse['Street']) ? (string) $apiResponse['Street'] : null;
-        $this->house = isset($apiResponse['House']) ? (string) $apiResponse['House'] : null;
-        $this->apartment = isset($apiResponse['Apartment']) ? (string) $apiResponse['Apartment'] : null;
-        $this->entrance = isset($apiResponse['Entrance']) ? (string) $apiResponse['Entrance'] : null;
-        $this->floor = isset($apiResponse['Floor']) ? (string) $apiResponse['Floor'] : null;
-        $this->deliveryPrice = (int) ($apiResponse['DeliveryPrice'] ?? null);
-        $this->deliveryDiscount = (float) ($apiResponse['DeliveryDiscount'] ?? null);
-        $this->bonusAvailable = (float) ($apiResponse['BonusAvailable'] ?? null);
-        $this->sumWithoutDiscount = (float) ($apiResponse['SumWithoutDiscount'] ?? null);
-        $this->sumDiscount = (float) ($apiResponse['SumDiscount'] ?? null);
-        $this->sumBonus = (float) ($apiResponse['SumBonus'] ?? null);
-        $this->total = (float) ($apiResponse['Total'] ?? null);
-        $this->plaziusStatus = (bool) ($apiResponse['PlaziusStatus'] ?? null);
-        $this->plaziusErr = isset($apiResponse['PlaziusErr']) ? (string) $apiResponse['PlaziusErr'] : null;
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->id = (int) ($apiResponse['id'] ?? null);
+        $this->cityId = (int) ($apiResponse['cityid'] ?? null);
+        $this->clientId = (int) ($apiResponse['clientid'] ?? null);
+        $this->clientName = (string) ($apiResponse['clientname'] ?? null);
+        $this->clientPhone = (string) ($apiResponse['clientphone'] ?? null);
+        $this->type = (string) ($apiResponse['type'] ?? null);
+        $this->city = isset($apiResponse['city']) ? (string) $apiResponse['city'] : null;
+        $this->street = isset($apiResponse['street']) ? (string) $apiResponse['street'] : null;
+        $this->house = isset($apiResponse['house']) ? (string) $apiResponse['house'] : null;
+        $this->apartment = isset($apiResponse['apartment']) ? (string) $apiResponse['apartment'] : null;
+        $this->entrance = isset($apiResponse['entrance']) ? (string) $apiResponse['entrance'] : null;
+        $this->floor = isset($apiResponse['floor']) ? (string) $apiResponse['floor'] : null;
+        $this->deliveryPrice = (int) ($apiResponse['deliveryprice'] ?? null);
+        $this->deliveryDiscount = (float) ($apiResponse['deliverydiscount'] ?? null);
+        $this->bonusAvailable = (float) ($apiResponse['bonusavailable'] ?? null);
+        $this->sumWithoutDiscount = (float) ($apiResponse['sumwithoutdiscount'] ?? null);
+        $this->sumDiscount = (float) ($apiResponse['sumdiscount'] ?? null);
+        $this->sumBonus = (float) ($apiResponse['sumbonus'] ?? null);
+        $this->total = (float) ($apiResponse['total'] ?? null);
+        $this->plaziusStatus = (bool) ($apiResponse['plaziusstatus'] ?? null);
+        $this->plaziusErr = isset($apiResponse['plaziuserr']) ? (string) $apiResponse['plaziuserr'] : null;
         $this->list = [];
-        foreach (($apiResponse['List'] ?? []) as $tmpItem) {
+        foreach (($apiResponse['list'] ?? []) as $tmpItem) {
             $this->list[] = new OrderProduct(\is_array($tmpItem) ? $tmpItem : []);
         }
-        $this->shop = isset($apiResponse['Shop']) ? new ShopSelected($apiResponse['Shop']) : null;
+        $this->shop = isset($apiResponse['shop']) ? new ShopSelected($apiResponse['shop']) : null;
         $this->onTimeHoursInterval = [];
-        foreach (($apiResponse['OnTimeHoursInterval'] ?? []) as $tmpItem) {
+        foreach (($apiResponse['ontimehoursinterval'] ?? []) as $tmpItem) {
             $this->onTimeHoursInterval[] = new OrderFinalOnTimeHoursInterval(\is_array($tmpItem) ? $tmpItem : []);
         }
     }

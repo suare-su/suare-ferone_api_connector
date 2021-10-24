@@ -32,8 +32,10 @@ class ReviewQuestion
 
     public function __construct(array $apiResponse)
     {
-        $this->id = (int) ($apiResponse['ID'] ?? null);
-        $this->questionRu = (string) ($apiResponse['QuestionRu'] ?? null);
-        $this->questionEn = isset($apiResponse['QuestionEn']) ? (string) $apiResponse['QuestionEn'] : null;
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->id = (int) ($apiResponse['id'] ?? null);
+        $this->questionRu = (string) ($apiResponse['questionru'] ?? null);
+        $this->questionEn = isset($apiResponse['questionen']) ? (string) $apiResponse['questionen'] : null;
     }
 }

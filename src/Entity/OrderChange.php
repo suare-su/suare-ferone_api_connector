@@ -44,8 +44,10 @@ class OrderChange
 
     public function __construct(array $apiResponse)
     {
-        $this->status = (string) ($apiResponse['Status'] ?? null);
-        $this->changed = (string) ($apiResponse['Changed'] ?? null);
-        $this->user = isset($apiResponse['User']) ? (string) $apiResponse['User'] : null;
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->status = (string) ($apiResponse['status'] ?? null);
+        $this->changed = (string) ($apiResponse['changed'] ?? null);
+        $this->user = isset($apiResponse['user']) ? (string) $apiResponse['user'] : null;
     }
 }

@@ -56,11 +56,13 @@ class OrderProduct
 
     public function __construct(array $apiResponse)
     {
-        $this->productId = (int) ($apiResponse['ProductID'] ?? null);
-        $this->name = (string) ($apiResponse['Name'] ?? null);
-        $this->price = (float) ($apiResponse['Price'] ?? null);
-        $this->amount = (int) ($apiResponse['Amount'] ?? null);
-        $this->total = (float) ($apiResponse['Total'] ?? null);
-        $this->discount = (float) ($apiResponse['Discount'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->productId = (int) ($apiResponse['productid'] ?? null);
+        $this->name = (string) ($apiResponse['name'] ?? null);
+        $this->price = (float) ($apiResponse['price'] ?? null);
+        $this->amount = (int) ($apiResponse['amount'] ?? null);
+        $this->total = (float) ($apiResponse['total'] ?? null);
+        $this->discount = (float) ($apiResponse['discount'] ?? null);
     }
 }

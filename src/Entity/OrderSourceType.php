@@ -53,6 +53,8 @@ class OrderSourceType
 
     public function __construct(array $apiResponse)
     {
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
         $this->type = (string) ($apiResponse['type'] ?? null);
         $this->referer = isset($apiResponse['referer']) ? (string) $apiResponse['referer'] : null;
         $this->utmSource = isset($apiResponse['utm_source']) ? (string) $apiResponse['utm_source'] : null;

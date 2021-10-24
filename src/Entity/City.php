@@ -96,16 +96,18 @@ class City
 
     public function __construct(array $apiResponse)
     {
-        $this->id = (int) ($apiResponse['ID'] ?? null);
-        $this->name = (string) ($apiResponse['Name'] ?? null);
-        $this->timezone = (string) ($apiResponse['Timezone'] ?? null);
-        $this->orderMinimalSum = (int) ($apiResponse['OrderMinimalSum'] ?? null);
-        $this->orderDelivery = (int) ($apiResponse['OrderDelivery'] ?? null);
-        $this->orderFreeDeliverySum = (int) ($apiResponse['OrderFreeDeliverySum'] ?? null);
-        $this->countryId = (int) ($apiResponse['CountryID'] ?? null);
-        $this->countryName = (string) ($apiResponse['CountryName'] ?? null);
-        $this->countryCode = (string) ($apiResponse['CountryCode'] ?? null);
-        $this->cityCode = (string) ($apiResponse['CityCode'] ?? null);
-        $this->cityMultiCode = (int) ($apiResponse['CityMultiCode'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->id = (int) ($apiResponse['id'] ?? null);
+        $this->name = (string) ($apiResponse['name'] ?? null);
+        $this->timezone = (string) ($apiResponse['timezone'] ?? null);
+        $this->orderMinimalSum = (int) ($apiResponse['orderminimalsum'] ?? null);
+        $this->orderDelivery = (int) ($apiResponse['orderdelivery'] ?? null);
+        $this->orderFreeDeliverySum = (int) ($apiResponse['orderfreedeliverysum'] ?? null);
+        $this->countryId = (int) ($apiResponse['countryid'] ?? null);
+        $this->countryName = (string) ($apiResponse['countryname'] ?? null);
+        $this->countryCode = (string) ($apiResponse['countrycode'] ?? null);
+        $this->cityCode = (string) ($apiResponse['citycode'] ?? null);
+        $this->cityMultiCode = (int) ($apiResponse['citymulticode'] ?? null);
     }
 }

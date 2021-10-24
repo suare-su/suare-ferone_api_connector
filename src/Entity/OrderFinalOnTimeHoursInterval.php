@@ -24,6 +24,8 @@ class OrderFinalOnTimeHoursInterval
 
     public function __construct(array $apiResponse)
     {
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
         $this->value = (string) ($apiResponse['value'] ?? null);
         $this->label = (string) ($apiResponse['label'] ?? null);
     }

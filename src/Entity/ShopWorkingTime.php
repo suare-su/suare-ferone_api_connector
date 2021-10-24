@@ -93,19 +93,21 @@ class ShopWorkingTime
 
     public function __construct(array $apiResponse)
     {
-        $this->monOpen = (string) ($apiResponse['MonOpen'] ?? null);
-        $this->monClose = (string) ($apiResponse['MonClose'] ?? null);
-        $this->tueOpen = (string) ($apiResponse['TueOpen'] ?? null);
-        $this->tueClose = (string) ($apiResponse['TueClose'] ?? null);
-        $this->wedOpen = (string) ($apiResponse['WedOpen'] ?? null);
-        $this->wedClose = (string) ($apiResponse['WedClose'] ?? null);
-        $this->thuOpen = (string) ($apiResponse['ThuOpen'] ?? null);
-        $this->thuClose = (string) ($apiResponse['ThuClose'] ?? null);
-        $this->friOpen = (string) ($apiResponse['FriOpen'] ?? null);
-        $this->friClose = (string) ($apiResponse['FriClose'] ?? null);
-        $this->satOpen = (string) ($apiResponse['SatOpen'] ?? null);
-        $this->satClose = (string) ($apiResponse['SatClose'] ?? null);
-        $this->sunOpen = (string) ($apiResponse['SunOpen'] ?? null);
-        $this->sunClose = (string) ($apiResponse['SunClose'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->monOpen = (string) ($apiResponse['monopen'] ?? null);
+        $this->monClose = (string) ($apiResponse['monclose'] ?? null);
+        $this->tueOpen = (string) ($apiResponse['tueopen'] ?? null);
+        $this->tueClose = (string) ($apiResponse['tueclose'] ?? null);
+        $this->wedOpen = (string) ($apiResponse['wedopen'] ?? null);
+        $this->wedClose = (string) ($apiResponse['wedclose'] ?? null);
+        $this->thuOpen = (string) ($apiResponse['thuopen'] ?? null);
+        $this->thuClose = (string) ($apiResponse['thuclose'] ?? null);
+        $this->friOpen = (string) ($apiResponse['friopen'] ?? null);
+        $this->friClose = (string) ($apiResponse['friclose'] ?? null);
+        $this->satOpen = (string) ($apiResponse['satopen'] ?? null);
+        $this->satClose = (string) ($apiResponse['satclose'] ?? null);
+        $this->sunOpen = (string) ($apiResponse['sunopen'] ?? null);
+        $this->sunClose = (string) ($apiResponse['sunclose'] ?? null);
     }
 }

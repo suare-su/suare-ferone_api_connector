@@ -33,6 +33,8 @@ class FindStreetsResponse
 
     public function __construct(array $apiResponse)
     {
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
         $this->id = (string) ($apiResponse['id'] ?? null);
         $this->city = (string) ($apiResponse['city'] ?? null);
         $this->label = (string) ($apiResponse['label'] ?? null);

@@ -40,9 +40,11 @@ class ClientAddrsClient
 
     public function __construct(array $apiResponse)
     {
-        $this->id = (int) ($apiResponse['ID'] ?? null);
-        $this->birth = isset($apiResponse['Birth']) ? (string) $apiResponse['Birth'] : null;
-        $this->phone = (string) ($apiResponse['Phone'] ?? null);
-        $this->name = (string) ($apiResponse['Name'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->id = (int) ($apiResponse['id'] ?? null);
+        $this->birth = isset($apiResponse['birth']) ? (string) $apiResponse['birth'] : null;
+        $this->phone = (string) ($apiResponse['phone'] ?? null);
+        $this->name = (string) ($apiResponse['name'] ?? null);
     }
 }

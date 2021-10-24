@@ -27,6 +27,8 @@ class FindCitiesResponse
 
     public function __construct(array $apiResponse)
     {
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
         $this->id = (string) ($apiResponse['id'] ?? null);
         $this->label = (string) ($apiResponse['label'] ?? null);
         $this->value = (string) ($apiResponse['value'] ?? null);

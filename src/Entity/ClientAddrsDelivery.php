@@ -48,10 +48,12 @@ class ClientAddrsDelivery
 
     public function __construct(array $apiResponse)
     {
-        $this->status = (bool) ($apiResponse['Status'] ?? null);
-        $this->price = (int) ($apiResponse['Price'] ?? null);
-        $this->minimal = (int) ($apiResponse['Minimal'] ?? null);
-        $this->total = (int) ($apiResponse['Total'] ?? null);
-        $this->totalWithDelivery = (int) ($apiResponse['TotalWithDelivery'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->status = (bool) ($apiResponse['status'] ?? null);
+        $this->price = (int) ($apiResponse['price'] ?? null);
+        $this->minimal = (int) ($apiResponse['minimal'] ?? null);
+        $this->total = (int) ($apiResponse['total'] ?? null);
+        $this->totalWithDelivery = (int) ($apiResponse['totalwithdelivery'] ?? null);
     }
 }

@@ -30,9 +30,11 @@ class MenuItem
 
     public function __construct(array $apiResponse)
     {
-        $this->group = new Group($apiResponse['Group'] ?? []);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->group = new Group($apiResponse['group'] ?? []);
         $this->products = [];
-        foreach (($apiResponse['Products'] ?? []) as $tmpItem) {
+        foreach (($apiResponse['products'] ?? []) as $tmpItem) {
             $this->products[] = new Product(\is_array($tmpItem) ? $tmpItem : []);
         }
     }

@@ -48,7 +48,7 @@ class EntitesGenerator extends AbstarctGeneartor
 
         $class = $namespace->addClass($className);
 
-        $constructorBody = '';
+        $constructorBody = "\$apiResponse = array_change_key_case(\$apiResponse, CASE_LOWER);\n\n";
         $requiredProperties = (array) ($description['required'] ?? []);
         $properties = (array) ($description['properties'] ?? []);
 
@@ -126,15 +126,16 @@ class EntitesGenerator extends AbstarctGeneartor
                 $getter->addComment("@return {$type['phpDoc']}");
             }
 
+            $lcName = strtolower($propertyName);
             if ($type['isPrimitive']) {
                 if ($isRequired) {
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = " . ($type['php'] ? "({$type['php']})" : '') . " (\$apiResponse['{$propertyName}'] ?? null);\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = " . ($type['php'] ? "({$type['php']})" : '') . " (\$apiResponse['{$lcName}'] ?? null);\n";
                 } else {
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$propertyName}']) ? " . ($type['php'] ? "({$type['php']})" : '') . " \$apiResponse['{$propertyName}'] : null;\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$lcName}']) ? " . ($type['php'] ? "({$type['php']})" : '') . " \$apiResponse['{$lcName}'] : null;\n";
                 }
             } elseif ($propertyDescription['type'] === self::TYPE_ARRAY) {
                 $constructorBody .= "\$this->{$unifiedPropertyName} = [];\n";
-                $constructorBody .= "foreach ((\$apiResponse['{$propertyName}'] ?? []) as \$tmpItem) {\n";
+                $constructorBody .= "foreach ((\$apiResponse['{$lcName}'] ?? []) as \$tmpItem) {\n";
                 if (!empty($type['class'])) {
                     $constructorBody .= "    \$this->{$unifiedPropertyName}[] = new {$type['class']}(is_array(\$tmpItem) ? \$tmpItem : []);\n";
                 } elseif (!empty($type['primitive'])) {
@@ -145,9 +146,9 @@ class EntitesGenerator extends AbstarctGeneartor
                 $constructorBody .= "}\n";
             } else {
                 if ($isRequired) {
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = new {$type['class']}(\$apiResponse['{$propertyName}'] ?? []);\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = new {$type['class']}(\$apiResponse['{$lcName}'] ?? []);\n";
                 } else {
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$propertyName}']) ? new {$type['class']}(\$apiResponse['{$propertyName}']) : null;\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$lcName}']) ? new {$type['class']}(\$apiResponse['{$lcName}']) : null;\n";
                 }
             }
 

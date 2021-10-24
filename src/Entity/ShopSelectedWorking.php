@@ -21,7 +21,9 @@ class ShopSelectedWorking
 
     public function __construct(array $apiResponse)
     {
-        $this->open = (string) ($apiResponse['Open'] ?? null);
-        $this->close = (string) ($apiResponse['Close'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->open = (string) ($apiResponse['open'] ?? null);
+        $this->close = (string) ($apiResponse['close'] ?? null);
     }
 }
