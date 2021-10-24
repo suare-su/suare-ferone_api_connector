@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Group
+use JsonSerializable;
+
+class Group implements JsonSerializable
 {
     /** Id */
     private int $id;
@@ -91,5 +93,20 @@ class Group
         $this->groupModifier = (bool) ($apiResponse['groupmodifier'] ?? null);
         $this->notInPlazius = (bool) ($apiResponse['notinplazius'] ?? null);
         $this->visible = (bool) ($apiResponse['visible'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'IIKOID' => $this->iikoid,
+            'ParentID' => $this->parentId,
+            'NameRu' => $this->nameRu,
+            'NameEn' => $this->nameEn,
+            'Place' => $this->place,
+            'GroupModifier' => $this->groupModifier,
+            'NotInPlazius' => $this->notInPlazius,
+            'Visible' => $this->visible,
+        ];
     }
 }

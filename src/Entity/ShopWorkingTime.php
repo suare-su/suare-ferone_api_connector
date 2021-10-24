@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ShopWorkingTime
+use JsonSerializable;
+
+class ShopWorkingTime implements JsonSerializable
 {
     private string $monOpen;
     private string $monClose;
@@ -109,5 +111,25 @@ class ShopWorkingTime
         $this->satClose = (string) ($apiResponse['satclose'] ?? null);
         $this->sunOpen = (string) ($apiResponse['sunopen'] ?? null);
         $this->sunClose = (string) ($apiResponse['sunclose'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'MonOpen' => $this->monOpen,
+            'MonClose' => $this->monClose,
+            'TueOpen' => $this->tueOpen,
+            'TueClose' => $this->tueClose,
+            'WedOpen' => $this->wedOpen,
+            'WedClose' => $this->wedClose,
+            'ThuOpen' => $this->thuOpen,
+            'ThuClose' => $this->thuClose,
+            'FriOpen' => $this->friOpen,
+            'FriClose' => $this->friClose,
+            'SatOpen' => $this->satOpen,
+            'SatClose' => $this->satClose,
+            'SunOpen' => $this->sunOpen,
+            'SunClose' => $this->sunClose,
+        ];
     }
 }

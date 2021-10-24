@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class OrderFinalOnTimeHoursInterval
+use JsonSerializable;
+
+class OrderFinalOnTimeHoursInterval implements JsonSerializable
 {
     /** Дата и время в формате MySQL в часовом поясе города */
     private string $value;
@@ -28,5 +30,13 @@ class OrderFinalOnTimeHoursInterval
 
         $this->value = (string) ($apiResponse['value'] ?? null);
         $this->label = (string) ($apiResponse['label'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'value' => $this->value,
+            'label' => $this->label,
+        ];
     }
 }

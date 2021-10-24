@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Review
+use JsonSerializable;
+
+class Review implements JsonSerializable
 {
     /** Id */
     private int $id;
@@ -145,5 +147,26 @@ class Review
         $this->report = isset($apiResponse['report']) ? (string) $apiResponse['report'] : null;
         $this->reportBy = isset($apiResponse['reportby']) ? (string) $apiResponse['reportby'] : null;
         $this->closed = isset($apiResponse['closed']) ? (string) $apiResponse['closed'] : null;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'CityID' => $this->cityId,
+            'ShopID' => $this->shopId,
+            'OrderID' => $this->orderId,
+            'ClientID' => $this->clientId,
+            'ClientName' => $this->clientName,
+            'ClientPhone' => $this->clientPhone,
+            'Created' => $this->created,
+            'CreatedBy' => $this->createdBy,
+            'Review' => $this->review,
+            'Photo' => $this->photo,
+            'Rating' => $this->rating,
+            'Report' => $this->report,
+            'ReportBy' => $this->reportBy,
+            'Closed' => $this->closed,
+        ];
     }
 }

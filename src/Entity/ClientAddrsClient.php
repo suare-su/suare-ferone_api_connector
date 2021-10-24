@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ClientAddrsClient
+use JsonSerializable;
+
+class ClientAddrsClient implements JsonSerializable
 {
     /** Id клиента */
     private int $id;
@@ -46,5 +48,15 @@ class ClientAddrsClient
         $this->birth = isset($apiResponse['birth']) ? (string) $apiResponse['birth'] : null;
         $this->phone = (string) ($apiResponse['phone'] ?? null);
         $this->name = (string) ($apiResponse['name'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'Birth' => $this->birth,
+            'Phone' => $this->phone,
+            'Name' => $this->name,
+        ];
     }
 }

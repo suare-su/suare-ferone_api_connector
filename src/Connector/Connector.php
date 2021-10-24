@@ -785,19 +785,19 @@ class Connector
     /**
      * GetOrderFinalInfo method implementation.
      *
-     * @param int $orderId
+     * @param int $id
      *
      * @return OrderFinal
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function getOrderFinalInfo(int $orderId): OrderFinal
+    public function getOrderFinalInfo(int $id): OrderFinal
     {
         $response = $this->sendRequestInternal(
             'GetOrderFinalInfo',
             [
-                'OrderID' => $orderId,
+                'OrderID' => $id,
             ]
         );
 

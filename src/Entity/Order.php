@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Order
+use JsonSerializable;
+
+class Order implements JsonSerializable
 {
     public const SHOP_TYPE_DELIVERY = 'delivery';
     public const SHOP_TYPE_STORE = 'store';
@@ -563,5 +565,69 @@ class Order
         foreach (($apiResponse['changes'] ?? []) as $tmpItem) {
             $this->changes[] = new OrderChange(\is_array($tmpItem) ? $tmpItem : []);
         }
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'CityID' => $this->cityId,
+            'ShopID' => $this->shopId,
+            'ShiftID' => $this->shiftId,
+            'ClientID' => $this->clientId,
+            'ClientName' => $this->clientName,
+            'ClientPhone' => $this->clientPhone,
+            'ShopName' => $this->shopName,
+            'ShopPrefix' => $this->shopPrefix,
+            'ShopType' => $this->shopType,
+            'CheckSN' => $this->checkSn,
+            'ShiftOpened' => $this->shiftOpened,
+            'Type' => $this->type,
+            'NowTime' => $this->nowTime,
+            'Created' => $this->created,
+            'Completed' => $this->completed,
+            'CompletedPlan' => $this->completedPlan,
+            'ExpiresPlanIn' => $this->expiresPlanIn,
+            'Operator' => $this->operator,
+            'Courier' => $this->courier,
+            'City' => $this->city,
+            'Street' => $this->street,
+            'House' => $this->house,
+            'Apartment' => $this->apartment,
+            'Entrance' => $this->entrance,
+            'Floor' => $this->floor,
+            'Addr' => $this->addr,
+            'AddrLat' => $this->addrLat,
+            'AddrLon' => $this->addrLon,
+            'AddrAcc' => $this->addrAcc,
+            'DeliveryPrice' => $this->deliveryPrice,
+            'DeliveryDiscount' => $this->deliveryDiscount,
+            'DeliveryLon' => $this->deliveryLon,
+            'DeliveryLat' => $this->deliveryLat,
+            'DeliveryAcc' => $this->deliveryAcc,
+            'PayType' => $this->payType,
+            'CashChange' => $this->cashChange,
+            'BonusAvailable' => $this->bonusAvailable,
+            'BonusCredited' => $this->bonusCredited,
+            'SumWithoutDiscount' => $this->sumWithoutDiscount,
+            'SumDiscount' => $this->sumDiscount,
+            'SumBonus' => $this->sumBonus,
+            'Total' => $this->total,
+            'OnTime' => $this->onTime,
+            'CreatedBySite' => $this->createdBySite,
+            'IIKOStatus' => $this->iikoStatus,
+            'PBIStatus' => $this->pbiStatus,
+            'PlaziusStatus' => $this->plaziusStatus,
+            'PlaziusErr' => $this->plaziusErr,
+            'Callback' => $this->callback,
+            'HiddenMenu' => $this->hiddenMenu,
+            'FuckedUp' => $this->fuckedUp,
+            'Comment' => $this->comment,
+            'Source' => $this->source ? $this->source->jsonSerialize() : null,
+            'Status' => $this->status,
+            'CancelReason' => $this->cancelReason,
+            'List' => array_map(fn (OrderProduct $item): array => $item->jsonSerialize(), $this->list),
+            'Changes' => array_map(fn (OrderChange $item): array => $item->jsonSerialize(), $this->changes),
+        ];
     }
 }

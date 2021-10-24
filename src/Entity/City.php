@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class City
+use JsonSerializable;
+
+class City implements JsonSerializable
 {
     /** Id */
     private int $id;
@@ -109,5 +111,22 @@ class City
         $this->countryCode = (string) ($apiResponse['countrycode'] ?? null);
         $this->cityCode = (string) ($apiResponse['citycode'] ?? null);
         $this->cityMultiCode = (int) ($apiResponse['citymulticode'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'Name' => $this->name,
+            'Timezone' => $this->timezone,
+            'OrderMinimalSum' => $this->orderMinimalSum,
+            'OrderDelivery' => $this->orderDelivery,
+            'OrderFreeDeliverySum' => $this->orderFreeDeliverySum,
+            'CountryID' => $this->countryId,
+            'CountryName' => $this->countryName,
+            'CountryCode' => $this->countryCode,
+            'CityCode' => $this->cityCode,
+            'CityMultiCode' => $this->cityMultiCode,
+        ];
     }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Client
+use JsonSerializable;
+
+class Client implements JsonSerializable
 {
     public const SEX_UNDEFINED = 'undefined';
     public const SEX_MALE = 'male';
@@ -125,5 +127,23 @@ class Client
         $this->placedOrders = (int) ($apiResponse['placedorders'] ?? null);
         $this->canceledOrders = (int) ($apiResponse['canceledorders'] ?? null);
         $this->ordersTotalSum = (int) ($apiResponse['orderstotalsum'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'CityID' => $this->cityId,
+            'Registred' => $this->registred,
+            'Birth' => $this->birth,
+            'Phone' => $this->phone,
+            'Name' => $this->name,
+            'Sex' => $this->sex,
+            'Status' => $this->status,
+            'Comment' => $this->comment,
+            'PlacedOrders' => $this->placedOrders,
+            'CanceledOrders' => $this->canceledOrders,
+            'OrdersTotalSum' => $this->ordersTotalSum,
+        ];
     }
 }

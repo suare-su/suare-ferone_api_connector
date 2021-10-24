@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ShopSelected
+use JsonSerializable;
+
+class ShopSelected implements JsonSerializable
 {
     public const TYPE_DELIVERY = 'delivery';
     public const TYPE_STORE = 'store';
@@ -171,5 +173,28 @@ class ShopSelected
         $this->shiftOpened = (string) ($apiResponse['shiftopened'] ?? null);
         $this->working = new ShopSelectedWorking($apiResponse['working'] ?? []);
         $this->sort = ($apiResponse['sort'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'CityID' => $this->cityId,
+            'Prefix' => $this->prefix,
+            'Type' => $this->type,
+            'SelfService' => $this->selfService,
+            'Delivery' => $this->delivery,
+            'CallCenter' => $this->callCenter,
+            'Name' => $this->name,
+            'City' => $this->city,
+            'Street' => $this->street,
+            'House' => $this->house,
+            'AddrLat' => $this->addrLat,
+            'AddrLon' => $this->addrLon,
+            'ShiftID' => $this->shiftId,
+            'ShiftOpened' => $this->shiftOpened,
+            'Working' => $this->working->jsonSerialize(),
+            'Sort' => $this->sort,
+        ];
     }
 }

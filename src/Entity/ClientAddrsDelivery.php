@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ClientAddrsDelivery
+use JsonSerializable;
+
+class ClientAddrsDelivery implements JsonSerializable
 {
     /** Возможность доставки */
     private bool $status;
@@ -55,5 +57,16 @@ class ClientAddrsDelivery
         $this->minimal = (int) ($apiResponse['minimal'] ?? null);
         $this->total = (int) ($apiResponse['total'] ?? null);
         $this->totalWithDelivery = (int) ($apiResponse['totalwithdelivery'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'Status' => $this->status,
+            'Price' => $this->price,
+            'Minimal' => $this->minimal,
+            'Total' => $this->total,
+            'TotalWithDelivery' => $this->totalWithDelivery,
+        ];
     }
 }

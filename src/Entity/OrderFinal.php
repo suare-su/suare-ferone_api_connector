@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class OrderFinal
+use JsonSerializable;
+
+class OrderFinal implements JsonSerializable
 {
     public const TYPE_DELIVERY = 'delivery';
     public const TYPE_SELF = 'self';
@@ -245,5 +247,35 @@ class OrderFinal
         foreach (($apiResponse['ontimehoursinterval'] ?? []) as $tmpItem) {
             $this->onTimeHoursInterval[] = new OrderFinalOnTimeHoursInterval(\is_array($tmpItem) ? $tmpItem : []);
         }
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'CityID' => $this->cityId,
+            'ClientID' => $this->clientId,
+            'ClientName' => $this->clientName,
+            'ClientPhone' => $this->clientPhone,
+            'Type' => $this->type,
+            'City' => $this->city,
+            'Street' => $this->street,
+            'House' => $this->house,
+            'Apartment' => $this->apartment,
+            'Entrance' => $this->entrance,
+            'Floor' => $this->floor,
+            'DeliveryPrice' => $this->deliveryPrice,
+            'DeliveryDiscount' => $this->deliveryDiscount,
+            'BonusAvailable' => $this->bonusAvailable,
+            'SumWithoutDiscount' => $this->sumWithoutDiscount,
+            'SumDiscount' => $this->sumDiscount,
+            'SumBonus' => $this->sumBonus,
+            'Total' => $this->total,
+            'PlaziusStatus' => $this->plaziusStatus,
+            'PlaziusErr' => $this->plaziusErr,
+            'List' => array_map(fn (OrderProduct $item): array => $item->jsonSerialize(), $this->list),
+            'Shop' => $this->shop ? $this->shop->jsonSerialize() : null,
+            'OnTimeHoursInterval' => array_map(fn (OrderFinalOnTimeHoursInterval $item): array => $item->jsonSerialize(), $this->onTimeHoursInterval),
+        ];
     }
 }

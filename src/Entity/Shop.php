@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Shop
+use JsonSerializable;
+
+class Shop implements JsonSerializable
 {
     public const TYPE_DELIVERY = 'delivery';
     public const TYPE_STORE = 'store';
@@ -184,5 +186,30 @@ class Shop
         $this->deliveryZone = isset($apiResponse['deliveryzone']) ? (string) $apiResponse['deliveryzone'] : null;
         $this->active = (bool) ($apiResponse['active'] ?? null);
         $this->workingTime = new ShopWorkingTime($apiResponse['workingtime'] ?? []);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'Code' => $this->code,
+            'Prefix' => $this->prefix,
+            'Type' => $this->type,
+            'Name' => $this->name,
+            'SelfService' => $this->selfService,
+            'Delivery' => $this->delivery,
+            'CallCenter' => $this->callCenter,
+            'Phone' => $this->phone,
+            'CityID' => $this->cityId,
+            'City' => $this->city,
+            'Street' => $this->street,
+            'House' => $this->house,
+            'Addr' => $this->addr,
+            'AddrLat' => $this->addrLat,
+            'AddrLon' => $this->addrLon,
+            'DeliveryZone' => $this->deliveryZone,
+            'Active' => $this->active,
+            'WorkingTime' => $this->workingTime->jsonSerialize(),
+        ];
     }
 }

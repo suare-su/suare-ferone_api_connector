@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ClientAddrs
+use JsonSerializable;
+
+class ClientAddrs implements JsonSerializable
 {
     /** Название города */
     private string $city;
@@ -94,5 +96,17 @@ class ClientAddrs
         foreach (($apiResponse['list'] ?? []) as $tmpItem) {
             $this->list[] = new OrderProduct(\is_array($tmpItem) ? $tmpItem : []);
         }
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'City' => $this->city,
+            'Delivery' => $this->delivery->jsonSerialize(),
+            'Client' => $this->client ? $this->client->jsonSerialize() : null,
+            'Addrs' => array_map(fn (ClientAddrsAddrs $item): array => $item->jsonSerialize(), $this->addrs),
+            'Shops' => array_map(fn (ShopSelected $item): array => $item->jsonSerialize(), $this->shops),
+            'List' => array_map(fn (OrderProduct $item): array => $item->jsonSerialize(), $this->list),
+        ];
     }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class OrderStatus
+use JsonSerializable;
+
+class OrderStatus implements JsonSerializable
 {
     public const STATUS_NEW = 'new';
     public const STATUS_ACCEPTED = 'accepted';
@@ -49,5 +51,14 @@ class OrderStatus
         $this->status = (string) ($apiResponse['status'] ?? null);
         $this->type = (string) ($apiResponse['type'] ?? null);
         $this->changed = (string) ($apiResponse['changed'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'Status' => $this->status,
+            'Type' => $this->type,
+            'Changed' => $this->changed,
+        ];
     }
 }

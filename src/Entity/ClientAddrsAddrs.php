@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ClientAddrsAddrs
+use JsonSerializable;
+
+class ClientAddrsAddrs implements JsonSerializable
 {
     /** Id заказа */
     private int $orderId;
@@ -118,5 +120,23 @@ class ClientAddrsAddrs
         $this->addrLat = isset($apiResponse['addrlat']) ? (float) $apiResponse['addrlat'] : null;
         $this->addrLon = isset($apiResponse['addrlon']) ? (float) $apiResponse['addrlon'] : null;
         $this->addrAcc = isset($apiResponse['addracc']) ? (int) $apiResponse['addracc'] : null;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'OrderID' => $this->orderId,
+            'KladrStreetID' => $this->kladrStreetId,
+            'City' => $this->city,
+            'Street' => $this->street,
+            'House' => $this->house,
+            'Apartment' => $this->apartment,
+            'Entrance' => $this->entrance,
+            'Floor' => $this->floor,
+            'Addr' => $this->addr,
+            'AddrLat' => $this->addrLat,
+            'AddrLon' => $this->addrLon,
+            'AddrAcc' => $this->addrAcc,
+        ];
     }
 }

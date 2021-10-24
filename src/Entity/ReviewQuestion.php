@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ReviewQuestion
+use JsonSerializable;
+
+class ReviewQuestion implements JsonSerializable
 {
     /** Id */
     private int $id;
@@ -37,5 +39,14 @@ class ReviewQuestion
         $this->id = (int) ($apiResponse['id'] ?? null);
         $this->questionRu = (string) ($apiResponse['questionru'] ?? null);
         $this->questionEn = isset($apiResponse['questionen']) ? (string) $apiResponse['questionen'] : null;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'QuestionRu' => $this->questionRu,
+            'QuestionEn' => $this->questionEn,
+        ];
     }
 }

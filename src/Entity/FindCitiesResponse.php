@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class FindCitiesResponse
+use JsonSerializable;
+
+class FindCitiesResponse implements JsonSerializable
 {
     private string $id;
     private string $label;
@@ -32,5 +34,14 @@ class FindCitiesResponse
         $this->id = (string) ($apiResponse['id'] ?? null);
         $this->label = (string) ($apiResponse['label'] ?? null);
         $this->value = (string) ($apiResponse['value'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'label' => $this->label,
+            'value' => $this->value,
+        ];
     }
 }

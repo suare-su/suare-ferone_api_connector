@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SuareSu\FeroneApiConnector\Generator;
 
 use InvalidArgumentException;
+use JsonSerializable;
 use Nette\PhpGenerator\PhpFile;
 use RuntimeException;
 
@@ -45,10 +46,12 @@ class EntitesGenerator extends AbstarctGeneartor
 
         $namespace = $phpFile->addNamespace($namespaceName);
         $namespace->addUse(InvalidArgumentException::class);
+        $namespace->addUse(JsonSerializable::class);
 
-        $class = $namespace->addClass($className);
+        $class = $namespace->addClass($className)->addImplement(JsonSerializable::class);
 
         $constructorBody = "\$apiResponse = array_change_key_case(\$apiResponse, CASE_LOWER);\n\n";
+        $jsonSerializeBody = '';
         $requiredProperties = (array) ($description['required'] ?? []);
         $properties = (array) ($description['properties'] ?? []);
 
@@ -128,6 +131,7 @@ class EntitesGenerator extends AbstarctGeneartor
 
             $lcName = strtolower($propertyName);
             if ($type['isPrimitive']) {
+                $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName},\n";
                 if ($isRequired) {
                     $constructorBody .= "\$this->{$unifiedPropertyName} = " . ($type['php'] ? "({$type['php']})" : '') . " (\$apiResponse['{$lcName}'] ?? null);\n";
                 } else {
@@ -137,17 +141,22 @@ class EntitesGenerator extends AbstarctGeneartor
                 $constructorBody .= "\$this->{$unifiedPropertyName} = [];\n";
                 $constructorBody .= "foreach ((\$apiResponse['{$lcName}'] ?? []) as \$tmpItem) {\n";
                 if (!empty($type['class'])) {
+                    $jsonSerializeBody .= "    \"{$propertyName}\" => array_map(fn ({$type['class']} \$item): array => \$item->jsonSerialize(), \$this->{$unifiedPropertyName}),\n";
                     $constructorBody .= "    \$this->{$unifiedPropertyName}[] = new {$type['class']}(is_array(\$tmpItem) ? \$tmpItem : []);\n";
                 } elseif (!empty($type['primitive'])) {
+                    $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName},\n";
                     $constructorBody .= "    \$this->{$unifiedPropertyName}[] = ({$type['primitive']}) \$tmpItem;\n";
                 } else {
+                    $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName},\n";
                     $constructorBody .= "    \$this->{$unifiedPropertyName}[] = \$tmpItem;\n";
                 }
                 $constructorBody .= "}\n";
             } else {
                 if ($isRequired) {
+                    $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName}->jsonSerialize(),\n";
                     $constructorBody .= "\$this->{$unifiedPropertyName} = new {$type['class']}(\$apiResponse['{$lcName}'] ?? []);\n";
                 } else {
+                    $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName} ? \$this->{$unifiedPropertyName}->jsonSerialize() : null,\n";
                     $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$lcName}']) ? new {$type['class']}(\$apiResponse['{$lcName}']) : null;\n";
                 }
             }
@@ -164,6 +173,12 @@ class EntitesGenerator extends AbstarctGeneartor
             ->addBody(trim($constructorBody))
             ->addParameter('apiResponse')
             ->setType('array')
+        ;
+
+        $class->addMethod('jsonSerialize')
+            ->setVisibility('public')
+            ->addBody($jsonSerializeBody ? "return [\n" . trim($jsonSerializeBody) . "\n];" : 'return [];')
+            ->setReturnType('array')
         ;
 
         return $result;

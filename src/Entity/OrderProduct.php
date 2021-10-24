@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class OrderProduct
+use JsonSerializable;
+
+class OrderProduct implements JsonSerializable
 {
     /** Id продукта */
     private int $productId;
@@ -64,5 +66,17 @@ class OrderProduct
         $this->amount = (int) ($apiResponse['amount'] ?? null);
         $this->total = (float) ($apiResponse['total'] ?? null);
         $this->discount = (float) ($apiResponse['discount'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ProductID' => $this->productId,
+            'Name' => $this->name,
+            'Price' => $this->price,
+            'Amount' => $this->amount,
+            'Total' => $this->total,
+            'Discount' => $this->discount,
+        ];
     }
 }

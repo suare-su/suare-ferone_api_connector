@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Product
+use JsonSerializable;
+
+class Product implements JsonSerializable
 {
     public const TYPE_PRODUCT = 'product';
     public const TYPE_MODIFIER = 'modifier';
@@ -300,5 +302,40 @@ class Product
         foreach (($apiResponse['mods'] ?? []) as $tmpItem) {
             $this->mods[] = new GroupModifier(\is_array($tmpItem) ? $tmpItem : []);
         }
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'IIKOID' => $this->iikoid,
+            'GroupID' => $this->groupId,
+            'Type' => $this->type,
+            'ShopType' => $this->shopType,
+            'NameRu' => $this->nameRu,
+            'NameEn' => $this->nameEn,
+            'DescriptionRu' => $this->descriptionRu,
+            'DescriptionEn' => $this->descriptionEn,
+            'Image' => $this->image,
+            'Energy' => $this->energy,
+            'Carbohydrate' => $this->carbohydrate,
+            'Fat' => $this->fat,
+            'Fiber' => $this->fiber,
+            'Size' => $this->size,
+            'Units' => $this->units,
+            'Price' => $this->price,
+            'Place' => $this->place,
+            'MajorMultiplier' => $this->majorMultiplier,
+            'MinorMultiplier' => $this->minorMultiplier,
+            'PromoCode' => $this->promoCode,
+            'PromoTitle' => $this->promoTitle,
+            'PromoDesc' => $this->promoDesc,
+            'PromoCondition' => $this->promoCondition,
+            'NotInPlazius' => $this->notInPlazius,
+            'Visible' => $this->visible,
+            'Stop' => $this->stop,
+            'StopShops' => $this->stopShops,
+            'mods' => array_map(fn (GroupModifier $item): array => $item->jsonSerialize(), $this->mods),
+        ];
     }
 }
