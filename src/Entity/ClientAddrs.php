@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ClientAddrs
+use JsonSerializable;
+
+class ClientAddrs implements JsonSerializable
 {
     /** Название города */
     private string $city;
@@ -77,20 +79,34 @@ class ClientAddrs
 
     public function __construct(array $apiResponse)
     {
-        $this->city = (string) ($apiResponse['City'] ?? null);
-        $this->delivery = new ClientAddrsDelivery($apiResponse['Delivery'] ?? []);
-        $this->client = isset($apiResponse['Client']) ? new ClientAddrsClient($apiResponse['Client']) : null;
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->city = (string) ($apiResponse['city'] ?? null);
+        $this->delivery = new ClientAddrsDelivery($apiResponse['delivery'] ?? []);
+        $this->client = isset($apiResponse['client']) ? new ClientAddrsClient($apiResponse['client']) : null;
         $this->addrs = [];
-        foreach (($apiResponse['Addrs'] ?? []) as $tmpItem) {
+        foreach (($apiResponse['addrs'] ?? []) as $tmpItem) {
             $this->addrs[] = new ClientAddrsAddrs(\is_array($tmpItem) ? $tmpItem : []);
         }
         $this->shops = [];
-        foreach (($apiResponse['Shops'] ?? []) as $tmpItem) {
+        foreach (($apiResponse['shops'] ?? []) as $tmpItem) {
             $this->shops[] = new ShopSelected(\is_array($tmpItem) ? $tmpItem : []);
         }
         $this->list = [];
-        foreach (($apiResponse['List'] ?? []) as $tmpItem) {
+        foreach (($apiResponse['list'] ?? []) as $tmpItem) {
             $this->list[] = new OrderProduct(\is_array($tmpItem) ? $tmpItem : []);
         }
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'City' => $this->city,
+            'Delivery' => $this->delivery->jsonSerialize(),
+            'Client' => $this->client ? $this->client->jsonSerialize() : null,
+            'Addrs' => array_map(fn (ClientAddrsAddrs $item): array => $item->jsonSerialize(), $this->addrs),
+            'Shops' => array_map(fn (ShopSelected $item): array => $item->jsonSerialize(), $this->shops),
+            'List' => array_map(fn (OrderProduct $item): array => $item->jsonSerialize(), $this->list),
+        ];
     }
 }

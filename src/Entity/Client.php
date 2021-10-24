@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Client
+use JsonSerializable;
+
+class Client implements JsonSerializable
 {
     public const SEX_UNDEFINED = 'undefined';
     public const SEX_MALE = 'male';
@@ -111,17 +113,37 @@ class Client
 
     public function __construct(array $apiResponse)
     {
-        $this->id = (int) ($apiResponse['ID'] ?? null);
-        $this->cityId = (int) ($apiResponse['CityID'] ?? null);
-        $this->registred = (string) ($apiResponse['Registred'] ?? null);
-        $this->birth = (string) ($apiResponse['Birth'] ?? null);
-        $this->phone = (string) ($apiResponse['Phone'] ?? null);
-        $this->name = (string) ($apiResponse['Name'] ?? null);
-        $this->sex = (string) ($apiResponse['Sex'] ?? null);
-        $this->status = (string) ($apiResponse['Status'] ?? null);
-        $this->comment = isset($apiResponse['Comment']) ? (string) $apiResponse['Comment'] : null;
-        $this->placedOrders = (int) ($apiResponse['PlacedOrders'] ?? null);
-        $this->canceledOrders = (int) ($apiResponse['CanceledOrders'] ?? null);
-        $this->ordersTotalSum = (int) ($apiResponse['OrdersTotalSum'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->id = (int) ($apiResponse['id'] ?? null);
+        $this->cityId = (int) ($apiResponse['cityid'] ?? null);
+        $this->registred = (string) ($apiResponse['registred'] ?? null);
+        $this->birth = (string) ($apiResponse['birth'] ?? null);
+        $this->phone = (string) ($apiResponse['phone'] ?? null);
+        $this->name = (string) ($apiResponse['name'] ?? null);
+        $this->sex = (string) ($apiResponse['sex'] ?? null);
+        $this->status = (string) ($apiResponse['status'] ?? null);
+        $this->comment = isset($apiResponse['comment']) ? (string) $apiResponse['comment'] : null;
+        $this->placedOrders = (int) ($apiResponse['placedorders'] ?? null);
+        $this->canceledOrders = (int) ($apiResponse['canceledorders'] ?? null);
+        $this->ordersTotalSum = (int) ($apiResponse['orderstotalsum'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'CityID' => $this->cityId,
+            'Registred' => $this->registred,
+            'Birth' => $this->birth,
+            'Phone' => $this->phone,
+            'Name' => $this->name,
+            'Sex' => $this->sex,
+            'Status' => $this->status,
+            'Comment' => $this->comment,
+            'PlacedOrders' => $this->placedOrders,
+            'CanceledOrders' => $this->canceledOrders,
+            'OrdersTotalSum' => $this->ordersTotalSum,
+        ];
     }
 }

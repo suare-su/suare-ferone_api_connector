@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ShopSelected
+use JsonSerializable;
+
+class ShopSelected implements JsonSerializable
 {
     public const TYPE_DELIVERY = 'delivery';
     public const TYPE_STORE = 'store';
@@ -152,22 +154,47 @@ class ShopSelected
 
     public function __construct(array $apiResponse)
     {
-        $this->id = (int) ($apiResponse['ID'] ?? null);
-        $this->cityId = (int) ($apiResponse['CityID'] ?? null);
-        $this->prefix = (string) ($apiResponse['Prefix'] ?? null);
-        $this->type = (string) ($apiResponse['Type'] ?? null);
-        $this->selfService = (bool) ($apiResponse['SelfService'] ?? null);
-        $this->delivery = (bool) ($apiResponse['Delivery'] ?? null);
-        $this->callCenter = (bool) ($apiResponse['CallCenter'] ?? null);
-        $this->name = (string) ($apiResponse['Name'] ?? null);
-        $this->city = (string) ($apiResponse['City'] ?? null);
-        $this->street = (string) ($apiResponse['Street'] ?? null);
-        $this->house = (string) ($apiResponse['House'] ?? null);
-        $this->addrLat = (float) ($apiResponse['AddrLat'] ?? null);
-        $this->addrLon = (float) ($apiResponse['AddrLon'] ?? null);
-        $this->shiftId = (int) ($apiResponse['ShiftID'] ?? null);
-        $this->shiftOpened = (string) ($apiResponse['ShiftOpened'] ?? null);
-        $this->working = new ShopSelectedWorking($apiResponse['Working'] ?? []);
-        $this->sort = ($apiResponse['Sort'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->id = (int) ($apiResponse['id'] ?? null);
+        $this->cityId = (int) ($apiResponse['cityid'] ?? null);
+        $this->prefix = (string) ($apiResponse['prefix'] ?? null);
+        $this->type = (string) ($apiResponse['type'] ?? null);
+        $this->selfService = (bool) ($apiResponse['selfservice'] ?? null);
+        $this->delivery = (bool) ($apiResponse['delivery'] ?? null);
+        $this->callCenter = (bool) ($apiResponse['callcenter'] ?? null);
+        $this->name = (string) ($apiResponse['name'] ?? null);
+        $this->city = (string) ($apiResponse['city'] ?? null);
+        $this->street = (string) ($apiResponse['street'] ?? null);
+        $this->house = (string) ($apiResponse['house'] ?? null);
+        $this->addrLat = (float) ($apiResponse['addrlat'] ?? null);
+        $this->addrLon = (float) ($apiResponse['addrlon'] ?? null);
+        $this->shiftId = (int) ($apiResponse['shiftid'] ?? null);
+        $this->shiftOpened = (string) ($apiResponse['shiftopened'] ?? null);
+        $this->working = new ShopSelectedWorking($apiResponse['working'] ?? []);
+        $this->sort = ($apiResponse['sort'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'CityID' => $this->cityId,
+            'Prefix' => $this->prefix,
+            'Type' => $this->type,
+            'SelfService' => $this->selfService,
+            'Delivery' => $this->delivery,
+            'CallCenter' => $this->callCenter,
+            'Name' => $this->name,
+            'City' => $this->city,
+            'Street' => $this->street,
+            'House' => $this->house,
+            'AddrLat' => $this->addrLat,
+            'AddrLon' => $this->addrLon,
+            'ShiftID' => $this->shiftId,
+            'ShiftOpened' => $this->shiftOpened,
+            'Working' => $this->working->jsonSerialize(),
+            'Sort' => $this->sort,
+        ];
     }
 }

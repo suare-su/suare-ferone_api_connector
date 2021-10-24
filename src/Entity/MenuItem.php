@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class MenuItem
+use JsonSerializable;
+
+class MenuItem implements JsonSerializable
 {
     private Group $group;
 
@@ -30,10 +32,20 @@ class MenuItem
 
     public function __construct(array $apiResponse)
     {
-        $this->group = new Group($apiResponse['Group'] ?? []);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->group = new Group($apiResponse['group'] ?? []);
         $this->products = [];
-        foreach (($apiResponse['Products'] ?? []) as $tmpItem) {
+        foreach (($apiResponse['products'] ?? []) as $tmpItem) {
             $this->products[] = new Product(\is_array($tmpItem) ? $tmpItem : []);
         }
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'Group' => $this->group->jsonSerialize(),
+            'Products' => array_map(fn (Product $item): array => $item->jsonSerialize(), $this->products),
+        ];
     }
 }

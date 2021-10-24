@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class OrderSourceType
+use JsonSerializable;
+
+class OrderSourceType implements JsonSerializable
 {
     private string $type;
 
@@ -53,6 +55,8 @@ class OrderSourceType
 
     public function __construct(array $apiResponse)
     {
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
         $this->type = (string) ($apiResponse['type'] ?? null);
         $this->referer = isset($apiResponse['referer']) ? (string) $apiResponse['referer'] : null;
         $this->utmSource = isset($apiResponse['utm_source']) ? (string) $apiResponse['utm_source'] : null;
@@ -60,5 +64,18 @@ class OrderSourceType
         $this->utmCampaign = isset($apiResponse['utm_campaign']) ? (string) $apiResponse['utm_campaign'] : null;
         $this->utmTerm = isset($apiResponse['utm_term']) ? (string) $apiResponse['utm_term'] : null;
         $this->utmContent = isset($apiResponse['utm_content']) ? (string) $apiResponse['utm_content'] : null;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'type' => $this->type,
+            'referer' => $this->referer,
+            'utm_source' => $this->utmSource,
+            'utm_medium' => $this->utmMedium,
+            'utm_campaign' => $this->utmCampaign,
+            'utm_term' => $this->utmTerm,
+            'utm_content' => $this->utmContent,
+        ];
     }
 }

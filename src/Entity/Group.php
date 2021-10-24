@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Group
+use JsonSerializable;
+
+class Group implements JsonSerializable
 {
     /** Id */
     private int $id;
@@ -80,14 +82,31 @@ class Group
 
     public function __construct(array $apiResponse)
     {
-        $this->id = (int) ($apiResponse['ID'] ?? null);
-        $this->iikoid = isset($apiResponse['IIKOID']) ? (string) $apiResponse['IIKOID'] : null;
-        $this->parentId = (int) ($apiResponse['ParentID'] ?? null);
-        $this->nameRu = (string) ($apiResponse['NameRu'] ?? null);
-        $this->nameEn = isset($apiResponse['NameEn']) ? (string) $apiResponse['NameEn'] : null;
-        $this->place = (int) ($apiResponse['Place'] ?? null);
-        $this->groupModifier = (bool) ($apiResponse['GroupModifier'] ?? null);
-        $this->notInPlazius = (bool) ($apiResponse['NotInPlazius'] ?? null);
-        $this->visible = (bool) ($apiResponse['Visible'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->id = (int) ($apiResponse['id'] ?? null);
+        $this->iikoid = isset($apiResponse['iikoid']) ? (string) $apiResponse['iikoid'] : null;
+        $this->parentId = (int) ($apiResponse['parentid'] ?? null);
+        $this->nameRu = (string) ($apiResponse['nameru'] ?? null);
+        $this->nameEn = isset($apiResponse['nameen']) ? (string) $apiResponse['nameen'] : null;
+        $this->place = (int) ($apiResponse['place'] ?? null);
+        $this->groupModifier = (bool) ($apiResponse['groupmodifier'] ?? null);
+        $this->notInPlazius = (bool) ($apiResponse['notinplazius'] ?? null);
+        $this->visible = (bool) ($apiResponse['visible'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'IIKOID' => $this->iikoid,
+            'ParentID' => $this->parentId,
+            'NameRu' => $this->nameRu,
+            'NameEn' => $this->nameEn,
+            'Place' => $this->place,
+            'GroupModifier' => $this->groupModifier,
+            'NotInPlazius' => $this->notInPlazius,
+            'Visible' => $this->visible,
+        ];
     }
 }

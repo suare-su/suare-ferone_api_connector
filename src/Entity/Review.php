@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Review
+use JsonSerializable;
+
+class Review implements JsonSerializable
 {
     /** Id */
     private int $id;
@@ -128,20 +130,43 @@ class Review
 
     public function __construct(array $apiResponse)
     {
-        $this->id = (int) ($apiResponse['ID'] ?? null);
-        $this->cityId = (int) ($apiResponse['CityID'] ?? null);
-        $this->shopId = (int) ($apiResponse['ShopID'] ?? null);
-        $this->orderId = (int) ($apiResponse['OrderID'] ?? null);
-        $this->clientId = (int) ($apiResponse['ClientID'] ?? null);
-        $this->clientName = (string) ($apiResponse['ClientName'] ?? null);
-        $this->clientPhone = (string) ($apiResponse['ClientPhone'] ?? null);
-        $this->created = (string) ($apiResponse['Created'] ?? null);
-        $this->createdBy = isset($apiResponse['CreatedBy']) ? (string) $apiResponse['CreatedBy'] : null;
-        $this->review = (string) ($apiResponse['Review'] ?? null);
-        $this->photo = isset($apiResponse['Photo']) ? (string) $apiResponse['Photo'] : null;
-        $this->rating = (int) ($apiResponse['Rating'] ?? null);
-        $this->report = isset($apiResponse['Report']) ? (string) $apiResponse['Report'] : null;
-        $this->reportBy = isset($apiResponse['ReportBy']) ? (string) $apiResponse['ReportBy'] : null;
-        $this->closed = isset($apiResponse['Closed']) ? (string) $apiResponse['Closed'] : null;
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->id = (int) ($apiResponse['id'] ?? null);
+        $this->cityId = (int) ($apiResponse['cityid'] ?? null);
+        $this->shopId = (int) ($apiResponse['shopid'] ?? null);
+        $this->orderId = (int) ($apiResponse['orderid'] ?? null);
+        $this->clientId = (int) ($apiResponse['clientid'] ?? null);
+        $this->clientName = (string) ($apiResponse['clientname'] ?? null);
+        $this->clientPhone = (string) ($apiResponse['clientphone'] ?? null);
+        $this->created = (string) ($apiResponse['created'] ?? null);
+        $this->createdBy = isset($apiResponse['createdby']) ? (string) $apiResponse['createdby'] : null;
+        $this->review = (string) ($apiResponse['review'] ?? null);
+        $this->photo = isset($apiResponse['photo']) ? (string) $apiResponse['photo'] : null;
+        $this->rating = (int) ($apiResponse['rating'] ?? null);
+        $this->report = isset($apiResponse['report']) ? (string) $apiResponse['report'] : null;
+        $this->reportBy = isset($apiResponse['reportby']) ? (string) $apiResponse['reportby'] : null;
+        $this->closed = isset($apiResponse['closed']) ? (string) $apiResponse['closed'] : null;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'CityID' => $this->cityId,
+            'ShopID' => $this->shopId,
+            'OrderID' => $this->orderId,
+            'ClientID' => $this->clientId,
+            'ClientName' => $this->clientName,
+            'ClientPhone' => $this->clientPhone,
+            'Created' => $this->created,
+            'CreatedBy' => $this->createdBy,
+            'Review' => $this->review,
+            'Photo' => $this->photo,
+            'Rating' => $this->rating,
+            'Report' => $this->report,
+            'ReportBy' => $this->reportBy,
+            'Closed' => $this->closed,
+        ];
     }
 }

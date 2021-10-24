@@ -42,6 +42,14 @@ $rawEntites['FindHousesResponse'] = [
         'value' => ['type' => 'string'],
     ],
 ];
+$rawEntites['BindedClient'] = [
+    'type' => 'object',
+    'required' => ['OrderID', 'ClientID'],
+    'properties' => [
+        'OrderID' => ['type' => 'integer'],
+        'ClientID' => ['type' => 'integer'],
+    ],
+];
 
 $fsHelper = FileSystemFactory::create();
 $entitiesGenerator = new EntitesGenerator(
@@ -67,6 +75,25 @@ $entitiesGenerator = new EntitesGenerator(
         'ClientAddrs',
         'ShopSelected',
         'OrderFinal',
+        'OrderListItem',
+        'OrderListItemMod',
+        'BindClientInfoAddrInfo',
+        'BindClientIdAddrInfo',
+        'BindClientInfoShopId',
+        'BindClientIdShopId',
+        'ClientInfo',
+        'AddrInfo',
+        'BindedClient',
+    ],
+    [
+        'OrderListItem',
+        'OrderListItemMod',
+        'BindClientInfoAddrInfo',
+        'BindClientIdAddrInfo',
+        'BindClientInfoShopId',
+        'BindClientIdShopId',
+        'ClientInfo',
+        'AddrInfo',
     ]
 );
 $entitiesGenerator->generate(

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SuareSu\FeroneApiConnector\Generator;
 
 use InvalidArgumentException;
+use JsonSerializable;
 use Nette\PhpGenerator\PhpFile;
 use RuntimeException;
 
@@ -45,12 +46,15 @@ class EntitesGenerator extends AbstarctGeneartor
 
         $namespace = $phpFile->addNamespace($namespaceName);
         $namespace->addUse(InvalidArgumentException::class);
+        $namespace->addUse(JsonSerializable::class);
 
-        $class = $namespace->addClass($className);
+        $class = $namespace->addClass($className)->addImplement(JsonSerializable::class);
 
-        $constructorBody = '';
+        $constructorBody = "\$apiResponse = array_change_key_case(\$apiResponse, CASE_LOWER);\n\n";
+        $jsonSerializeBody = '';
         $requiredProperties = (array) ($description['required'] ?? []);
         $properties = (array) ($description['properties'] ?? []);
+        $allowSetters = \in_array($className, $this->allowedSetters);
 
         foreach ($properties as $propertyName => $propertyDescription) {
             if ($propertyDescription['type'] === self::TYPE_OBJECT) {
@@ -126,28 +130,51 @@ class EntitesGenerator extends AbstarctGeneartor
                 $getter->addComment("@return {$type['phpDoc']}");
             }
 
+            if ($allowSetters) {
+                $setterName = $this->unifySetterName($unifiedPropertyName);
+                $setter = $class->addMethod($setterName)
+                    ->setVisibility('public')
+                    ->setReturnType('self')
+                    ->addBody("\$this->{$unifiedPropertyName} = \$value;\n\nreturn \$this;")
+                ;
+                $param = $setter->addParameter('value')->setType($type['php']);
+                if (!$isRequired) {
+                    $param->setNullable();
+                }
+                if (!empty($type['phpDoc'])) {
+                    $setter->addComment("@param {$type['phpDoc']} \$value");
+                }
+            }
+
+            $lcName = strtolower($propertyName);
             if ($type['isPrimitive']) {
+                $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName},\n";
                 if ($isRequired) {
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = " . ($type['php'] ? "({$type['php']})" : '') . " (\$apiResponse['{$propertyName}'] ?? null);\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = " . ($type['php'] ? "({$type['php']})" : '') . " (\$apiResponse['{$lcName}'] ?? null);\n";
                 } else {
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$propertyName}']) ? " . ($type['php'] ? "({$type['php']})" : '') . " \$apiResponse['{$propertyName}'] : null;\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$lcName}']) ? " . ($type['php'] ? "({$type['php']})" : '') . " \$apiResponse['{$lcName}'] : null;\n";
                 }
             } elseif ($propertyDescription['type'] === self::TYPE_ARRAY) {
                 $constructorBody .= "\$this->{$unifiedPropertyName} = [];\n";
-                $constructorBody .= "foreach ((\$apiResponse['{$propertyName}'] ?? []) as \$tmpItem) {\n";
+                $constructorBody .= "foreach ((\$apiResponse['{$lcName}'] ?? []) as \$tmpItem) {\n";
                 if (!empty($type['class'])) {
+                    $jsonSerializeBody .= "    \"{$propertyName}\" => array_map(fn ({$type['class']} \$item): array => \$item->jsonSerialize(), \$this->{$unifiedPropertyName}),\n";
                     $constructorBody .= "    \$this->{$unifiedPropertyName}[] = new {$type['class']}(is_array(\$tmpItem) ? \$tmpItem : []);\n";
                 } elseif (!empty($type['primitive'])) {
+                    $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName},\n";
                     $constructorBody .= "    \$this->{$unifiedPropertyName}[] = ({$type['primitive']}) \$tmpItem;\n";
                 } else {
+                    $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName},\n";
                     $constructorBody .= "    \$this->{$unifiedPropertyName}[] = \$tmpItem;\n";
                 }
                 $constructorBody .= "}\n";
             } else {
                 if ($isRequired) {
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = new {$type['class']}(\$apiResponse['{$propertyName}'] ?? []);\n";
+                    $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName}->jsonSerialize(),\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = new {$type['class']}(\$apiResponse['{$lcName}'] ?? []);\n";
                 } else {
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$propertyName}']) ? new {$type['class']}(\$apiResponse['{$propertyName}']) : null;\n";
+                    $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName} ? \$this->{$unifiedPropertyName}->jsonSerialize() : null,\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$lcName}']) ? new {$type['class']}(\$apiResponse['{$lcName}']) : null;\n";
                 }
             }
 
@@ -158,11 +185,16 @@ class EntitesGenerator extends AbstarctGeneartor
             }
         }
 
-        $class->addMethod('__construct')
+        $constructor = $class->addMethod('__construct')->setVisibility('public')->addBody(trim($constructorBody));
+        $constructParam = $constructor->addParameter('apiResponse')->setType('array');
+        if ($allowSetters) {
+            $constructParam->setDefaultValue([]);
+        }
+
+        $class->addMethod('jsonSerialize')
             ->setVisibility('public')
-            ->addBody(trim($constructorBody))
-            ->addParameter('apiResponse')
-            ->setType('array')
+            ->addBody($jsonSerializeBody ? "return [\n" . trim($jsonSerializeBody) . "\n];" : 'return [];')
+            ->setReturnType('array')
         ;
 
         return $result;

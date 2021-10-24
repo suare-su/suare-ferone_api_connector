@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SuareSu\FeroneApiConnector\Connector;
 
 use DateTimeImmutable;
+use SuareSu\FeroneApiConnector\Entity\BindedClient;
 use SuareSu\FeroneApiConnector\Entity\City;
 use SuareSu\FeroneApiConnector\Entity\Client;
 use SuareSu\FeroneApiConnector\Entity\ClientAddrs;
@@ -20,15 +21,25 @@ use SuareSu\FeroneApiConnector\Entity\ReviewQuestion;
 use SuareSu\FeroneApiConnector\Entity\Shop;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
+use SuareSu\FeroneApiConnector\Query\AcceptOrderQuery;
+use SuareSu\FeroneApiConnector\Query\AddReviewQuestionsQuery;
+use SuareSu\FeroneApiConnector\Query\AddReviewRatingQuery;
+use SuareSu\FeroneApiConnector\Query\BaseShopQuery;
+use SuareSu\FeroneApiConnector\Query\BindClientQuery;
+use SuareSu\FeroneApiConnector\Query\BonusPayOrderQuery;
+use SuareSu\FeroneApiConnector\Query\CheckAddressInZonesQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientReviewsListQuery;
+use SuareSu\FeroneApiConnector\Query\CreateOrderQuery;
 use SuareSu\FeroneApiConnector\Query\MenuQuery;
 use SuareSu\FeroneApiConnector\Query\OrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\Query;
 use SuareSu\FeroneApiConnector\Query\ReviewsListQuery;
+use SuareSu\FeroneApiConnector\Query\SendSmsQuery;
+use SuareSu\FeroneApiConnector\Query\UpdateClientInfoQuery;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 use SuareSu\FeroneApiConnector\Transport\TransportResponse;
@@ -83,21 +94,14 @@ class Connector
     /**
      * SendSMS method implementation.
      *
-     * @param string $phoneNumber
-     * @param string $message
+     * @param SendSmsQuery $query
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function sendSMS(string $phoneNumber, string $message): void
+    public function sendSMS(SendSmsQuery $query): void
     {
-        $this->sendRequestInternal(
-            'SendSMS',
-            [
-                'Phone' => $phoneNumber,
-                'Message' => $message,
-            ]
-        );
+        $this->sendRequestInternal('SendSMS', $query);
     }
 
     /**
@@ -307,24 +311,14 @@ class Connector
     /**
      * UpdateClientInfo method implementation.
      *
-     * @param int         $clientId
-     * @param string      $name
-     * @param string|null $birth
+     * @param UpdateClientInfoQuery $query
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function updateClientInfo(int $clientId, string $name, ?string $birth = null): void
+    public function updateClientInfo(UpdateClientInfoQuery $query): void
     {
-        $params = [
-            'ClientID' => $clientId,
-            'Name' => $name,
-        ];
-        if ($birth !== null) {
-            $params['Birth'] = $birth;
-        }
-
-        $this->sendRequestInternal('UpdateClientInfo', $params);
+        $this->sendRequestInternal('UpdateClientInfo', $query);
     }
 
     /**
@@ -516,28 +510,16 @@ class Connector
     /**
      * AddReview method implementation with rating.
      *
-     * @param int         $orderId
-     * @param string      $review
-     * @param int         $rating
-     * @param string|null $photo
+     * @param AddReviewRatingQuery $query
      *
      * @return int
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function addReviewRating(int $orderId, string $review, int $rating, ?string $photo = null): int
+    public function addReviewRating(AddReviewRatingQuery $query): int
     {
-        $params = [
-            'OrderID' => $orderId,
-            'Review' => $review,
-            'Rating' => $rating,
-        ];
-        if ($photo !== null) {
-            $params['Photo'] = $photo;
-        }
-
-        $data = $this->sendRequestInternal('AddReview', $params)->getData();
+        $data = $this->sendRequestInternal('AddReview', $query)->getData();
 
         return (int) ($data['ID'] ?? 0);
     }
@@ -545,34 +527,16 @@ class Connector
     /**
      * AddReview method implementation with questions.
      *
-     * @param int             $orderId
-     * @param string          $review
-     * @param array<int, int> $questions
-     * @param string|null     $photo
+     * @param AddReviewQuestionsQuery $query
      *
      * @return int
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function addReviewQuestions(int $orderId, string $review, array $questions, ?string $photo = null): int
+    public function addReviewQuestions(AddReviewQuestionsQuery $query): int
     {
-        $params = [
-            'OrderID' => $orderId,
-            'Review' => $review,
-            'Questions' => [],
-        ];
-        foreach ($questions as $id => $rating) {
-            $params['Questions'][] = [
-                'ID' => $id,
-                'Rating' => $rating,
-            ];
-        }
-        if ($photo !== null) {
-            $params['Photo'] = $photo;
-        }
-
-        $data = $this->sendRequestInternal('AddReview', $params)->getData();
+        $data = $this->sendRequestInternal('AddReview', $query)->getData();
 
         return (int) ($data['ID'] ?? 0);
     }
@@ -775,24 +739,17 @@ class Connector
     /**
      * GetBaseShop method implementation.
      *
-     * @param int    $cityId
-     * @param string $address
+     * @param BaseShopQuery $query
      *
      * @return int|null
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function getBaseShop(int $cityId, string $address): ?int
+    public function getBaseShop(BaseShopQuery $query): ?int
     {
         try {
-            $response = $this->sendRequestInternal(
-                'GetBaseShop',
-                [
-                    'CityID' => $cityId,
-                    'Address' => $address,
-                ]
-            );
+            $response = $this->sendRequestInternal('GetBaseShop', $query);
         } catch (ApiException $e) {
             if ($e->getCode() === 70) {
                 return null;
@@ -806,24 +763,17 @@ class Connector
     /**
      * CheckAddressInZones method implementation.
      *
-     * @param int    $orderId
-     * @param string $address
+     * @param CheckAddressInZonesQuery $query
      *
      * @return bool
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function checkAddressInZones(int $orderId, string $address): bool
+    public function checkAddressInZones(CheckAddressInZonesQuery $query): bool
     {
         try {
-            $this->sendRequestInternal(
-                'CheckAddressInZones',
-                [
-                    'OrderID' => $orderId,
-                    'Address' => $address,
-                ]
-            );
+            $this->sendRequestInternal('CheckAddressInZones', $query);
         } catch (ApiException $e) {
             if ($e->getCode() === 70) {
                 return false;
@@ -837,23 +787,83 @@ class Connector
     /**
      * GetOrderFinalInfo method implementation.
      *
-     * @param int $orderId
+     * @param int $id
      *
      * @return OrderFinal
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function getOrderFinalInfo(int $orderId): OrderFinal
+    public function getOrderFinalInfo(int $id): OrderFinal
     {
         $response = $this->sendRequestInternal(
             'GetOrderFinalInfo',
             [
-                'OrderID' => $orderId,
+                'OrderID' => $id,
             ]
         );
 
         return new OrderFinal($response->getData());
+    }
+
+    /**
+     * CreateOrder method implementation.
+     *
+     * @param CreateOrderQuery $query
+     *
+     * @return int
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function createOrder(CreateOrderQuery $query): int
+    {
+        $data = $this->sendRequestInternal('CreateOrder', $query)->getData();
+
+        return (int) ($data['ID'] ?? 0);
+    }
+
+    /**
+     * CreateOrder method implementation.
+     *
+     * @param BindClientQuery $query
+     *
+     * @return BindedClient
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function bindClient(BindClientQuery $query): BindedClient
+    {
+        $data = $this->sendRequestInternal('BindClient', $query)->getData();
+
+        return new BindedClient($data);
+    }
+
+    /**
+     * BonusPayOrder method implementation.
+     *
+     * @param BonusPayOrderQuery $query
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function bonusPayOrder(BonusPayOrderQuery $query): void
+    {
+        $this->sendRequestInternal('BonusPayOrder', $query);
+    }
+
+    /**
+     * AcceptOrder method implementation.
+     *
+     * @param AcceptOrderQuery $query
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function acceptOrder(AcceptOrderQuery $query): void
+    {
+        $this->sendRequestInternal('AcceptOrder', $query);
     }
 
     /**

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Product
+use JsonSerializable;
+
+class Product implements JsonSerializable
 {
     public const TYPE_PRODUCT = 'product';
     public const TYPE_MODIFIER = 'modifier';
@@ -263,40 +265,77 @@ class Product
 
     public function __construct(array $apiResponse)
     {
-        $this->id = (int) ($apiResponse['ID'] ?? null);
-        $this->iikoid = isset($apiResponse['IIKOID']) ? (string) $apiResponse['IIKOID'] : null;
-        $this->groupId = (int) ($apiResponse['GroupID'] ?? null);
-        $this->type = (string) ($apiResponse['Type'] ?? null);
-        $this->shopType = (string) ($apiResponse['ShopType'] ?? null);
-        $this->nameRu = (string) ($apiResponse['NameRu'] ?? null);
-        $this->nameEn = isset($apiResponse['NameEn']) ? (string) $apiResponse['NameEn'] : null;
-        $this->descriptionRu = isset($apiResponse['DescriptionRu']) ? (string) $apiResponse['DescriptionRu'] : null;
-        $this->descriptionEn = isset($apiResponse['DescriptionEn']) ? (string) $apiResponse['DescriptionEn'] : null;
-        $this->image = isset($apiResponse['Image']) ? (string) $apiResponse['Image'] : null;
-        $this->energy = isset($apiResponse['Energy']) ? (int) $apiResponse['Energy'] : null;
-        $this->carbohydrate = isset($apiResponse['Carbohydrate']) ? (float) $apiResponse['Carbohydrate'] : null;
-        $this->fat = isset($apiResponse['Fat']) ? (float) $apiResponse['Fat'] : null;
-        $this->fiber = isset($apiResponse['Fiber']) ? (float) $apiResponse['Fiber'] : null;
-        $this->size = (float) ($apiResponse['Size'] ?? null);
-        $this->units = (string) ($apiResponse['Units'] ?? null);
-        $this->price = (int) ($apiResponse['Price'] ?? null);
-        $this->place = (int) ($apiResponse['Place'] ?? null);
-        $this->majorMultiplier = (int) ($apiResponse['MajorMultiplier'] ?? null);
-        $this->minorMultiplier = (int) ($apiResponse['MinorMultiplier'] ?? null);
-        $this->promoCode = isset($apiResponse['PromoCode']) ? (string) $apiResponse['PromoCode'] : null;
-        $this->promoTitle = isset($apiResponse['PromoTitle']) ? (string) $apiResponse['PromoTitle'] : null;
-        $this->promoDesc = isset($apiResponse['PromoDesc']) ? (string) $apiResponse['PromoDesc'] : null;
-        $this->promoCondition = isset($apiResponse['PromoCondition']) ? (bool) $apiResponse['PromoCondition'] : null;
-        $this->notInPlazius = (bool) ($apiResponse['NotInPlazius'] ?? null);
-        $this->visible = (bool) ($apiResponse['Visible'] ?? null);
-        $this->stop = (bool) ($apiResponse['Stop'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->id = (int) ($apiResponse['id'] ?? null);
+        $this->iikoid = isset($apiResponse['iikoid']) ? (string) $apiResponse['iikoid'] : null;
+        $this->groupId = (int) ($apiResponse['groupid'] ?? null);
+        $this->type = (string) ($apiResponse['type'] ?? null);
+        $this->shopType = (string) ($apiResponse['shoptype'] ?? null);
+        $this->nameRu = (string) ($apiResponse['nameru'] ?? null);
+        $this->nameEn = isset($apiResponse['nameen']) ? (string) $apiResponse['nameen'] : null;
+        $this->descriptionRu = isset($apiResponse['descriptionru']) ? (string) $apiResponse['descriptionru'] : null;
+        $this->descriptionEn = isset($apiResponse['descriptionen']) ? (string) $apiResponse['descriptionen'] : null;
+        $this->image = isset($apiResponse['image']) ? (string) $apiResponse['image'] : null;
+        $this->energy = isset($apiResponse['energy']) ? (int) $apiResponse['energy'] : null;
+        $this->carbohydrate = isset($apiResponse['carbohydrate']) ? (float) $apiResponse['carbohydrate'] : null;
+        $this->fat = isset($apiResponse['fat']) ? (float) $apiResponse['fat'] : null;
+        $this->fiber = isset($apiResponse['fiber']) ? (float) $apiResponse['fiber'] : null;
+        $this->size = (float) ($apiResponse['size'] ?? null);
+        $this->units = (string) ($apiResponse['units'] ?? null);
+        $this->price = (int) ($apiResponse['price'] ?? null);
+        $this->place = (int) ($apiResponse['place'] ?? null);
+        $this->majorMultiplier = (int) ($apiResponse['majormultiplier'] ?? null);
+        $this->minorMultiplier = (int) ($apiResponse['minormultiplier'] ?? null);
+        $this->promoCode = isset($apiResponse['promocode']) ? (string) $apiResponse['promocode'] : null;
+        $this->promoTitle = isset($apiResponse['promotitle']) ? (string) $apiResponse['promotitle'] : null;
+        $this->promoDesc = isset($apiResponse['promodesc']) ? (string) $apiResponse['promodesc'] : null;
+        $this->promoCondition = isset($apiResponse['promocondition']) ? (bool) $apiResponse['promocondition'] : null;
+        $this->notInPlazius = (bool) ($apiResponse['notinplazius'] ?? null);
+        $this->visible = (bool) ($apiResponse['visible'] ?? null);
+        $this->stop = (bool) ($apiResponse['stop'] ?? null);
         $this->stopShops = [];
-        foreach (($apiResponse['StopShops'] ?? []) as $tmpItem) {
+        foreach (($apiResponse['stopshops'] ?? []) as $tmpItem) {
             $this->stopShops[] = (int) $tmpItem;
         }
         $this->mods = [];
         foreach (($apiResponse['mods'] ?? []) as $tmpItem) {
             $this->mods[] = new GroupModifier(\is_array($tmpItem) ? $tmpItem : []);
         }
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'IIKOID' => $this->iikoid,
+            'GroupID' => $this->groupId,
+            'Type' => $this->type,
+            'ShopType' => $this->shopType,
+            'NameRu' => $this->nameRu,
+            'NameEn' => $this->nameEn,
+            'DescriptionRu' => $this->descriptionRu,
+            'DescriptionEn' => $this->descriptionEn,
+            'Image' => $this->image,
+            'Energy' => $this->energy,
+            'Carbohydrate' => $this->carbohydrate,
+            'Fat' => $this->fat,
+            'Fiber' => $this->fiber,
+            'Size' => $this->size,
+            'Units' => $this->units,
+            'Price' => $this->price,
+            'Place' => $this->place,
+            'MajorMultiplier' => $this->majorMultiplier,
+            'MinorMultiplier' => $this->minorMultiplier,
+            'PromoCode' => $this->promoCode,
+            'PromoTitle' => $this->promoTitle,
+            'PromoDesc' => $this->promoDesc,
+            'PromoCondition' => $this->promoCondition,
+            'NotInPlazius' => $this->notInPlazius,
+            'Visible' => $this->visible,
+            'Stop' => $this->stop,
+            'StopShops' => $this->stopShops,
+            'mods' => array_map(fn (GroupModifier $item): array => $item->jsonSerialize(), $this->mods),
+        ];
     }
 }

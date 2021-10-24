@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class GroupModifier
+use JsonSerializable;
+
+class GroupModifier implements JsonSerializable
 {
     /** Id группы группового модификатора */
     private int $groupId;
@@ -32,8 +34,19 @@ class GroupModifier
 
     public function __construct(array $apiResponse)
     {
-        $this->groupId = (int) ($apiResponse['GroupID'] ?? null);
-        $this->min = (int) ($apiResponse['Min'] ?? null);
-        $this->max = (int) ($apiResponse['Max'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->groupId = (int) ($apiResponse['groupid'] ?? null);
+        $this->min = (int) ($apiResponse['min'] ?? null);
+        $this->max = (int) ($apiResponse['max'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'GroupID' => $this->groupId,
+            'Min' => $this->min,
+            'Max' => $this->max,
+        ];
     }
 }

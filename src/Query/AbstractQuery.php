@@ -23,7 +23,41 @@ class AbstractQuery implements Query
      */
     protected function add(string $name, $value): self
     {
-        $this->params[trim($name)] = $value;
+        $this->params[$this->unifyParamName($name)] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Add new value to array with set name.
+     *
+     * @param string $name
+     * @param mixed  $value
+     *
+     * @return $this
+     */
+    protected function addToArray(string $name, $value): self
+    {
+        $name = $this->unifyParamName($name);
+        if (!isset($this->params[$name])) {
+            $this->params[$name] = [];
+        }
+
+        $this->params[$name][] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Reset params with new array of params.
+     *
+     * @param array $newParams
+     *
+     * @return $this
+     */
+    protected function resetParams(array $newParams): self
+    {
+        $this->params = $newParams;
 
         return $this;
     }
@@ -44,5 +78,17 @@ class AbstractQuery implements Query
     public static function new(): self
     {
         return new static();
+    }
+
+    /**
+     * Convert param name to unified form.
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    private function unifyParamName(string $name): string
+    {
+        return trim($name);
     }
 }

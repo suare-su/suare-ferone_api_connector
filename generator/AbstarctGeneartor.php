@@ -33,10 +33,13 @@ abstract class AbstarctGeneartor
 
     protected array $allowedEntites;
 
-    public function __construct(FileSystemHelperInterface $fs, array $allowedEntites = [])
+    protected array $allowedSetters;
+
+    public function __construct(FileSystemHelperInterface $fs, array $allowedEntites = [], array $allowedSetters = [])
     {
         $this->fs = $fs;
         $this->allowedEntites = $allowedEntites;
+        $this->allowedSetters = $allowedSetters;
     }
 
     /**

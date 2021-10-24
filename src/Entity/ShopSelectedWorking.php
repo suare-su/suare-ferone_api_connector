@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ShopSelectedWorking
+use JsonSerializable;
+
+class ShopSelectedWorking implements JsonSerializable
 {
     private string $open;
     private string $close;
@@ -21,7 +23,17 @@ class ShopSelectedWorking
 
     public function __construct(array $apiResponse)
     {
-        $this->open = (string) ($apiResponse['Open'] ?? null);
-        $this->close = (string) ($apiResponse['Close'] ?? null);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->open = (string) ($apiResponse['open'] ?? null);
+        $this->close = (string) ($apiResponse['close'] ?? null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'Open' => $this->open,
+            'Close' => $this->close,
+        ];
     }
 }

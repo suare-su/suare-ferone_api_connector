@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class ClientAddrsAddrs
+use JsonSerializable;
+
+class ClientAddrsAddrs implements JsonSerializable
 {
     /** Id заказа */
     private int $orderId;
@@ -104,17 +106,37 @@ class ClientAddrsAddrs
 
     public function __construct(array $apiResponse)
     {
-        $this->orderId = (int) ($apiResponse['OrderID'] ?? null);
-        $this->kladrStreetId = (string) ($apiResponse['KladrStreetID'] ?? null);
-        $this->city = (string) ($apiResponse['City'] ?? null);
-        $this->street = (string) ($apiResponse['Street'] ?? null);
-        $this->house = (string) ($apiResponse['House'] ?? null);
-        $this->apartment = isset($apiResponse['Apartment']) ? (string) $apiResponse['Apartment'] : null;
-        $this->entrance = isset($apiResponse['Entrance']) ? (string) $apiResponse['Entrance'] : null;
-        $this->floor = isset($apiResponse['Floor']) ? (string) $apiResponse['Floor'] : null;
-        $this->addr = isset($apiResponse['Addr']) ? (string) $apiResponse['Addr'] : null;
-        $this->addrLat = isset($apiResponse['AddrLat']) ? (float) $apiResponse['AddrLat'] : null;
-        $this->addrLon = isset($apiResponse['AddrLon']) ? (float) $apiResponse['AddrLon'] : null;
-        $this->addrAcc = isset($apiResponse['AddrAcc']) ? (int) $apiResponse['AddrAcc'] : null;
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->orderId = (int) ($apiResponse['orderid'] ?? null);
+        $this->kladrStreetId = (string) ($apiResponse['kladrstreetid'] ?? null);
+        $this->city = (string) ($apiResponse['city'] ?? null);
+        $this->street = (string) ($apiResponse['street'] ?? null);
+        $this->house = (string) ($apiResponse['house'] ?? null);
+        $this->apartment = isset($apiResponse['apartment']) ? (string) $apiResponse['apartment'] : null;
+        $this->entrance = isset($apiResponse['entrance']) ? (string) $apiResponse['entrance'] : null;
+        $this->floor = isset($apiResponse['floor']) ? (string) $apiResponse['floor'] : null;
+        $this->addr = isset($apiResponse['addr']) ? (string) $apiResponse['addr'] : null;
+        $this->addrLat = isset($apiResponse['addrlat']) ? (float) $apiResponse['addrlat'] : null;
+        $this->addrLon = isset($apiResponse['addrlon']) ? (float) $apiResponse['addrlon'] : null;
+        $this->addrAcc = isset($apiResponse['addracc']) ? (int) $apiResponse['addracc'] : null;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'OrderID' => $this->orderId,
+            'KladrStreetID' => $this->kladrStreetId,
+            'City' => $this->city,
+            'Street' => $this->street,
+            'House' => $this->house,
+            'Apartment' => $this->apartment,
+            'Entrance' => $this->entrance,
+            'Floor' => $this->floor,
+            'Addr' => $this->addr,
+            'AddrLat' => $this->addrLat,
+            'AddrLon' => $this->addrLon,
+            'AddrAcc' => $this->addrAcc,
+        ];
     }
 }

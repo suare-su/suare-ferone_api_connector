@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-class Shop
+use JsonSerializable;
+
+class Shop implements JsonSerializable
 {
     public const TYPE_DELIVERY = 'delivery';
     public const TYPE_STORE = 'store';
@@ -163,24 +165,51 @@ class Shop
 
     public function __construct(array $apiResponse)
     {
-        $this->id = (int) ($apiResponse['ID'] ?? null);
-        $this->code = (string) ($apiResponse['Code'] ?? null);
-        $this->prefix = (string) ($apiResponse['Prefix'] ?? null);
-        $this->type = (string) ($apiResponse['Type'] ?? null);
-        $this->name = (string) ($apiResponse['Name'] ?? null);
-        $this->selfService = (bool) ($apiResponse['SelfService'] ?? null);
-        $this->delivery = (bool) ($apiResponse['Delivery'] ?? null);
-        $this->callCenter = (bool) ($apiResponse['CallCenter'] ?? null);
-        $this->phone = (string) ($apiResponse['Phone'] ?? null);
-        $this->cityId = (int) ($apiResponse['CityID'] ?? null);
-        $this->city = (string) ($apiResponse['City'] ?? null);
-        $this->street = (string) ($apiResponse['Street'] ?? null);
-        $this->house = (string) ($apiResponse['House'] ?? null);
-        $this->addr = isset($apiResponse['Addr']) ? (string) $apiResponse['Addr'] : null;
-        $this->addrLat = isset($apiResponse['AddrLat']) ? (float) $apiResponse['AddrLat'] : null;
-        $this->addrLon = isset($apiResponse['AddrLon']) ? (float) $apiResponse['AddrLon'] : null;
-        $this->deliveryZone = isset($apiResponse['DeliveryZone']) ? (string) $apiResponse['DeliveryZone'] : null;
-        $this->active = (bool) ($apiResponse['Active'] ?? null);
-        $this->workingTime = new ShopWorkingTime($apiResponse['WorkingTime'] ?? []);
+        $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
+
+        $this->id = (int) ($apiResponse['id'] ?? null);
+        $this->code = (string) ($apiResponse['code'] ?? null);
+        $this->prefix = (string) ($apiResponse['prefix'] ?? null);
+        $this->type = (string) ($apiResponse['type'] ?? null);
+        $this->name = (string) ($apiResponse['name'] ?? null);
+        $this->selfService = (bool) ($apiResponse['selfservice'] ?? null);
+        $this->delivery = (bool) ($apiResponse['delivery'] ?? null);
+        $this->callCenter = (bool) ($apiResponse['callcenter'] ?? null);
+        $this->phone = (string) ($apiResponse['phone'] ?? null);
+        $this->cityId = (int) ($apiResponse['cityid'] ?? null);
+        $this->city = (string) ($apiResponse['city'] ?? null);
+        $this->street = (string) ($apiResponse['street'] ?? null);
+        $this->house = (string) ($apiResponse['house'] ?? null);
+        $this->addr = isset($apiResponse['addr']) ? (string) $apiResponse['addr'] : null;
+        $this->addrLat = isset($apiResponse['addrlat']) ? (float) $apiResponse['addrlat'] : null;
+        $this->addrLon = isset($apiResponse['addrlon']) ? (float) $apiResponse['addrlon'] : null;
+        $this->deliveryZone = isset($apiResponse['deliveryzone']) ? (string) $apiResponse['deliveryzone'] : null;
+        $this->active = (bool) ($apiResponse['active'] ?? null);
+        $this->workingTime = new ShopWorkingTime($apiResponse['workingtime'] ?? []);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'ID' => $this->id,
+            'Code' => $this->code,
+            'Prefix' => $this->prefix,
+            'Type' => $this->type,
+            'Name' => $this->name,
+            'SelfService' => $this->selfService,
+            'Delivery' => $this->delivery,
+            'CallCenter' => $this->callCenter,
+            'Phone' => $this->phone,
+            'CityID' => $this->cityId,
+            'City' => $this->city,
+            'Street' => $this->street,
+            'House' => $this->house,
+            'Addr' => $this->addr,
+            'AddrLat' => $this->addrLat,
+            'AddrLon' => $this->addrLon,
+            'DeliveryZone' => $this->deliveryZone,
+            'Active' => $this->active,
+            'WorkingTime' => $this->workingTime->jsonSerialize(),
+        ];
     }
 }
