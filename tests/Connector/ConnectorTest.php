@@ -1137,6 +1137,28 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testGetOrderFinalInfo(): void
+    {
+        $orderId = 12;
+
+        $transport = $this->createTransportMock(
+            'GetOrderFinalInfo',
+            [
+                'OrderID' => $orderId,
+            ],
+            [
+                'ID' => $orderId,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($orderId, $connector->getOrderFinalInfo($orderId)->getId());
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method

@@ -66,6 +66,7 @@ $entitiesGenerator = new EntitesGenerator(
         'FindHousesResponse',
         'ClientAddrs',
         'ShopSelected',
+        'OrderFinal',
     ]
 );
 $entitiesGenerator->generate(

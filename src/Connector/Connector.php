@@ -13,6 +13,7 @@ use SuareSu\FeroneApiConnector\Entity\FindHousesResponse;
 use SuareSu\FeroneApiConnector\Entity\FindStreetsResponse;
 use SuareSu\FeroneApiConnector\Entity\MenuItem;
 use SuareSu\FeroneApiConnector\Entity\Order;
+use SuareSu\FeroneApiConnector\Entity\OrderFinal;
 use SuareSu\FeroneApiConnector\Entity\OrderStatus;
 use SuareSu\FeroneApiConnector\Entity\Review;
 use SuareSu\FeroneApiConnector\Entity\ReviewQuestion;
@@ -831,6 +832,28 @@ class Connector
         }
 
         return true;
+    }
+
+    /**
+     * GetOrderFinalInfo method implementation.
+     *
+     * @param int $orderId
+     *
+     * @return OrderFinal
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getOrderFinalInfo(int $orderId): OrderFinal
+    {
+        $response = $this->sendRequestInternal(
+            'GetOrderFinalInfo',
+            [
+                'OrderID' => $orderId,
+            ]
+        );
+
+        return new OrderFinal($response->getData());
     }
 
     /**
