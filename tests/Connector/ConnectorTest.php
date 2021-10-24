@@ -6,6 +6,7 @@ namespace SuareSu\FeroneApiConnector\Tests\Connector;
 
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Connector\Connector;
+use SuareSu\FeroneApiConnector\Entity\OrderListItem;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Query\AcceptOrderQuery;
 use SuareSu\FeroneApiConnector\Query\AddReviewQuestionsQuery;
@@ -18,6 +19,7 @@ use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientReviewsListQuery;
+use SuareSu\FeroneApiConnector\Query\CreateOrderQuery;
 use SuareSu\FeroneApiConnector\Query\MenuQuery;
 use SuareSu\FeroneApiConnector\Query\OrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\ReviewsListQuery;
@@ -1242,6 +1244,49 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testCreateOrder(): void
+    {
+        $cityId = 123;
+        $total = 456.0;
+        $source = ['key' => 'value'];
+        $listItem = $this->getMockBuilder(OrderListItem::class)->getMock();
+        $listItem1 = $this->getMockBuilder(OrderListItem::class)->getMock();
+        $query = CreateOrderQuery::new()
+            ->setCityId($cityId)
+            ->setTotal($total)
+            ->setSource($source)
+            ->setList(
+                [
+                    $listItem,
+                    $listItem1,
+                ]
+            );
+        $orderId = 12;
+
+        $transport = $this->createTransportMock(
+            'CreateOrder',
+            [
+                'CityID' => $cityId,
+                'Total' => $total,
+                'Source' => json_encode($source),
+                'List' => [
+                    $listItem,
+                    $listItem1,
+                ],
+            ],
+            [
+                'ID' => $orderId,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($orderId, $connector->createOrder($query));
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method
@@ -1261,7 +1306,10 @@ class ConnectorTest extends BaseTestCase
             $sendRequestMethod->willReturnCallback(
                 function (TransportRequest $request) use ($method, $params, $result): TransportResponse {
                     if ($request->getMethod() !== $method || $request->getParams() !== $params) {
-                        throw new ApiException("Mock for this request isn't found");
+                        $message = "Mock for this request isn't found.";
+                        $message .= " Have {$method} - " . json_encode($params) . '.';
+                        $message .= " Got {$request->getMethod()} - " . json_encode($request->getParams());
+                        throw new ApiException($message);
                     }
 
                     $response = $this->getMockBuilder(TransportResponse::class)->disableOriginalConstructor()->getMock();

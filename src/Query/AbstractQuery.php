@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Query;
 
-use InvalidArgumentException;
-
 /**
  * Object that represents params for method in connector.
  *
@@ -43,9 +41,6 @@ class AbstractQuery implements Query
         $name = $this->unifyParamName($name);
         if (!isset($this->params[$name])) {
             $this->params[$name] = [];
-        } elseif (!\is_array($this->params[$name])) {
-            $message = "Param {$name} is not an array";
-            throw new InvalidArgumentException($message);
         }
 
         $this->params[$name][] = $value;

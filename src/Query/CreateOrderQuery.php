@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Query;
 
+use SuareSu\FeroneApiConnector\Entity\OrderListItem;
+
 /**
  * Query object for CreateOrder.
  */
@@ -12,6 +14,7 @@ class CreateOrderQuery extends AbstractQuery
     public const PARAM_CITY_ID = 'CityID';
     public const PARAM_TOTAL = 'Total';
     public const PARAM_SOURCE = 'Source';
+    public const PARAM_LIST = 'List';
 
     /**
      * Set CityID parameter.
@@ -51,5 +54,33 @@ class CreateOrderQuery extends AbstractQuery
         }
 
         return $this->add(self::PARAM_SOURCE, $value);
+    }
+
+    /**
+     * Set List parameter.
+     *
+     * @param OrderListItem[] $value
+     *
+     * @return $this
+     */
+    public function setList(array $value): self
+    {
+        foreach ($value as $item) {
+            $this->addListItem($item);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add item to List parameter.
+     *
+     * @param OrderListItem $value
+     *
+     * @return $this
+     */
+    public function addListItem(OrderListItem $value): self
+    {
+        return $this->addToArray(self::PARAM_LIST, $value);
     }
 }

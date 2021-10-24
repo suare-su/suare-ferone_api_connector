@@ -54,6 +54,7 @@ class EntitesGenerator extends AbstarctGeneartor
         $jsonSerializeBody = '';
         $requiredProperties = (array) ($description['required'] ?? []);
         $properties = (array) ($description['properties'] ?? []);
+        $allowSetters = \in_array($className, $this->allowedSetters);
 
         foreach ($properties as $propertyName => $propertyDescription) {
             if ($propertyDescription['type'] === self::TYPE_OBJECT) {
@@ -129,6 +130,22 @@ class EntitesGenerator extends AbstarctGeneartor
                 $getter->addComment("@return {$type['phpDoc']}");
             }
 
+            if ($allowSetters) {
+                $setterName = $this->unifySetterName($unifiedPropertyName);
+                $setter = $class->addMethod($setterName)
+                    ->setVisibility('public')
+                    ->setReturnType('self')
+                    ->addBody("\$this->{$unifiedPropertyName} = \$value;\n\nreturn \$this;")
+                ;
+                $param = $setter->addParameter('value')->setType($type['php']);
+                if (!$isRequired) {
+                    $param->setNullable();
+                }
+                if (!empty($type['phpDoc'])) {
+                    $setter->addComment("@param {$type['phpDoc']} \$value");
+                }
+            }
+
             $lcName = strtolower($propertyName);
             if ($type['isPrimitive']) {
                 $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName},\n";
@@ -168,12 +185,11 @@ class EntitesGenerator extends AbstarctGeneartor
             }
         }
 
-        $class->addMethod('__construct')
-            ->setVisibility('public')
-            ->addBody(trim($constructorBody))
-            ->addParameter('apiResponse')
-            ->setType('array')
-        ;
+        $constructor = $class->addMethod('__construct')->setVisibility('public')->addBody(trim($constructorBody));
+        $constructParam = $constructor->addParameter('apiResponse')->setType('array');
+        if ($allowSetters) {
+            $constructParam->setDefaultValue([]);
+        }
 
         $class->addMethod('jsonSerialize')
             ->setVisibility('public')

@@ -67,6 +67,12 @@ $entitiesGenerator = new EntitesGenerator(
         'ClientAddrs',
         'ShopSelected',
         'OrderFinal',
+        'OrderListItem',
+        'OrderListItemMod',
+    ],
+    [
+        'OrderListItem',
+        'OrderListItemMod',
     ]
 );
 $entitiesGenerator->generate(
