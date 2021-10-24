@@ -772,6 +772,30 @@ class Connector
     }
 
     /**
+     * GetBaseShop method implementation.
+     *
+     * @param int    $cityId
+     * @param string $address
+     *
+     * @return int
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getBaseShop(int $cityId, string $address): int
+    {
+        $response = $this->sendRequestInternal(
+            'GetBaseShop',
+            [
+                'CityID' => $cityId,
+                'Address' => $address,
+            ]
+        );
+
+        return (int) ($response->getData()['ShopID'] ?? 0);
+    }
+
+    /**
      * Create and send request using transport.
      *
      * @param string      $method

@@ -229,7 +229,7 @@ class TransportTest extends BaseTestCase
         $requestFactory->method('createRequest')->willReturn($request);
 
         $streamResponse = $this->getMockBuilder(StreamInterface::class)->getMock();
-        $streamResponse->method('__toString')->willReturn('{"error": 1, "errorDescription": "error"}');
+        $streamResponse->method('__toString')->willReturn('{"error": 12, "errorDescription": "error"}');
         $response = $this->getMockBuilder(ResponseInterface::class)->getMock();
         $response->method('getBody')->willReturn($streamResponse);
         $response->method('getStatusCode')->willReturn(200);
@@ -240,6 +240,7 @@ class TransportTest extends BaseTestCase
         $transport = new Transport($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(ApiException::class);
+        $this->expectExceptionCode(12);
         $transport->sendRequest($transportRequest);
     }
 }

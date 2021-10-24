@@ -1007,6 +1007,30 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testGetBaseShop(): void
+    {
+        $cityId = 12;
+        $address = 'test';
+        $shopId = 123;
+        $transport = $this->createTransportMock(
+            'GetBaseShop',
+            [
+                'CityID' => $cityId,
+                'Address' => $address,
+            ],
+            [
+                'ShopID' => $shopId,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($shopId, $connector->getBaseShop($cityId, $address));
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method

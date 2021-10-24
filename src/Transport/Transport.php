@@ -111,7 +111,10 @@ class Transport
         $feroneResponse = new TransportResponse($jsonPayload);
 
         if ($feroneResponse->hasError()) {
-            throw new ApiException($this->createApiErrorMessage($feroneResponse));
+            throw new ApiException(
+                $this->createApiErrorMessage($feroneResponse),
+                $feroneResponse->getError()
+            );
         }
 
         return $feroneResponse;
