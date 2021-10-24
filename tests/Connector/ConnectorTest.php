@@ -959,6 +959,28 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testGetClientLastAddr(): void
+    {
+        $phone = '79999999999';
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'GetClientLastAddr',
+            [
+                'Phone' => $phone,
+            ],
+            [
+                'Address' => $address,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($address, $connector->getClientLastAddr($phone));
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method

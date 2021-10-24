@@ -729,6 +729,30 @@ class Connector
     }
 
     /**
+     * GetClientLastAddr method implementation.
+     *
+     * @param string $phone
+     *
+     * @return string
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function getClientLastAddr(string $phone): string
+    {
+        $response = $this->sendRequestInternal(
+            'GetClientLastAddr',
+            [
+                'Phone' => $phone,
+            ]
+        );
+
+        $data = $response->getData();
+
+        return (string) ($data['Address'] ?? '');
+    }
+
+    /**
      * Create and send request using transport.
      *
      * @param string      $method
