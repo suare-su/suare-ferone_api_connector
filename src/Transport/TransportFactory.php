@@ -7,6 +7,7 @@ namespace SuareSu\FeroneApiConnector\Transport;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Factory object that can create a transport object using different clients.
@@ -18,6 +19,8 @@ class TransportFactory
     private string $url = '';
 
     private string $authKey = '';
+
+    private ?LoggerInterface $logger = null;
 
     /**
      * Create and return new instance of fabric.
@@ -58,6 +61,20 @@ class TransportFactory
     }
 
     /**
+     * Set logger object transport object that will be created.
+     *
+     * @param LoggerInterface|null $logger
+     *
+     * @return $this
+     */
+    public function setLogger(?LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    /**
      * Create new transport based on guzzle http client.
      *
      * @param Client $client
@@ -71,6 +88,12 @@ class TransportFactory
         $config = new TransportConfig($this->url, $this->authKey);
         $factory = new HttpFactory();
 
-        return new Transport($config, $client, $factory, $factory);
+        return new Transport(
+            $config,
+            $client,
+            $factory,
+            $factory,
+            $this->logger
+        );
     }
 }

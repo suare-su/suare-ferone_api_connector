@@ -9,6 +9,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Log\LoggerInterface;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
 use Throwable;
@@ -35,16 +36,20 @@ class Transport
 
     private StreamFactoryInterface $streamFactory;
 
+    private ?LoggerInterface $logger;
+
     public function __construct(
         TransportConfig $config,
         ClientInterface $client,
         RequestFactoryInterface $requestFactory,
-        StreamFactoryInterface $streamFactory
+        StreamFactoryInterface $streamFactory,
+        ?LoggerInterface $logger = null
     ) {
         $this->config = $config;
         $this->client = $client;
         $this->requestFactory = $requestFactory;
         $this->streamFactory = $streamFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -73,6 +78,17 @@ class Transport
      */
     private function sendRequestInternal(TransportRequest $request): ResponseInterface
     {
+        if ($this->logger) {
+            $this->logger->debug(
+                'Sending a new request to Ferone',
+                [
+                    'url' => $this->config->getUrl(),
+                    'method' => $request->getMethod(),
+                    'params' => $request->getParams(),
+                ]
+            );
+        }
+
         try {
             $payload = $this->createPayloadStream($request);
             $psrRequest = $this->requestFactory
@@ -97,6 +113,19 @@ class Transport
     private function parseResponse(ResponseInterface $response): TransportResponse
     {
         $statusCode = $response->getStatusCode();
+        $body = (string) $response->getBody();
+
+        if ($this->logger) {
+            $this->logger->debug(
+                'Request to Ferone is completed',
+                [
+                    'url' => $this->config->getUrl(),
+                    'status' => $statusCode,
+                    'body' => $body,
+                ]
+            );
+        }
+
         if ($statusCode < 200 || $statusCode > 300) {
             throw new ApiException(
                 $this->createBadStatusCodeMessage($statusCode)
@@ -104,8 +133,7 @@ class Transport
         }
 
         try {
-            $stringPayload = (string) $response->getBody();
-            $jsonPayload = json_decode($stringPayload, true, 512, \JSON_THROW_ON_ERROR);
+            $jsonPayload = json_decode($body, true, 512, \JSON_THROW_ON_ERROR);
         } catch (Throwable $e) {
             throw new TransportException($e->getMessage(), 0, $e);
         }
