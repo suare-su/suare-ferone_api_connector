@@ -199,6 +199,7 @@ class TransportTest extends BaseTestCase
         $transport = new Transport($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(ApiException::class);
+        $this->expectExceptionCode(0);
         $transport->sendRequest($transportRequest);
     }
 

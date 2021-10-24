@@ -98,7 +98,9 @@ class Transport
     {
         $statusCode = $response->getStatusCode();
         if ($statusCode < 200 || $statusCode > 300) {
-            throw new ApiException($this->createBadStatusCodeMessage($statusCode));
+            throw new ApiException(
+                $this->createBadStatusCodeMessage($statusCode)
+            );
         }
 
         try {

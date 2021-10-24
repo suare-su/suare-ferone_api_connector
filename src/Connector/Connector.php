@@ -777,22 +777,60 @@ class Connector
      * @param int    $cityId
      * @param string $address
      *
-     * @return int
+     * @return int|null
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function getBaseShop(int $cityId, string $address): int
+    public function getBaseShop(int $cityId, string $address): ?int
     {
-        $response = $this->sendRequestInternal(
-            'GetBaseShop',
-            [
-                'CityID' => $cityId,
-                'Address' => $address,
-            ]
-        );
+        try {
+            $response = $this->sendRequestInternal(
+                'GetBaseShop',
+                [
+                    'CityID' => $cityId,
+                    'Address' => $address,
+                ]
+            );
+        } catch (ApiException $e) {
+            if ($e->getCode() === 70) {
+                return null;
+            }
+            throw $e;
+        }
 
         return (int) ($response->getData()['ShopID'] ?? 0);
+    }
+
+    /**
+     * CheckAddressInZones method implementation.
+     *
+     * @param int    $orderId
+     * @param string $address
+     *
+     * @return bool
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function checkAddressInZones(int $orderId, string $address): bool
+    {
+        try {
+            $this->sendRequestInternal(
+                'CheckAddressInZones',
+                [
+                    'OrderID' => $orderId,
+                    'Address' => $address,
+                ]
+            );
+        } catch (ApiException $e) {
+            if ($e->getCode() === 70) {
+                return false;
+            }
+            throw $e;
+        }
+
+        return true;
     }
 
     /**

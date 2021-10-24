@@ -1031,6 +1031,112 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testGetBaseShop70Exception(): void
+    {
+        $cityId = 12;
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'GetBaseShop',
+            [
+                'CityID' => $cityId,
+                'Address' => $address,
+            ],
+            new ApiException('test', 70)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertNull($connector->getBaseShop($cityId, $address));
+    }
+
+    /**
+     * @test
+     */
+    public function testGetBaseShopNon70Exception(): void
+    {
+        $cityId = 12;
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'GetBaseShop',
+            [
+                'CityID' => $cityId,
+                'Address' => $address,
+            ],
+            new ApiException('test', 321)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->expectException(ApiException::class);
+        $connector->getBaseShop($cityId, $address);
+    }
+
+    /**
+     * @test
+     */
+    public function testCheckAddressInZones(): void
+    {
+        $orderId = 12;
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'CheckAddressInZones',
+            [
+                'OrderID' => $orderId,
+                'Address' => $address,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertTrue($connector->checkAddressInZones($orderId, $address));
+    }
+
+    /**
+     * @test
+     */
+    public function testCheckAddressInZonesCode70Exception(): void
+    {
+        $orderId = 12;
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'CheckAddressInZones',
+            [
+                'OrderID' => $orderId,
+                'Address' => $address,
+            ],
+            new ApiException('test', 70)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertFalse($connector->checkAddressInZones($orderId, $address));
+    }
+
+    /**
+     * @test
+     */
+    public function testCheckAddressInZonesCodeNon70Exception(): void
+    {
+        $orderId = 12;
+        $address = 'test';
+        $transport = $this->createTransportMock(
+            'CheckAddressInZones',
+            [
+                'OrderID' => $orderId,
+                'Address' => $address,
+            ],
+            new ApiException('test', 123)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->expectException(ApiException::class);
+        $connector->checkAddressInZones($orderId, $address);
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string          $method
