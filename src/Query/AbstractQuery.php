@@ -49,6 +49,20 @@ class AbstractQuery implements Query
     }
 
     /**
+     * Reset params with new array of params.
+     *
+     * @param array $newParams
+     *
+     * @return $this
+     */
+    protected function resetParams(array $newParams): self
+    {
+        $this->params = $newParams;
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getParams(): array

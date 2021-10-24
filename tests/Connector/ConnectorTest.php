@@ -6,12 +6,14 @@ namespace SuareSu\FeroneApiConnector\Tests\Connector;
 
 use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Connector\Connector;
+use SuareSu\FeroneApiConnector\Entity\BindClientIdShopId;
 use SuareSu\FeroneApiConnector\Entity\OrderListItem;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Query\AcceptOrderQuery;
 use SuareSu\FeroneApiConnector\Query\AddReviewQuestionsQuery;
 use SuareSu\FeroneApiConnector\Query\AddReviewRatingQuery;
 use SuareSu\FeroneApiConnector\Query\BaseShopQuery;
+use SuareSu\FeroneApiConnector\Query\BindClientQuery;
 use SuareSu\FeroneApiConnector\Query\BonusPayOrderQuery;
 use SuareSu\FeroneApiConnector\Query\CheckAddressInZonesQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
@@ -1284,6 +1286,31 @@ class ConnectorTest extends BaseTestCase
         $connector = new Connector($transport);
 
         $this->assertSame($orderId, $connector->createOrder($query));
+    }
+
+    /**
+     * @test
+     */
+    public function testBindClient(): void
+    {
+        $bindInfoArray = ['key' => 'value'];
+        $bindInfo = $this->getMockBuilder(BindClientIdShopId::class)->getMock();
+        $bindInfo->method('jsonSerialize')->willReturn($bindInfoArray);
+        $query = BindClientQuery::new()->setBindInfo($bindInfo);
+
+        $orderId = 12;
+
+        $transport = $this->createTransportMock(
+            'BindClient',
+            $bindInfoArray,
+            [
+                'OrderID' => $orderId,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame($orderId, $connector->bindClient($query)->getOrderId());
     }
 
     /**

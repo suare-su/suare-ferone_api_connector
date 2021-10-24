@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SuareSu\FeroneApiConnector\Connector;
 
 use DateTimeImmutable;
+use SuareSu\FeroneApiConnector\Entity\BindedClient;
 use SuareSu\FeroneApiConnector\Entity\City;
 use SuareSu\FeroneApiConnector\Entity\Client;
 use SuareSu\FeroneApiConnector\Entity\ClientAddrs;
@@ -24,6 +25,7 @@ use SuareSu\FeroneApiConnector\Query\AcceptOrderQuery;
 use SuareSu\FeroneApiConnector\Query\AddReviewQuestionsQuery;
 use SuareSu\FeroneApiConnector\Query\AddReviewRatingQuery;
 use SuareSu\FeroneApiConnector\Query\BaseShopQuery;
+use SuareSu\FeroneApiConnector\Query\BindClientQuery;
 use SuareSu\FeroneApiConnector\Query\BonusPayOrderQuery;
 use SuareSu\FeroneApiConnector\Query\CheckAddressInZonesQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
@@ -819,6 +821,23 @@ class Connector
         $data = $this->sendRequestInternal('CreateOrder', $query)->getData();
 
         return (int) ($data['ID'] ?? 0);
+    }
+
+    /**
+     * CreateOrder method implementation.
+     *
+     * @param BindClientQuery $query
+     *
+     * @return BindedClient
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function bindClient(BindClientQuery $query): BindedClient
+    {
+        $data = $this->sendRequestInternal('BindClient', $query)->getData();
+
+        return new BindedClient($data);
     }
 
     /**
