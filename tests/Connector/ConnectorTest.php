@@ -8,6 +8,11 @@ use DateTimeImmutable;
 use SuareSu\FeroneApiConnector\Connector\Connector;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Query\AcceptOrderQuery;
+use SuareSu\FeroneApiConnector\Query\AddReviewQuestionsQuery;
+use SuareSu\FeroneApiConnector\Query\AddReviewRatingQuery;
+use SuareSu\FeroneApiConnector\Query\BaseShopQuery;
+use SuareSu\FeroneApiConnector\Query\BonusPayOrderQuery;
+use SuareSu\FeroneApiConnector\Query\CheckAddressInZonesQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
@@ -16,6 +21,8 @@ use SuareSu\FeroneApiConnector\Query\ClientReviewsListQuery;
 use SuareSu\FeroneApiConnector\Query\MenuQuery;
 use SuareSu\FeroneApiConnector\Query\OrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\ReviewsListQuery;
+use SuareSu\FeroneApiConnector\Query\SendSmsQuery;
+use SuareSu\FeroneApiConnector\Query\UpdateClientInfoQuery;
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
@@ -104,6 +111,7 @@ class ConnectorTest extends BaseTestCase
     {
         $phoneNumber = '79999999999';
         $message = 'test';
+        $query = SendSmsQuery::new()->setPhone($phoneNumber)->setMessage($message);
         $transport = $this->createTransportMock(
             'SendSMS',
             [
@@ -113,8 +121,7 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-
-        $connector->sendSMS($phoneNumber, $message);
+        $connector->sendSMS($query);
     }
 
     /**
@@ -419,6 +426,7 @@ class ConnectorTest extends BaseTestCase
         $clientId = 234;
         $name = 'test';
         $birth = '0404';
+        $query = UpdateClientInfoQuery::new()->setClientId($clientId)->setName($name)->setBirth($birth);
         $transport = $this->createTransportMock(
             'UpdateClientInfo',
             [
@@ -430,7 +438,7 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-        $connector->updateClientInfo($clientId, $name, $birth);
+        $connector->updateClientInfo($query);
     }
 
     /**
@@ -718,6 +726,11 @@ class ConnectorTest extends BaseTestCase
         $review = 'test';
         $rating = 1;
         $photo = 'test.png';
+        $query = AddReviewRatingQuery::new()
+            ->setOrderId($orderId)
+            ->setReview($review)
+            ->setRating($rating)
+            ->setPhoto($photo);
         $reviewId = 321;
         $transport = $this->createTransportMock(
             'AddReview',
@@ -733,7 +746,7 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-        $testReviewId = $connector->addReviewRating($orderId, $review, $rating, $photo);
+        $testReviewId = $connector->addReviewRating($query);
 
         $this->assertSame($reviewId, $testReviewId);
     }
@@ -748,6 +761,11 @@ class ConnectorTest extends BaseTestCase
         $questionId = 3;
         $rating = 1;
         $photo = 'test.png';
+        $query = AddReviewQuestionsQuery::new()
+            ->setOrderId($orderId)
+            ->setReview($review)
+            ->setQuestions([$questionId => $rating])
+            ->setPhoto($photo);
         $reviewId = 321;
         $transport = $this->createTransportMock(
             'AddReview',
@@ -768,7 +786,7 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-        $testReviewId = $connector->addReviewQuestions($orderId, $review, [$questionId => $rating], $photo);
+        $testReviewId = $connector->addReviewQuestions($query);
 
         $this->assertSame($reviewId, $testReviewId);
     }
@@ -1014,6 +1032,7 @@ class ConnectorTest extends BaseTestCase
     {
         $cityId = 12;
         $address = 'test';
+        $query = BaseShopQuery::new()->setCityId($cityId)->setAddress($address);
         $shopId = 123;
         $transport = $this->createTransportMock(
             'GetBaseShop',
@@ -1028,7 +1047,7 @@ class ConnectorTest extends BaseTestCase
 
         $connector = new Connector($transport);
 
-        $this->assertSame($shopId, $connector->getBaseShop($cityId, $address));
+        $this->assertSame($shopId, $connector->getBaseShop($query));
     }
 
     /**
@@ -1038,6 +1057,7 @@ class ConnectorTest extends BaseTestCase
     {
         $cityId = 12;
         $address = 'test';
+        $query = BaseShopQuery::new()->setCityId($cityId)->setAddress($address);
         $transport = $this->createTransportMock(
             'GetBaseShop',
             [
@@ -1049,7 +1069,7 @@ class ConnectorTest extends BaseTestCase
 
         $connector = new Connector($transport);
 
-        $this->assertNull($connector->getBaseShop($cityId, $address));
+        $this->assertNull($connector->getBaseShop($query));
     }
 
     /**
@@ -1059,6 +1079,7 @@ class ConnectorTest extends BaseTestCase
     {
         $cityId = 12;
         $address = 'test';
+        $query = BaseShopQuery::new()->setCityId($cityId)->setAddress($address);
         $transport = $this->createTransportMock(
             'GetBaseShop',
             [
@@ -1071,7 +1092,7 @@ class ConnectorTest extends BaseTestCase
         $connector = new Connector($transport);
 
         $this->expectException(ApiException::class);
-        $connector->getBaseShop($cityId, $address);
+        $connector->getBaseShop($query);
     }
 
     /**
@@ -1081,6 +1102,7 @@ class ConnectorTest extends BaseTestCase
     {
         $orderId = 12;
         $address = 'test';
+        $query = CheckAddressInZonesQuery::new()->setOrderId($orderId)->setAddress($address);
         $transport = $this->createTransportMock(
             'CheckAddressInZones',
             [
@@ -1091,7 +1113,7 @@ class ConnectorTest extends BaseTestCase
 
         $connector = new Connector($transport);
 
-        $this->assertTrue($connector->checkAddressInZones($orderId, $address));
+        $this->assertTrue($connector->checkAddressInZones($query));
     }
 
     /**
@@ -1101,6 +1123,7 @@ class ConnectorTest extends BaseTestCase
     {
         $orderId = 12;
         $address = 'test';
+        $query = CheckAddressInZonesQuery::new()->setOrderId($orderId)->setAddress($address);
         $transport = $this->createTransportMock(
             'CheckAddressInZones',
             [
@@ -1112,7 +1135,7 @@ class ConnectorTest extends BaseTestCase
 
         $connector = new Connector($transport);
 
-        $this->assertFalse($connector->checkAddressInZones($orderId, $address));
+        $this->assertFalse($connector->checkAddressInZones($query));
     }
 
     /**
@@ -1122,6 +1145,7 @@ class ConnectorTest extends BaseTestCase
     {
         $orderId = 12;
         $address = 'test';
+        $query = CheckAddressInZonesQuery::new()->setOrderId($orderId)->setAddress($address);
         $transport = $this->createTransportMock(
             'CheckAddressInZones',
             [
@@ -1134,7 +1158,7 @@ class ConnectorTest extends BaseTestCase
         $connector = new Connector($transport);
 
         $this->expectException(ApiException::class);
-        $connector->checkAddressInZones($orderId, $address);
+        $connector->checkAddressInZones($query);
     }
 
     /**
@@ -1166,6 +1190,7 @@ class ConnectorTest extends BaseTestCase
     {
         $orderId = 12;
         $bonus = 123;
+        $query = BonusPayOrderQuery::new()->setOrderId($orderId)->setBonus($bonus);
 
         $transport = $this->createTransportMock(
             'BonusPayOrder',
@@ -1176,7 +1201,7 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
-        $connector->bonusPayOrder($orderId, $bonus);
+        $connector->bonusPayOrder($query);
     }
 
     /**
