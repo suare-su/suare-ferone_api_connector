@@ -121,10 +121,10 @@ class Transport
                 "The '{$request->getMethod()}' request to Ferone is completed",
                 [
                     'url' => $this->config->getUrl(),
-                    'status' => $statusCode,
-                    'body' => $body,
                     'method' => $request->getMethod(),
                     'params' => $request->getParams(),
+                    'status' => $statusCode,
+                    'body' => mb_strlen($body) <= 2000 ? $body : mb_substr($body, 0, 2000) . '...',
                 ]
             );
         }
