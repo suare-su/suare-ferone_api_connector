@@ -66,7 +66,7 @@ class Transport
     {
         $response = $this->sendRequestInternal($request);
 
-        return $this->parseResponse($response);
+        return $this->parseResponse($request, $response);
     }
 
     /**
@@ -80,7 +80,7 @@ class Transport
     {
         if ($this->logger) {
             $this->logger->debug(
-                'Sending a new request to Ferone',
+                "Sending a '{$request->getMethod()}' request to Ferone",
                 [
                     'url' => $this->config->getUrl(),
                     'method' => $request->getMethod(),
@@ -106,22 +106,25 @@ class Transport
     /**
      * Parse a response to an array.
      *
+     * @param TransportRequest  $request
      * @param ResponseInterface $response
      *
      * @return TransportResponse
      */
-    private function parseResponse(ResponseInterface $response): TransportResponse
+    private function parseResponse(TransportRequest $request, ResponseInterface $response): TransportResponse
     {
         $statusCode = $response->getStatusCode();
         $body = (string) $response->getBody();
 
         if ($this->logger) {
             $this->logger->debug(
-                'Request to Ferone is completed',
+                "The '{$request->getMethod()}' request to Ferone is completed",
                 [
                     'url' => $this->config->getUrl(),
                     'status' => $statusCode,
                     'body' => $body,
+                    'method' => $request->getMethod(),
+                    'params' => $request->getParams(),
                 ]
             );
         }
