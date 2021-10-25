@@ -88,7 +88,7 @@ class TransportFactory
         $config = new TransportConfig($this->url, $this->authKey);
         $factory = new HttpFactory();
 
-        return new Transport(
+        return new TransportGuzzle(
             $config,
             $client,
             $factory,
