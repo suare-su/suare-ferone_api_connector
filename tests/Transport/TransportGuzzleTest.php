@@ -11,17 +11,18 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Log\LoggerInterface;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
-use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportConfig;
+use SuareSu\FeroneApiConnector\Transport\TransportGuzzle;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 
 /**
  * @internal
  */
-class TransportTest extends BaseTestCase
+class TransportGuzzleTest extends BaseTestCase
 {
     /**
      * @test
@@ -76,7 +77,10 @@ class TransportTest extends BaseTestCase
             ->with($this->identicalTo($request))
             ->willReturn($response);
 
-        $transport = new Transport($config, $client, $requestFactory, $streamFactory);
+        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
+        $logger->expects($this->atLeastOnce())->method('debug');
+
+        $transport = new TransportGuzzle($config, $client, $requestFactory, $streamFactory, $logger);
         $response = $transport->sendRequest($transportRequest);
 
         $this->assertSame($data, $response->getData());
@@ -114,7 +118,7 @@ class TransportTest extends BaseTestCase
             ->with($this->identicalTo($request))
             ->willThrowException(new InvalidArgumentException('test'));
 
-        $transport = new Transport($config, $client, $requestFactory, $streamFactory);
+        $transport = new TransportGuzzle($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(TransportException::class);
         $transport->sendRequest($transportRequest);
@@ -155,7 +159,7 @@ class TransportTest extends BaseTestCase
         $client = $this->getMockBuilder(ClientInterface::class)->getMock();
         $client->method('sendRequest')->willReturn($response);
 
-        $transport = new Transport($config, $client, $requestFactory, $streamFactory);
+        $transport = new TransportGuzzle($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(TransportException::class);
         $transport->sendRequest($transportRequest);
@@ -196,7 +200,7 @@ class TransportTest extends BaseTestCase
         $client = $this->getMockBuilder(ClientInterface::class)->getMock();
         $client->method('sendRequest')->willReturn($response);
 
-        $transport = new Transport($config, $client, $requestFactory, $streamFactory);
+        $transport = new TransportGuzzle($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(0);
@@ -238,7 +242,7 @@ class TransportTest extends BaseTestCase
         $client = $this->getMockBuilder(ClientInterface::class)->getMock();
         $client->method('sendRequest')->willReturn($response);
 
-        $transport = new Transport($config, $client, $requestFactory, $streamFactory);
+        $transport = new TransportGuzzle($config, $client, $requestFactory, $streamFactory);
 
         $this->expectException(ApiException::class);
         $this->expectExceptionCode(12);
