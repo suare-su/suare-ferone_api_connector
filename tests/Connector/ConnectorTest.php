@@ -18,6 +18,7 @@ use SuareSu\FeroneApiConnector\Query\BonusPayOrderQuery;
 use SuareSu\FeroneApiConnector\Query\CheckAddressInZonesQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
+use SuareSu\FeroneApiConnector\Query\ClientInfoQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientReviewsListQuery;
@@ -378,9 +379,10 @@ class ConnectorTest extends BaseTestCase
     /**
      * @test
      */
-    public function testGetClientInfo(): void
+    public function testGetClientInfoId(): void
     {
         $id = 123;
+        $query = ClientInfoQuery::new()->setClientId($id);
         $transport = $this->createTransportMock(
             'GetClientInfo',
             [
@@ -392,8 +394,55 @@ class ConnectorTest extends BaseTestCase
         );
 
         $connector = new Connector($transport);
+        $client = $connector->getClientInfo($query);
 
-        $this->assertSame($id, $connector->getClientInfo($id)->getId());
+        $this->assertNotNull($client);
+        $this->assertSame($id, $client->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetClientInfoPhone(): void
+    {
+        $phone = '79999999999';
+        $id = 123;
+        $query = ClientInfoQuery::new()->setPhone($phone);
+        $transport = $this->createTransportMock(
+            'GetClientInfo',
+            [
+                'Phone' => $phone,
+            ],
+            [
+                'ID' => $id,
+            ]
+        );
+
+        $connector = new Connector($transport);
+        $client = $connector->getClientInfo($query);
+
+        $this->assertNotNull($client);
+        $this->assertSame($id, $client->getId());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetClientInfoNotFound(): void
+    {
+        $id = 123;
+        $query = ClientInfoQuery::new()->setClientId($id);
+        $transport = $this->createTransportMock(
+            'GetClientInfo',
+            [
+                'ClientID' => $id,
+            ],
+            new ApiException('test', 30)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertNull($connector->getClientInfo($query));
     }
 
     /**

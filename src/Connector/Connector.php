@@ -30,6 +30,7 @@ use SuareSu\FeroneApiConnector\Query\BonusPayOrderQuery;
 use SuareSu\FeroneApiConnector\Query\CheckAddressInZonesQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
+use SuareSu\FeroneApiConnector\Query\ClientInfoQuery;
 use SuareSu\FeroneApiConnector\Query\ClientListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientOrdersListQuery;
 use SuareSu\FeroneApiConnector\Query\ClientReviewsListQuery;
@@ -272,21 +273,23 @@ class Connector
     /**
      * GetClientInfo method implementation.
      *
-     * @param int $id
+     * @param ClientInfoQuery $query
      *
-     * @return Client
+     * @return Client|null
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function getClientInfo(int $id): Client
+    public function getClientInfo(ClientInfoQuery $query): ?Client
     {
-        $response = $this->sendRequestInternal(
-            'GetClientInfo',
-            [
-                'ClientID' => $id,
-            ]
-        );
+        try {
+            $response = $this->sendRequestInternal('GetClientInfo', $query);
+        } catch (ApiException $e) {
+            if ($e->getCode() === 30) {
+                return null;
+            }
+            throw $e;
+        }
 
         return new Client($response->getData());
     }
