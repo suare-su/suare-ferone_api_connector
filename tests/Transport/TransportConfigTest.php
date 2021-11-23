@@ -47,4 +47,34 @@ class TransportConfigTest extends BaseTestCase
 
         $this->assertSame($authKey, $config->getAuthKey());
     }
+
+    /**
+     * @test
+     */
+    public function testGetTimeout(): void
+    {
+        $url = 'http://test.ru';
+        $authKey = 'test';
+        $timeout = 123;
+        $retries = 2;
+
+        $config = new TransportConfig($url, $authKey, $timeout, $retries);
+
+        $this->assertSame($timeout, $config->getTimeout());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetRetries(): void
+    {
+        $url = 'http://test.ru';
+        $authKey = 'test';
+        $timeout = 123;
+        $retries = 2;
+
+        $config = new TransportConfig($url, $authKey, $timeout, $retries);
+
+        $this->assertSame($retries, $config->getRetries());
+    }
 }
