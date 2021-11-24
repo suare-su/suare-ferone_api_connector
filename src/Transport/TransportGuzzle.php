@@ -54,12 +54,25 @@ class TransportGuzzle implements Transport
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-suppress PossiblyUndefinedVariable
      */
     public function sendRequest(TransportRequest $request): TransportResponse
     {
-        $response = $this->sendRequestInternal($request);
+        $tries = $this->config->getRetries() ?: 1;
+        for ($i = 1; $i <= $tries; ++$i) {
+            try {
+                $response = $this->sendRequestInternal($request);
+                $parsedResponse = $this->parseResponse($request, $response);
+                break;
+            } catch (TransportException $e) {
+                if ($i === $tries) {
+                    throw $e;
+                }
+            }
+        }
 
-        return $this->parseResponse($request, $response);
+        return $parsedResponse;
     }
 
     /**

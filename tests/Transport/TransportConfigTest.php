@@ -19,7 +19,25 @@ class TransportConfigTest extends BaseTestCase
     public function testContructWrongUrlException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new TransportConfig('test', 'test');
+        new TransportConfig('test', 'test', 10, 10);
+    }
+
+    /**
+     * @test
+     */
+    public function testContructWrongTimeoutException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new TransportConfig('http://test.ru', 'test', 0, 10);
+    }
+
+    /**
+     * @test
+     */
+    public function testContructWrongRetriesException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new TransportConfig('http://test.ru', 'test', 10, 0);
     }
 
     /**
@@ -46,5 +64,35 @@ class TransportConfigTest extends BaseTestCase
         $config = new TransportConfig($url, $authKey);
 
         $this->assertSame($authKey, $config->getAuthKey());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetTimeout(): void
+    {
+        $url = 'http://test.ru';
+        $authKey = 'test';
+        $timeout = 123;
+        $retries = 2;
+
+        $config = new TransportConfig($url, $authKey, $timeout, $retries);
+
+        $this->assertSame($timeout, $config->getTimeout());
+    }
+
+    /**
+     * @test
+     */
+    public function testGetRetries(): void
+    {
+        $url = 'http://test.ru';
+        $authKey = 'test';
+        $timeout = 123;
+        $retries = 2;
+
+        $config = new TransportConfig($url, $authKey, $timeout, $retries);
+
+        $this->assertSame($retries, $config->getRetries());
     }
 }

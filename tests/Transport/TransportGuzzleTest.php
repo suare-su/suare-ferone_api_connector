@@ -127,6 +127,46 @@ class TransportGuzzleTest extends BaseTestCase
     /**
      * @test
      */
+    public function testSendRequestTransportExceptionRetries(): void
+    {
+        $apiUrl = 'http://test.ru/';
+        $authKey = 'auth_key';
+        $retries = 10;
+        $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
+        $config->method('getUrl')->willReturn($apiUrl);
+        $config->method('getAuthKey')->willReturn($authKey);
+        $config->method('getRetries')->willReturn($retries);
+
+        $method = 'api method';
+        $params = ['param_key' => 'param value'];
+        $transportRequest = new TransportRequest($method, $params);
+
+        $streamRequest = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $streamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $streamFactory->method('createStream')->willReturn($streamRequest);
+
+        $request = $this->getMockBuilder(RequestInterface::class)->getMock();
+        $request->method('withBody')->willReturnSelf();
+        $request->method('withHeader')->willReturnSelf();
+
+        $requestFactory = $this->getMockBuilder(RequestFactoryInterface::class)->getMock();
+        $requestFactory->method('createRequest')->willReturn($request);
+
+        $client = $this->getMockBuilder(ClientInterface::class)->getMock();
+        $client->expects($this->exactly($retries))
+            ->method('sendRequest')
+            ->with($this->identicalTo($request))
+            ->willThrowException(new InvalidArgumentException('test'));
+
+        $transport = new TransportGuzzle($config, $client, $requestFactory, $streamFactory);
+
+        $this->expectException(TransportException::class);
+        $transport->sendRequest($transportRequest);
+    }
+
+    /**
+     * @test
+     */
     public function testSendRequestBrokenResonseException(): void
     {
         $apiUrl = 'http://test.ru/';

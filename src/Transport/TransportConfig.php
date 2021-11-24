@@ -15,15 +15,35 @@ class TransportConfig
 
     private string $authKey;
 
-    public function __construct(string $url, string $authKey)
-    {
+    private int $timeout;
+
+    private int $retries;
+
+    public function __construct(
+        string $url,
+        string $authKey,
+        int $timeout = 5,
+        int $retries = 1
+    ) {
         if (!preg_match('#^https?://[^\.]+\.[^\.]+.*#', $url)) {
             $message = sprintf('Correct absolute url is required. Got: %s', $url);
             throw new InvalidArgumentException($message);
         }
 
+        if ($timeout <= 0) {
+            $message = sprintf('Timeout must be more than 0. Got: %s', $timeout);
+            throw new InvalidArgumentException($message);
+        }
+
+        if ($retries <= 0) {
+            $message = sprintf('Retries must be more than 0. Got: %s', $timeout);
+            throw new InvalidArgumentException($message);
+        }
+
         $this->url = trim($url, " \n\r\t\v\0/\\") . '/';
         $this->authKey = $authKey;
+        $this->timeout = $timeout;
+        $this->retries = $retries;
     }
 
     public function getUrl(): string
@@ -34,5 +54,15 @@ class TransportConfig
     public function getAuthKey(): string
     {
         return $this->authKey;
+    }
+
+    public function getTimeout(): int
+    {
+        return $this->timeout;
+    }
+
+    public function getRetries(): int
+    {
+        return $this->retries;
     }
 }
