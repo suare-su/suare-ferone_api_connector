@@ -30,6 +30,16 @@ class TransportConfig
             throw new InvalidArgumentException($message);
         }
 
+        if ($timeout <= 0) {
+            $message = sprintf('Timeout must be more than 0. Got: %s', $timeout);
+            throw new InvalidArgumentException($message);
+        }
+
+        if ($retries <= 0) {
+            $message = sprintf('Retries must be more than 0. Got: %s', $timeout);
+            throw new InvalidArgumentException($message);
+        }
+
         $this->url = trim($url, " \n\r\t\v\0/\\") . '/';
         $this->authKey = $authKey;
         $this->timeout = $timeout;

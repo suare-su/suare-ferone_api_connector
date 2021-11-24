@@ -19,7 +19,25 @@ class TransportConfigTest extends BaseTestCase
     public function testContructWrongUrlException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new TransportConfig('test', 'test');
+        new TransportConfig('test', 'test', 10, 10);
+    }
+
+    /**
+     * @test
+     */
+    public function testContructWrongTimeoutException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new TransportConfig('http://test.ru', 'test', 0, 10);
+    }
+
+    /**
+     * @test
+     */
+    public function testContructWrongRetriesException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new TransportConfig('http://test.ru', 'test', 10, 0);
     }
 
     /**
