@@ -1302,8 +1302,15 @@ class ConnectorTest extends BaseTestCase
         $cityId = 123;
         $total = 456.0;
         $source = ['key' => 'value'];
+
+        $listItemArray = ['test' => 'test value', 'Mods' => []];
         $listItem = $this->getMockBuilder(OrderListItem::class)->getMock();
+        $listItem->method('jsonSerialize')->willReturn($listItemArray);
+
+        $listItemArray1 = ['test1' => 'test value 1', 'Mods' => ['mod' => 'mod value']];
         $listItem1 = $this->getMockBuilder(OrderListItem::class)->getMock();
+        $listItem1->method('jsonSerialize')->willReturn($listItemArray1);
+
         $query = CreateOrderQuery::new()
             ->setCityId($cityId)
             ->setTotal($total)
@@ -1323,8 +1330,8 @@ class ConnectorTest extends BaseTestCase
                 'Total' => $total,
                 'Source' => json_encode($source),
                 'List' => [
-                    $listItem,
-                    $listItem1,
+                    ['test' => 'test value'],
+                    ['test1' => 'test value 1', 'Mods' => ['mod' => 'mod value']],
                 ],
             ],
             [
