@@ -81,6 +81,11 @@ class CreateOrderQuery extends AbstractQuery
      */
     public function addListItem(OrderListItem $value): self
     {
-        return $this->addToArray(self::PARAM_LIST, $value);
+        $array = $value->jsonSerialize();
+        if (empty($array['Mods'])) {
+            unset($array['Mods']);
+        }
+
+        return $this->addToArray(self::PARAM_LIST, $array);
     }
 }
