@@ -1011,7 +1011,7 @@ class ConnectorTest extends BaseTestCase
             'SearchHouseOnStreet',
             [
                 'StreetID' => $streetId,
-                'Street' => $number,
+                'House' => $number,
             ],
             [
                 [
