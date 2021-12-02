@@ -692,10 +692,16 @@ class Connector
             ]
         );
 
-        return array_map(
-            fn (array $item): FindHousesResponse => new FindHousesResponse($item),
-            $response->getData()
-        );
+        $return = [];
+        foreach ($response->getData() as $item) {
+            $value = $item['value'] ?? '';
+            if (mb_strpos($value, 'кв') !== false || mb_strpos($value, 'помещ') !== false) {
+                continue;
+            }
+            $return[] = new FindHousesResponse($item);
+        }
+
+        return $return;
     }
 
     /**
