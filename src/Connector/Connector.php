@@ -675,20 +675,20 @@ class Connector
      * GetReviewsQuestions method implementation.
      *
      * @param string $streetId
-     * @param string $street
+     * @param string $house
      *
      * @return FindHousesResponse[]
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function findHouses(string $streetId, string $number): array
+    public function findHouses(string $streetId, string $house): array
     {
         $response = $this->sendRequestInternal(
             'SearchHouseOnStreet',
             [
                 'StreetID' => $streetId,
-                'Street' => $number,
+                'House' => $house,
             ]
         );
 
