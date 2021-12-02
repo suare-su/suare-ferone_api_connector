@@ -29,6 +29,9 @@ class AddrInfo implements JsonSerializable
     /** Полный адрес заказа до дома */
     private ?string $addr;
 
+    /** Город */
+    private ?string $city;
+
     public function getKladr(): ?string
     {
         return $this->kladr;
@@ -113,6 +116,18 @@ class AddrInfo implements JsonSerializable
         return $this;
     }
 
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $value): self
+    {
+        $this->city = $value;
+
+        return $this;
+    }
+
     public function __construct(array $apiResponse = [])
     {
         $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
@@ -124,6 +139,7 @@ class AddrInfo implements JsonSerializable
         $this->entrance = isset($apiResponse['entrance']) ? (string) $apiResponse['entrance'] : null;
         $this->floor = isset($apiResponse['floor']) ? (string) $apiResponse['floor'] : null;
         $this->addr = isset($apiResponse['addr']) ? (string) $apiResponse['addr'] : null;
+        $this->city = isset($apiResponse['city']) ? (string) $apiResponse['city'] : null;
     }
 
     public function jsonSerialize(): array
@@ -136,6 +152,7 @@ class AddrInfo implements JsonSerializable
             'Entrance' => $this->entrance,
             'Floor' => $this->floor,
             'Addr' => $this->addr,
+            'City' => $this->city,
         ];
     }
 }
