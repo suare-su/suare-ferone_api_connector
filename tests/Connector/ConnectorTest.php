@@ -474,6 +474,26 @@ class ConnectorTest extends BaseTestCase
     /**
      * @test
      */
+    public function testGetClientBonusClientNotFound(): void
+    {
+        $phone = '79999999999';
+        $query = ClientBonusQuery::new()->setPhone($phone);
+        $transport = $this->createTransportMock(
+            'GetClientBonus',
+            [
+                'Phone' => $phone,
+            ],
+            new ApiException('Клиент не найден', 30)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertSame(0, $connector->getClientBonus($query));
+    }
+
+    /**
+     * @test
+     */
     public function testUpdateClientInfo(): void
     {
         $clientId = 234;

@@ -306,7 +306,14 @@ class Connector
      */
     public function getClientBonus(ClientBonusQuery $query): int
     {
-        $data = $this->sendRequestInternal('GetClientBonus', $query)->getData();
+        try {
+            $data = $this->sendRequestInternal('GetClientBonus', $query)->getData();
+        } catch (ApiException $e) {
+            if ($e->getCode() === 30) {
+                return 0;
+            }
+            throw $e;
+        }
 
         return (int) ($data['Balance'] ?? 0);
     }
