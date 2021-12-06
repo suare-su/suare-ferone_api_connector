@@ -554,7 +554,6 @@ class Order implements JsonSerializable
         $this->hiddenMenu = (bool) ($apiResponse['hiddenmenu'] ?? null);
         $this->fuckedUp = (bool) ($apiResponse['fuckedup'] ?? null);
         $this->comment = isset($apiResponse['comment']) ? (string) $apiResponse['comment'] : null;
-        $this->source = isset($apiResponse['source']) ? new OrderSourceType($apiResponse['source']) : null;
         $this->status = (string) ($apiResponse['status'] ?? null);
         $this->cancelReason = isset($apiResponse['cancelreason']) ? (string) $apiResponse['cancelreason'] : null;
         $this->list = [];
@@ -564,6 +563,14 @@ class Order implements JsonSerializable
         $this->changes = [];
         foreach (($apiResponse['changes'] ?? []) as $tmpItem) {
             $this->changes[] = new OrderChange(\is_array($tmpItem) ? $tmpItem : []);
+        }
+
+        if (isset($apiResponse['source']) && \is_string($apiResponse['source'])) {
+            $this->source = new OrderSourceType(json_decode($apiResponse['source'], true));
+        } elseif (isset($apiResponse['source']) && \is_array($apiResponse['source'])) {
+            $this->source = new OrderSourceType($apiResponse['source']);
+        } else {
+            $this->source = null;
         }
     }
 

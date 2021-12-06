@@ -610,6 +610,27 @@ class ConnectorTest extends BaseTestCase
     /**
      * @test
      */
+    public function testGetClientOrdersList30Exception(): void
+    {
+        $clientId = 12;
+        $query = ClientOrdersListQuery::new()->setClientId($clientId);
+        $transport = $this->createTransportMock(
+            'GetClientOrdersList',
+            [
+                'ClientID' => $clientId,
+            ],
+            new ApiException('test', 30)
+        );
+
+        $connector = new Connector($transport);
+        $orders = $connector->getClientOrdersList($query);
+
+        $this->assertSame([], $orders);
+    }
+
+    /**
+     * @test
+     */
     public function testGetOrderInfo(): void
     {
         $id = 123;
