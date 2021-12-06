@@ -360,12 +360,17 @@ class Connector
      *
      * @throws ApiException
      * @throws TransportException
-     *
-     * @TODO Source property has string type for this method - issue on API side - so it fails on every call
      */
     public function getClientOrdersList(ClientOrdersListQuery $query): array
     {
-        $response = $this->sendRequestInternal('GetClientOrdersList', $query);
+        try {
+            $response = $this->sendRequestInternal('GetClientOrdersList', $query);
+        } catch (ApiException $e) {
+            if ($e->getCode() === 30) {
+                return [];
+            }
+            throw $e;
+        }
 
         return array_map(
             fn (array $item): Order => new Order($item),
