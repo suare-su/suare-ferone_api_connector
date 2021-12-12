@@ -772,7 +772,7 @@ class Connector
         try {
             $response = $this->sendRequestInternal('GetBaseShop', $query);
         } catch (ApiException $e) {
-            if ($e->getCode() === 70) {
+            if ($e->getCode() === 73) {
                 return null;
             }
             throw $e;
