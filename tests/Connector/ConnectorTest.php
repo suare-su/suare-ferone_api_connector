@@ -1147,7 +1147,7 @@ class ConnectorTest extends BaseTestCase
     /**
      * @test
      */
-    public function testGetBaseShop70Exception(): void
+    public function testGetBaseShop73Exception(): void
     {
         $cityId = 12;
         $address = 'test';
@@ -1158,7 +1158,7 @@ class ConnectorTest extends BaseTestCase
                 'CityID' => $cityId,
                 'Address' => $address,
             ],
-            new ApiException('test', 70)
+            new ApiException('test', 73)
         );
 
         $connector = new Connector($transport);
