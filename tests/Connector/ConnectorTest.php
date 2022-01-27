@@ -1169,6 +1169,28 @@ class ConnectorTest extends BaseTestCase
     /**
      * @test
      */
+    public function testGetBaseShop70Exception(): void
+    {
+        $cityId = 12;
+        $address = 'test';
+        $query = BaseShopQuery::new()->setCityId($cityId)->setAddress($address);
+        $transport = $this->createTransportMock(
+            'GetBaseShop',
+            [
+                'CityID' => $cityId,
+                'Address' => $address,
+            ],
+            new ApiException('test', 70)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertNull($connector->getBaseShop($query));
+    }
+
+    /**
+     * @test
+     */
     public function testGetBaseShopNon70Exception(): void
     {
         $cityId = 12;
