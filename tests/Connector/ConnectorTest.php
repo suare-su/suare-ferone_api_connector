@@ -1418,7 +1418,7 @@ class ConnectorTest extends BaseTestCase
      * @param array           $params
      * @param Throwable|array $result
      *
-     * @return MockObject&Transport
+     * @return Transport
      */
     private function createTransportMock(string $method, array $params = [], $result = []): Transport
     {
