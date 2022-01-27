@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SuareSu\FeroneApiConnector\Tests\Connector;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\MockObject\MockObject;
 use SuareSu\FeroneApiConnector\Connector\Connector;
 use SuareSu\FeroneApiConnector\Entity\BindClientIdShopId;
 use SuareSu\FeroneApiConnector\Entity\OrderListItem;
@@ -1307,8 +1308,8 @@ class ConnectorTest extends BaseTestCase
         $pay = 'external';
         $confirm = true;
         $cashChange = 123123;
-        $time = '23:32';
-        $onTime = new DateTimeImmutable("2020-10-10 {$time}");
+        $time = '2020-10-10 23:32:12';
+        $onTime = new DateTimeImmutable($time);
         $comment = 'test';
 
         $query = AcceptOrderQuery::new()
@@ -1417,10 +1418,11 @@ class ConnectorTest extends BaseTestCase
      * @param array           $params
      * @param Throwable|array $result
      *
-     * @return Transport
+     * @return MockObject&Transport
      */
     private function createTransportMock(string $method, array $params = [], $result = []): Transport
     {
+        /** @var MockObject&Transport */
         $transport = $this->getMockBuilder(Transport::class)->disableOriginalConstructor()->getMock();
 
         $sendRequestMethod = $transport->expects($this->once())->method('sendRequest');
@@ -1436,6 +1438,7 @@ class ConnectorTest extends BaseTestCase
                         throw new ApiException($message);
                     }
 
+                    /** @var MockObject&TransportResponse */
                     $response = $this->getMockBuilder(TransportResponse::class)->disableOriginalConstructor()->getMock();
                     $response->method('getData')->willReturn($result);
 

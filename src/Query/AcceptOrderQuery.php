@@ -75,7 +75,7 @@ class AcceptOrderQuery extends AbstractQuery
      */
     public function setOnTime(DateTimeInterface $value): self
     {
-        return $this->add(self::PARAM_ON_TIME, $value->format('H:i'));
+        return $this->add(self::PARAM_ON_TIME, $value->format('Y-m-d H:i:s'));
     }
 
     /**
