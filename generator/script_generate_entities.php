@@ -11,7 +11,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $guzzleClient = new Client();
 $extractor = new RemoteSwaggerExtractor($guzzleClient);
-$rawEntites = $extractor->extractFrom('https://api.swaggerhub.com/apis/idmitrio/ferone-api/2.0');
+$rawEntites = $extractor->extractFrom('https://api.swaggerhub.com/apis/idmitrio/ferone-api/2.1');
 
 $rawEntites['FindCitiesResponse'] = [
     'type' => 'object',
