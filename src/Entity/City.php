@@ -41,6 +41,9 @@ class City implements JsonSerializable
     /** Если 0, в CityCode указан телефонный код, если 1, то указано количество цифр в телефонном коде */
     private int $cityMultiCode;
 
+    /** Json-строка зоны доставки в формате geojson */
+    private ?string $deliveryZone;
+
     public function getId(): int
     {
         return $this->id;
@@ -96,6 +99,11 @@ class City implements JsonSerializable
         return $this->cityMultiCode;
     }
 
+    public function getDeliveryZone(): ?string
+    {
+        return $this->deliveryZone;
+    }
+
     public function __construct(array $apiResponse)
     {
         $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
@@ -111,6 +119,7 @@ class City implements JsonSerializable
         $this->countryCode = (string) ($apiResponse['countrycode'] ?? null);
         $this->cityCode = (string) ($apiResponse['citycode'] ?? null);
         $this->cityMultiCode = (int) ($apiResponse['citymulticode'] ?? null);
+        $this->deliveryZone = isset($apiResponse['deliveryzone']) ? (string) $apiResponse['deliveryzone'] : null;
     }
 
     public function jsonSerialize(): array
@@ -127,6 +136,7 @@ class City implements JsonSerializable
             'CountryCode' => $this->countryCode,
             'CityCode' => $this->cityCode,
             'CityMultiCode' => $this->cityMultiCode,
+            'DeliveryZone' => $this->deliveryZone,
         ];
     }
 }
