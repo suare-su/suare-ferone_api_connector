@@ -39,7 +39,8 @@ class AbstractQuery implements Query
     protected function addToArray(string $name, $value): self
     {
         $name = $this->unifyParamName($name);
-        if (!isset($this->params[$name])) {
+
+        if (!isset($this->params[$name]) || !\is_array($this->params[$name])) {
             $this->params[$name] = [];
         }
 

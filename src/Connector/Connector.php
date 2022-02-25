@@ -90,7 +90,7 @@ class Connector
     {
         $data = $this->sendRequestInternal('GetTokenExpiry')->getData();
 
-        return $this->instantiateDateTimeObject($data['ExpiresOn'] ?? '');
+        return $this->instantiateDateTimeObject((string) ($data['ExpiresOn'] ?? ''));
     }
 
     /**
@@ -158,7 +158,7 @@ class Connector
     {
         $data = $this->sendRequestInternal('GetCitiesLastChanged')->getData();
 
-        return $this->instantiateDateTimeObject($data['Changed'] ?? '');
+        return $this->instantiateDateTimeObject((string) ($data['Changed'] ?? ''));
     }
 
     /**
@@ -213,7 +213,7 @@ class Connector
     {
         $data = $this->sendRequestInternal('GetShopsLastChanged')->getData();
 
-        return $this->instantiateDateTimeObject($data['Changed'] ?? '');
+        return $this->instantiateDateTimeObject((string) ($data['Changed'] ?? ''));
     }
 
     /**
@@ -248,7 +248,7 @@ class Connector
     {
         $data = $this->sendRequestInternal('GetMenuLastChanged')->getData();
 
-        return new DateTimeImmutable($data['Changed'] ?? '');
+        return new DateTimeImmutable((string) ($data['Changed'] ?? ''));
     }
 
     /**
@@ -707,7 +707,10 @@ class Connector
 
         $return = [];
         foreach ($response->getData() as $item) {
-            $value = $item['value'] ?? '';
+            if (!\is_array($item)) {
+                continue;
+            }
+            $value = (string) ($item['value'] ?? '');
             if (mb_strpos($value, 'кв') !== false || mb_strpos($value, 'помещ') !== false) {
                 continue;
             }

@@ -34,10 +34,13 @@ class MenuItem implements JsonSerializable
     {
         $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
 
-        $this->group = new Group($apiResponse['group'] ?? []);
+        $this->group = new Group((array) ($apiResponse['group'] ?? []));
+
         $this->products = [];
-        foreach (($apiResponse['products'] ?? []) as $tmpItem) {
-            $this->products[] = new Product(\is_array($tmpItem) ? $tmpItem : []);
+        $data = isset($apiResponse['products']) && \is_array($apiResponse['products']) ? $apiResponse['products'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
+            $this->products[] = new Product($tmpItem);
         }
     }
 

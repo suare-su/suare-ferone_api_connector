@@ -155,11 +155,13 @@ class EntitesGenerator extends AbstarctGeneartor
                     $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$lcName}']) ? " . ($type['php'] ? "({$type['php']})" : '') . " \$apiResponse['{$lcName}'] : null;\n";
                 }
             } elseif ($propertyDescription['type'] === self::TYPE_ARRAY) {
-                $constructorBody .= "\$this->{$unifiedPropertyName} = [];\n";
-                $constructorBody .= "foreach ((\$apiResponse['{$lcName}'] ?? []) as \$tmpItem) {\n";
+                $constructorBody .= "\n\$this->{$unifiedPropertyName} = [];\n";
+                $constructorBody .= "\$data = isset(\$apiResponse['{$lcName}']) && is_array(\$apiResponse['{$lcName}']) ? \$apiResponse['{$lcName}'] : [];\n";
+                $constructorBody .= "\$data = array_filter(\$data, fn (\$item): bool => is_array(\$item));\n";
+                $constructorBody .= "foreach (\$data as \$tmpItem) {\n";
                 if (!empty($type['class'])) {
                     $jsonSerializeBody .= "    \"{$propertyName}\" => array_map(fn ({$type['class']} \$item): array => \$item->jsonSerialize(), \$this->{$unifiedPropertyName}),\n";
-                    $constructorBody .= "    \$this->{$unifiedPropertyName}[] = new {$type['class']}(is_array(\$tmpItem) ? \$tmpItem : []);\n";
+                    $constructorBody .= "    \$this->{$unifiedPropertyName}[] = new {$type['class']}(\$tmpItem);\n";
                 } elseif (!empty($type['primitive'])) {
                     $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName},\n";
                     $constructorBody .= "    \$this->{$unifiedPropertyName}[] = ({$type['primitive']}) \$tmpItem;\n";
@@ -171,10 +173,13 @@ class EntitesGenerator extends AbstarctGeneartor
             } else {
                 if ($isRequired) {
                     $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName}->jsonSerialize(),\n";
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = new {$type['class']}(\$apiResponse['{$lcName}'] ?? []);\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = new {$type['class']}((array) (\$apiResponse['{$lcName}'] ?? []));\n";
                 } else {
                     $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName} ? \$this->{$unifiedPropertyName}->jsonSerialize() : null,\n";
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = isset(\$apiResponse['{$lcName}']) ? new {$type['class']}(\$apiResponse['{$lcName}']) : null;\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = null;\n";
+                    $constructorBody .= "if (isset(\$apiResponse['{$lcName}']) && \\is_array(\$apiResponse['{$lcName}'])) {\n";
+                    $constructorBody .= "    \$this->{$unifiedPropertyName} = new {$type['class']}(\$apiResponse['{$lcName}']);\n";
+                    $constructorBody .= "}\n";
                 }
             }
 

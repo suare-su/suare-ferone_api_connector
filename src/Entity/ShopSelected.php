@@ -171,7 +171,7 @@ class ShopSelected implements JsonSerializable
         $this->addrLon = (float) ($apiResponse['addrlon'] ?? null);
         $this->shiftId = (int) ($apiResponse['shiftid'] ?? null);
         $this->shiftOpened = (string) ($apiResponse['shiftopened'] ?? null);
-        $this->working = new ShopSelectedWorking($apiResponse['working'] ?? []);
+        $this->working = new ShopSelectedWorking((array) ($apiResponse['working'] ?? []));
         $this->sort = ($apiResponse['sort'] ?? null);
     }
 

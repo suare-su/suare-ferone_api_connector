@@ -29,7 +29,7 @@ class TransportResponse
     /**
      * Return only data parameter from payload.
      *
-     * @return array
+     * @return mixed[]
      */
     public function getData(): array
     {
