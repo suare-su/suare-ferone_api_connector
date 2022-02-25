@@ -238,14 +238,23 @@ class OrderFinal implements JsonSerializable
         $this->total = (float) ($apiResponse['total'] ?? null);
         $this->plaziusStatus = (bool) ($apiResponse['plaziusstatus'] ?? null);
         $this->plaziusErr = isset($apiResponse['plaziuserr']) ? (string) $apiResponse['plaziuserr'] : null;
+
         $this->list = [];
-        foreach (($apiResponse['list'] ?? []) as $tmpItem) {
-            $this->list[] = new OrderProduct(\is_array($tmpItem) ? $tmpItem : []);
+        $data = isset($apiResponse['list']) && \is_array($apiResponse['list']) ? $apiResponse['list'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
+            $this->list[] = new OrderProduct($tmpItem);
         }
-        $this->shop = isset($apiResponse['shop']) ? new ShopSelected($apiResponse['shop']) : null;
+        $this->shop = null;
+        if (isset($apiResponse['shop']) && \is_array($apiResponse['shop'])) {
+            $this->shop = new ShopSelected($apiResponse['shop']);
+        }
+
         $this->onTimeHoursInterval = [];
-        foreach (($apiResponse['ontimehoursinterval'] ?? []) as $tmpItem) {
-            $this->onTimeHoursInterval[] = new OrderFinalOnTimeHoursInterval(\is_array($tmpItem) ? $tmpItem : []);
+        $data = isset($apiResponse['ontimehoursinterval']) && \is_array($apiResponse['ontimehoursinterval']) ? $apiResponse['ontimehoursinterval'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
+            $this->onTimeHoursInterval[] = new OrderFinalOnTimeHoursInterval($tmpItem);
         }
     }
 

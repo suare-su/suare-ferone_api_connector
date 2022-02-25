@@ -60,6 +60,8 @@ class TransportGuzzle implements Transport
     public function sendRequest(TransportRequest $request): TransportResponse
     {
         $tries = $this->config->getRetries() ?: 1;
+
+        $parsedResponse = null;
         for ($i = 1; $i <= $tries; ++$i) {
             try {
                 $response = $this->sendRequestInternal($request);
@@ -70,6 +72,10 @@ class TransportGuzzle implements Transport
                     throw $e;
                 }
             }
+        }
+
+        if (!($parsedResponse instanceof TransportResponse)) {
+            throw new TransportException("Can't create parsed response.");
         }
 
         return $parsedResponse;
@@ -142,6 +148,7 @@ class TransportGuzzle implements Transport
         }
 
         try {
+            /** @var mixed[] */
             $jsonPayload = json_decode($body, true, 512, \JSON_THROW_ON_ERROR);
         } catch (Throwable $e) {
             throw new TransportException($e->getMessage(), 0, $e);

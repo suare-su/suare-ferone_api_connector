@@ -27,6 +27,7 @@ use SuareSu\FeroneApiConnector\Query\AddReviewRatingQuery;
 use SuareSu\FeroneApiConnector\Query\BaseShopQuery;
 use SuareSu\FeroneApiConnector\Query\BindClientQuery;
 use SuareSu\FeroneApiConnector\Query\BonusPayOrderQuery;
+use SuareSu\FeroneApiConnector\Query\CheckAddressInCityZoneQuery;
 use SuareSu\FeroneApiConnector\Query\CheckAddressInZonesQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
@@ -89,7 +90,7 @@ class Connector
     {
         $data = $this->sendRequestInternal('GetTokenExpiry')->getData();
 
-        return $this->instantiateDateTimeObject($data['ExpiresOn'] ?? '');
+        return $this->instantiateDateTimeObject((string) ($data['ExpiresOn'] ?? ''));
     }
 
     /**
@@ -157,7 +158,7 @@ class Connector
     {
         $data = $this->sendRequestInternal('GetCitiesLastChanged')->getData();
 
-        return $this->instantiateDateTimeObject($data['Changed'] ?? '');
+        return $this->instantiateDateTimeObject((string) ($data['Changed'] ?? ''));
     }
 
     /**
@@ -212,7 +213,7 @@ class Connector
     {
         $data = $this->sendRequestInternal('GetShopsLastChanged')->getData();
 
-        return $this->instantiateDateTimeObject($data['Changed'] ?? '');
+        return $this->instantiateDateTimeObject((string) ($data['Changed'] ?? ''));
     }
 
     /**
@@ -247,7 +248,7 @@ class Connector
     {
         $data = $this->sendRequestInternal('GetMenuLastChanged')->getData();
 
-        return new DateTimeImmutable($data['Changed'] ?? '');
+        return new DateTimeImmutable((string) ($data['Changed'] ?? ''));
     }
 
     /**
@@ -706,7 +707,10 @@ class Connector
 
         $return = [];
         foreach ($response->getData() as $item) {
-            $value = $item['value'] ?? '';
+            if (!\is_array($item)) {
+                continue;
+            }
+            $value = (string) ($item['value'] ?? '');
             if (mb_strpos($value, 'кв') !== false || mb_strpos($value, 'помещ') !== false) {
                 continue;
             }
@@ -795,6 +799,30 @@ class Connector
     {
         try {
             $this->sendRequestInternal('CheckAddressInZones', $query);
+        } catch (ApiException $e) {
+            if ($e->getCode() === 70) {
+                return false;
+            }
+            throw $e;
+        }
+
+        return true;
+    }
+
+    /**
+     * CheckAddressInCityZone method implementation.
+     *
+     * @param CheckAddressInCityZoneQuery $query
+     *
+     * @return bool
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function checkAddressInCityZone(CheckAddressInCityZoneQuery $query): bool
+    {
+        try {
+            $this->sendRequestInternal('CheckAddressInCityZone', $query);
         } catch (ApiException $e) {
             if ($e->getCode() === 70) {
                 return false;

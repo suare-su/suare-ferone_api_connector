@@ -554,23 +554,25 @@ class Order implements JsonSerializable
         $this->hiddenMenu = (bool) ($apiResponse['hiddenmenu'] ?? null);
         $this->fuckedUp = (bool) ($apiResponse['fuckedup'] ?? null);
         $this->comment = isset($apiResponse['comment']) ? (string) $apiResponse['comment'] : null;
+        $this->source = null;
+        if (isset($apiResponse['source']) && \is_array($apiResponse['source'])) {
+            $this->source = new OrderSourceType($apiResponse['source']);
+        }
         $this->status = (string) ($apiResponse['status'] ?? null);
         $this->cancelReason = isset($apiResponse['cancelreason']) ? (string) $apiResponse['cancelreason'] : null;
+
         $this->list = [];
-        foreach (($apiResponse['list'] ?? []) as $tmpItem) {
-            $this->list[] = new OrderProduct(\is_array($tmpItem) ? $tmpItem : []);
-        }
-        $this->changes = [];
-        foreach (($apiResponse['changes'] ?? []) as $tmpItem) {
-            $this->changes[] = new OrderChange(\is_array($tmpItem) ? $tmpItem : []);
+        $data = isset($apiResponse['list']) && \is_array($apiResponse['list']) ? $apiResponse['list'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
+            $this->list[] = new OrderProduct($tmpItem);
         }
 
-        if (isset($apiResponse['source']) && \is_string($apiResponse['source'])) {
-            $this->source = new OrderSourceType(json_decode($apiResponse['source'], true));
-        } elseif (isset($apiResponse['source']) && \is_array($apiResponse['source'])) {
-            $this->source = new OrderSourceType($apiResponse['source']);
-        } else {
-            $this->source = null;
+        $this->changes = [];
+        $data = isset($apiResponse['changes']) && \is_array($apiResponse['changes']) ? $apiResponse['changes'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
+            $this->changes[] = new OrderChange($tmpItem);
         }
     }
 
