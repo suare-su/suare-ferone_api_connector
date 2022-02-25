@@ -824,7 +824,7 @@ class Connector
         try {
             $this->sendRequestInternal('CheckAddressInCityZone', $query);
         } catch (ApiException $e) {
-            if ($e->getCode() === 70) {
+            if ($e->getCode() === 73 || $e->getCode() === 70) {
                 return false;
             }
             throw $e;
