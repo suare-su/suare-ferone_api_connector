@@ -54,8 +54,8 @@ class BindClientInfoAddrInfo implements JsonSerializable
         $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
 
         $this->orderId = (int) ($apiResponse['orderid'] ?? null);
-        $this->clientInfo = new ClientInfo($apiResponse['clientinfo'] ?? []);
-        $this->addrInfo = new AddrInfo($apiResponse['addrinfo'] ?? []);
+        $this->clientInfo = new ClientInfo(\is_array($apiResponse['clientinfo']) ? $apiResponse['clientinfo'] : []);
+        $this->addrInfo = new AddrInfo(\is_array($apiResponse['addrinfo']) ? $apiResponse['addrinfo'] : []);
     }
 
     public function jsonSerialize(): array

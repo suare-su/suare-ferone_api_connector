@@ -82,19 +82,31 @@ class ClientAddrs implements JsonSerializable
         $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
 
         $this->city = (string) ($apiResponse['city'] ?? null);
-        $this->delivery = new ClientAddrsDelivery($apiResponse['delivery'] ?? []);
-        $this->client = isset($apiResponse['client']) ? new ClientAddrsClient($apiResponse['client']) : null;
+        $this->delivery = new ClientAddrsDelivery(\is_array($apiResponse['delivery']) ? $apiResponse['delivery'] : []);
+        $this->client = null;
+        if (isset($apiResponse['client']) && \is_array($apiResponse['client'])) {
+            $this->client = new ClientAddrsClient($apiResponse['client']);
+        }
+
         $this->addrs = [];
-        foreach (($apiResponse['addrs'] ?? []) as $tmpItem) {
-            $this->addrs[] = new ClientAddrsAddrs(\is_array($tmpItem) ? $tmpItem : []);
+        $data = isset($apiResponse['addrs']) && \is_array($apiResponse['addrs']) ? $apiResponse['addrs'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
+            $this->addrs[] = new ClientAddrsAddrs($tmpItem);
         }
+
         $this->shops = [];
-        foreach (($apiResponse['shops'] ?? []) as $tmpItem) {
-            $this->shops[] = new ShopSelected(\is_array($tmpItem) ? $tmpItem : []);
+        $data = isset($apiResponse['shops']) && \is_array($apiResponse['shops']) ? $apiResponse['shops'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
+            $this->shops[] = new ShopSelected($tmpItem);
         }
+
         $this->list = [];
-        foreach (($apiResponse['list'] ?? []) as $tmpItem) {
-            $this->list[] = new OrderProduct(\is_array($tmpItem) ? $tmpItem : []);
+        $data = isset($apiResponse['list']) && \is_array($apiResponse['list']) ? $apiResponse['list'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
+            $this->list[] = new OrderProduct($tmpItem);
         }
     }
 

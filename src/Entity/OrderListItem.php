@@ -115,9 +115,12 @@ class OrderListItem implements JsonSerializable
         $this->price = (float) ($apiResponse['price'] ?? null);
         $this->amount = (int) ($apiResponse['amount'] ?? null);
         $this->total = (float) ($apiResponse['total'] ?? null);
+
         $this->mods = [];
-        foreach (($apiResponse['mods'] ?? []) as $tmpItem) {
-            $this->mods[] = new OrderListItemMod(\is_array($tmpItem) ? $tmpItem : []);
+        $data = isset($apiResponse['mods']) && \is_array($apiResponse['mods']) ? $apiResponse['mods'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
+            $this->mods[] = new OrderListItemMod($tmpItem);
         }
     }
 

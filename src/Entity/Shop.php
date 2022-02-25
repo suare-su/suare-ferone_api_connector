@@ -185,7 +185,7 @@ class Shop implements JsonSerializable
         $this->addrLon = isset($apiResponse['addrlon']) ? (float) $apiResponse['addrlon'] : null;
         $this->deliveryZone = isset($apiResponse['deliveryzone']) ? (string) $apiResponse['deliveryzone'] : null;
         $this->active = (bool) ($apiResponse['active'] ?? null);
-        $this->workingTime = new ShopWorkingTime($apiResponse['workingtime'] ?? []);
+        $this->workingTime = new ShopWorkingTime(\is_array($apiResponse['workingtime']) ? $apiResponse['workingtime'] : []);
     }
 
     public function jsonSerialize(): array

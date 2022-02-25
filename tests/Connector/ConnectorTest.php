@@ -16,6 +16,7 @@ use SuareSu\FeroneApiConnector\Query\AddReviewRatingQuery;
 use SuareSu\FeroneApiConnector\Query\BaseShopQuery;
 use SuareSu\FeroneApiConnector\Query\BindClientQuery;
 use SuareSu\FeroneApiConnector\Query\BonusPayOrderQuery;
+use SuareSu\FeroneApiConnector\Query\CheckAddressInCityZoneQuery;
 use SuareSu\FeroneApiConnector\Query\CheckAddressInZonesQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
@@ -1231,6 +1232,27 @@ class ConnectorTest extends BaseTestCase
         $connector = new Connector($transport);
 
         $this->assertTrue($connector->checkAddressInZones($query));
+    }
+
+    /**
+     * @test
+     */
+    public function testCheckAddressInCityZone(): void
+    {
+        $orderId = 12;
+        $address = 'test';
+        $query = CheckAddressInCityZoneQuery::new()->setOrderId($orderId)->setAddress($address);
+        $transport = $this->createTransportMock(
+            'CheckAddressInCityZone',
+            [
+                'OrderID' => $orderId,
+                'Address' => $address,
+            ]
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertTrue($connector->checkAddressInCityZone($query));
     }
 
     /**

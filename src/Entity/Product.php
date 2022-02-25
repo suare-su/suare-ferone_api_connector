@@ -294,13 +294,19 @@ class Product implements JsonSerializable
         $this->notInPlazius = (bool) ($apiResponse['notinplazius'] ?? null);
         $this->visible = (bool) ($apiResponse['visible'] ?? null);
         $this->stop = (bool) ($apiResponse['stop'] ?? null);
+
         $this->stopShops = [];
-        foreach (($apiResponse['stopshops'] ?? []) as $tmpItem) {
+        $data = isset($apiResponse['stopshops']) && \is_array($apiResponse['stopshops']) ? $apiResponse['stopshops'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
             $this->stopShops[] = (int) $tmpItem;
         }
+
         $this->mods = [];
-        foreach (($apiResponse['mods'] ?? []) as $tmpItem) {
-            $this->mods[] = new GroupModifier(\is_array($tmpItem) ? $tmpItem : []);
+        $data = isset($apiResponse['mods']) && \is_array($apiResponse['mods']) ? $apiResponse['mods'] : [];
+        $data = array_filter($data, fn ($item): bool => \is_array($item));
+        foreach ($data as $tmpItem) {
+            $this->mods[] = new GroupModifier($tmpItem);
         }
     }
 
