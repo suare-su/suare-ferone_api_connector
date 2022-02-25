@@ -1239,13 +1239,13 @@ class ConnectorTest extends BaseTestCase
      */
     public function testCheckAddressInCityZone(): void
     {
-        $orderId = 12;
+        $cityId = 12;
         $address = 'test';
-        $query = CheckAddressInCityZoneQuery::new()->setOrderId($orderId)->setAddress($address);
+        $query = CheckAddressInCityZoneQuery::new()->setCityId($cityId)->setAddress($address);
         $transport = $this->createTransportMock(
             'CheckAddressInCityZone',
             [
-                'OrderID' => $orderId,
+                'CityID' => $cityId,
                 'Address' => $address,
             ]
         );
