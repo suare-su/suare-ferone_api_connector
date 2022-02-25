@@ -56,7 +56,7 @@ class BindClientInfoShopId implements JsonSerializable
         $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
 
         $this->orderId = (int) ($apiResponse['orderid'] ?? null);
-        $this->clientInfo = new ClientInfo(\is_array($apiResponse['clientinfo']) ? $apiResponse['clientinfo'] : []);
+        $this->clientInfo = new ClientInfo((array) ($apiResponse['clientinfo'] ?? []));
         $this->shopId = (int) ($apiResponse['shopid'] ?? null);
     }
 

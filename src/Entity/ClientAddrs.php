@@ -82,7 +82,7 @@ class ClientAddrs implements JsonSerializable
         $apiResponse = array_change_key_case($apiResponse, \CASE_LOWER);
 
         $this->city = (string) ($apiResponse['city'] ?? null);
-        $this->delivery = new ClientAddrsDelivery(\is_array($apiResponse['delivery']) ? $apiResponse['delivery'] : []);
+        $this->delivery = new ClientAddrsDelivery((array) ($apiResponse['delivery'] ?? []));
         $this->client = null;
         if (isset($apiResponse['client']) && \is_array($apiResponse['client'])) {
             $this->client = new ClientAddrsClient($apiResponse['client']);

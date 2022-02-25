@@ -173,7 +173,7 @@ class EntitesGenerator extends AbstarctGeneartor
             } else {
                 if ($isRequired) {
                     $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName}->jsonSerialize(),\n";
-                    $constructorBody .= "\$this->{$unifiedPropertyName} = new {$type['class']}(\\is_array(\$apiResponse['{$lcName}']) ? \$apiResponse['{$lcName}'] : []);\n";
+                    $constructorBody .= "\$this->{$unifiedPropertyName} = new {$type['class']}((array) (\$apiResponse['{$lcName}'] ?? []));\n";
                 } else {
                     $jsonSerializeBody .= "    \"{$propertyName}\" => \$this->{$unifiedPropertyName} ? \$this->{$unifiedPropertyName}->jsonSerialize() : null,\n";
                     $constructorBody .= "\$this->{$unifiedPropertyName} = null;\n";
