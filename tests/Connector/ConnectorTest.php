@@ -16,6 +16,7 @@ use SuareSu\FeroneApiConnector\Query\AddReviewRatingQuery;
 use SuareSu\FeroneApiConnector\Query\BaseShopQuery;
 use SuareSu\FeroneApiConnector\Query\BindClientQuery;
 use SuareSu\FeroneApiConnector\Query\BonusPayOrderQuery;
+use SuareSu\FeroneApiConnector\Query\CheckAddressInCityZoneQuery;
 use SuareSu\FeroneApiConnector\Query\CheckAddressInZonesQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
@@ -1236,15 +1237,37 @@ class ConnectorTest extends BaseTestCase
     /**
      * @test
      */
-    public function testCheckAddressInZonesCode70Exception(): void
+    public function testCheckAddressInCityZoneCode73Exception(): void
     {
-        $orderId = 12;
+        $cityId = 12;
         $address = 'test';
-        $query = CheckAddressInZonesQuery::new()->setOrderId($orderId)->setAddress($address);
+        $query = CheckAddressInCityZoneQuery::new()->setCityId($cityId)->setAddress($address);
         $transport = $this->createTransportMock(
-            'CheckAddressInZones',
+            'CheckAddressInCityZone',
             [
-                'OrderID' => $orderId,
+                'CityID' => $cityId,
+                'Address' => $address,
+            ],
+            new ApiException('test', 73)
+        );
+
+        $connector = new Connector($transport);
+
+        $this->assertFalse($connector->checkAddressInCityZone($query));
+    }
+
+    /**
+     * @test
+     */
+    public function testCheckAddressInCityZoneCode70Exception(): void
+    {
+        $cityId = 12;
+        $address = 'test';
+        $query = CheckAddressInCityZoneQuery::new()->setCityId($cityId)->setAddress($address);
+        $transport = $this->createTransportMock(
+            'CheckAddressInCityZone',
+            [
+                'CityID' => $cityId,
                 'Address' => $address,
             ],
             new ApiException('test', 70)
@@ -1252,30 +1275,7 @@ class ConnectorTest extends BaseTestCase
 
         $connector = new Connector($transport);
 
-        $this->assertFalse($connector->checkAddressInZones($query));
-    }
-
-    /**
-     * @test
-     */
-    public function testCheckAddressInZonesCodeNon70Exception(): void
-    {
-        $orderId = 12;
-        $address = 'test';
-        $query = CheckAddressInZonesQuery::new()->setOrderId($orderId)->setAddress($address);
-        $transport = $this->createTransportMock(
-            'CheckAddressInZones',
-            [
-                'OrderID' => $orderId,
-                'Address' => $address,
-            ],
-            new ApiException('test', 123)
-        );
-
-        $connector = new Connector($transport);
-
-        $this->expectException(ApiException::class);
-        $connector->checkAddressInZones($query);
+        $this->assertFalse($connector->checkAddressInCityZone($query));
     }
 
     /**

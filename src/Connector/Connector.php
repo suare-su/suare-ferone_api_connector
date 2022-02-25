@@ -27,6 +27,7 @@ use SuareSu\FeroneApiConnector\Query\AddReviewRatingQuery;
 use SuareSu\FeroneApiConnector\Query\BaseShopQuery;
 use SuareSu\FeroneApiConnector\Query\BindClientQuery;
 use SuareSu\FeroneApiConnector\Query\BonusPayOrderQuery;
+use SuareSu\FeroneApiConnector\Query\CheckAddressInCityZoneQuery;
 use SuareSu\FeroneApiConnector\Query\CheckAddressInZonesQuery;
 use SuareSu\FeroneApiConnector\Query\ClientAddrsQuery;
 use SuareSu\FeroneApiConnector\Query\ClientBonusQuery;
@@ -797,6 +798,30 @@ class Connector
             $this->sendRequestInternal('CheckAddressInZones', $query);
         } catch (ApiException $e) {
             if ($e->getCode() === 70) {
+                return false;
+            }
+            throw $e;
+        }
+
+        return true;
+    }
+
+    /**
+     * CheckAddressInCityZone method implementation.
+     *
+     * @param CheckAddressInCityZoneQuery $query
+     *
+     * @return bool
+     *
+     * @throws ApiException
+     * @throws TransportException
+     */
+    public function checkAddressInCityZone(CheckAddressInCityZoneQuery $query): bool
+    {
+        try {
+            $this->sendRequestInternal('CheckAddressInCityZone', $query);
+        } catch (ApiException $e) {
+            if ($e->getCode() === 73 || $e->getCode() === 70) {
                 return false;
             }
             throw $e;
