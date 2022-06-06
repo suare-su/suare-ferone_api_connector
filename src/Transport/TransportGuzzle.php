@@ -90,7 +90,7 @@ class TransportGuzzle implements Transport
      */
     private function sendRequestInternal(TransportRequest $request): ResponseInterface
     {
-        if ($this->logger) {
+        if ($this->logger && $this->config->getDebug()) {
             $this->logger->debug(
                 "Sending a '{$request->getMethod()}' request to Ferone",
                 [
@@ -128,7 +128,7 @@ class TransportGuzzle implements Transport
         $statusCode = $response->getStatusCode();
         $body = (string) $response->getBody();
 
-        if ($this->logger) {
+        if ($this->logger && $this->config->getDebug()) {
             $this->logger->debug(
                 "The '{$request->getMethod()}' request to Ferone is completed",
                 [
