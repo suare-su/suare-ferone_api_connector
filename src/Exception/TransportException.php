@@ -13,6 +13,8 @@ class TransportException extends Exception
 {
     private ?TransportRequest $request = null;
 
+    private ?string $response = null;
+
     public function setRequest(?TransportRequest $request): self
     {
         $this->request = $request;
@@ -23,5 +25,17 @@ class TransportException extends Exception
     public function getRequest(): ?TransportRequest
     {
         return $this->request;
+    }
+
+    public function setResponse(?string $response): self
+    {
+        $this->response = $response;
+
+        return $this;
+    }
+
+    public function getResponse(): ?string
+    {
+        return $this->response;
     }
 }
