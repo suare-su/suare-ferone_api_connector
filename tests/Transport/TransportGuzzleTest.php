@@ -34,6 +34,7 @@ class TransportGuzzleTest extends BaseTestCase
         $config = $this->getMockBuilder(TransportConfig::class)->disableOriginalConstructor()->getMock();
         $config->method('getUrl')->willReturn($apiUrl);
         $config->method('getAuthKey')->willReturn($authKey);
+        $config->method('getDebug')->willReturn(true);
 
         $method = 'api method';
         $params = ['param_key' => 'param value'];

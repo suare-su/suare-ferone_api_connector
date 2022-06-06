@@ -75,7 +75,7 @@ class TransportGuzzle implements Transport
         }
 
         if (!($parsedResponse instanceof TransportResponse)) {
-            throw new TransportException("Can't create parsed response.");
+            throw (new TransportException("Can't create parsed response."))->setRequest($request);
         }
 
         return $parsedResponse;
@@ -90,7 +90,7 @@ class TransportGuzzle implements Transport
      */
     private function sendRequestInternal(TransportRequest $request): ResponseInterface
     {
-        if ($this->logger) {
+        if ($this->logger && $this->config->getDebug()) {
             $this->logger->debug(
                 "Sending a '{$request->getMethod()}' request to Ferone",
                 [
@@ -109,7 +109,7 @@ class TransportGuzzle implements Transport
                 ->withBody($payload);
             $response = $this->client->sendRequest($psrRequest);
         } catch (Throwable $e) {
-            throw new TransportException($e->getMessage(), 0, $e);
+            throw (new TransportException($e->getMessage(), 0, $e))->setRequest($request);
         }
 
         return $response;
@@ -128,7 +128,7 @@ class TransportGuzzle implements Transport
         $statusCode = $response->getStatusCode();
         $body = (string) $response->getBody();
 
-        if ($this->logger) {
+        if ($this->logger && $this->config->getDebug()) {
             $this->logger->debug(
                 "The '{$request->getMethod()}' request to Ferone is completed",
                 [
@@ -151,7 +151,7 @@ class TransportGuzzle implements Transport
             /** @var mixed[] */
             $jsonPayload = json_decode($body, true, 512, \JSON_THROW_ON_ERROR);
         } catch (Throwable $e) {
-            throw new TransportException($e->getMessage(), 0, $e);
+            throw (new TransportException($e->getMessage(), 0, $e))->setRequest($request);
         }
 
         $feroneResponse = new TransportResponse($jsonPayload);

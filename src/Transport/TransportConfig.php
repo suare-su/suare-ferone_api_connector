@@ -19,11 +19,14 @@ class TransportConfig
 
     private int $retries;
 
+    private bool $debug;
+
     public function __construct(
         string $url,
         string $authKey,
         int $timeout = 5,
-        int $retries = 1
+        int $retries = 1,
+        bool $debug = false
     ) {
         if (!preg_match('#^https?://[^\.]+\.[^\.]+.*#', $url)) {
             $message = sprintf('Correct absolute url is required. Got: %s', $url);
@@ -44,6 +47,7 @@ class TransportConfig
         $this->authKey = $authKey;
         $this->timeout = $timeout;
         $this->retries = $retries;
+        $this->debug = $debug;
     }
 
     public function getUrl(): string
@@ -64,5 +68,10 @@ class TransportConfig
     public function getRetries(): int
     {
         return $this->retries;
+    }
+
+    public function getDebug(): bool
+    {
+        return $this->debug;
     }
 }
