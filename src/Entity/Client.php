@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class Client implements JsonSerializable
+class Client implements \JsonSerializable
 {
     public const SEX_UNDEFINED = 'undefined';
     public const SEX_MALE = 'male';

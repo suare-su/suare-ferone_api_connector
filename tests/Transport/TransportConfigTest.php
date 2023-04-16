@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Tests\Transport;
 
-use InvalidArgumentException;
 use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
 use SuareSu\FeroneApiConnector\Transport\TransportConfig;
 
@@ -18,7 +17,7 @@ class TransportConfigTest extends BaseTestCase
      */
     public function testContructWrongUrlException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         new TransportConfig('test', 'test', 10, 10);
     }
 
@@ -27,7 +26,7 @@ class TransportConfigTest extends BaseTestCase
      */
     public function testContructWrongTimeoutException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         new TransportConfig('http://test.ru', 'test', 0, 10);
     }
 
@@ -36,7 +35,7 @@ class TransportConfigTest extends BaseTestCase
      */
     public function testContructWrongRetriesException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         new TransportConfig('http://test.ru', 'test', 10, 0);
     }
 

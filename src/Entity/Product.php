@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class Product implements JsonSerializable
+class Product implements \JsonSerializable
 {
     public const TYPE_PRODUCT = 'product';
     public const TYPE_MODIFIER = 'modifier';
@@ -297,7 +295,6 @@ class Product implements JsonSerializable
 
         $this->stopShops = [];
         $data = isset($apiResponse['stopshops']) && \is_array($apiResponse['stopshops']) ? $apiResponse['stopshops'] : [];
-        $data = array_filter($data, fn ($item): bool => \is_array($item));
         foreach ($data as $tmpItem) {
             $this->stopShops[] = (int) $tmpItem;
         }

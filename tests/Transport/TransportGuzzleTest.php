@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Tests\Transport;
 
-use InvalidArgumentException;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
@@ -117,7 +116,7 @@ class TransportGuzzleTest extends BaseTestCase
         $client->expects($this->once())
             ->method('sendRequest')
             ->with($this->identicalTo($request))
-            ->willThrowException(new InvalidArgumentException('test'));
+            ->willThrowException(new \InvalidArgumentException('test'));
 
         $transport = new TransportGuzzle($config, $client, $requestFactory, $streamFactory);
 
@@ -157,7 +156,7 @@ class TransportGuzzleTest extends BaseTestCase
         $client->expects($this->exactly($retries))
             ->method('sendRequest')
             ->with($this->identicalTo($request))
-            ->willThrowException(new InvalidArgumentException('test'));
+            ->willThrowException(new \InvalidArgumentException('test'));
 
         $transport = new TransportGuzzle($config, $client, $requestFactory, $streamFactory);
 

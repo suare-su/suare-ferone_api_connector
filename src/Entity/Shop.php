@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class Shop implements JsonSerializable
+class Shop implements \JsonSerializable
 {
     public const TYPE_DELIVERY = 'delivery';
     public const TYPE_STORE = 'store';
@@ -61,6 +59,12 @@ class Shop implements JsonSerializable
 
     /** Json-строка зоны доставки в формате geojson */
     private ?string $deliveryZone;
+
+    /** Время выполнения заказа доставки для заведения в минутах */
+    private ?int $deliveryMins;
+
+    /** Время выполнения заказа самовывоза для заведения в минутах */
+    private ?int $selfServiceMins;
 
     /** Заведение активно и может принимать заказы */
     private bool $active;
@@ -153,6 +157,16 @@ class Shop implements JsonSerializable
         return $this->deliveryZone;
     }
 
+    public function getDeliveryMins(): ?int
+    {
+        return $this->deliveryMins;
+    }
+
+    public function getSelfServiceMins(): ?int
+    {
+        return $this->selfServiceMins;
+    }
+
     public function getActive(): bool
     {
         return $this->active;
@@ -184,6 +198,8 @@ class Shop implements JsonSerializable
         $this->addrLat = isset($apiResponse['addrlat']) ? (float) $apiResponse['addrlat'] : null;
         $this->addrLon = isset($apiResponse['addrlon']) ? (float) $apiResponse['addrlon'] : null;
         $this->deliveryZone = isset($apiResponse['deliveryzone']) ? (string) $apiResponse['deliveryzone'] : null;
+        $this->deliveryMins = isset($apiResponse['deliverymins']) ? (int) $apiResponse['deliverymins'] : null;
+        $this->selfServiceMins = isset($apiResponse['selfservicemins']) ? (int) $apiResponse['selfservicemins'] : null;
         $this->active = (bool) ($apiResponse['active'] ?? null);
         $this->workingTime = new ShopWorkingTime((array) ($apiResponse['workingtime'] ?? []));
     }
@@ -208,6 +224,8 @@ class Shop implements JsonSerializable
             'AddrLat' => $this->addrLat,
             'AddrLon' => $this->addrLon,
             'DeliveryZone' => $this->deliveryZone,
+            'DeliveryMins' => $this->deliveryMins,
+            'SelfServiceMins' => $this->selfServiceMins,
             'Active' => $this->active,
             'WorkingTime' => $this->workingTime->jsonSerialize(),
         ];

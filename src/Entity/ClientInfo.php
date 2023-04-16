@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class ClientInfo implements JsonSerializable
+class ClientInfo implements \JsonSerializable
 {
     /** Телефон */
     private string $phone;

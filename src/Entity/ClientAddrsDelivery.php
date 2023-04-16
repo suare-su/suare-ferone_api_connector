@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class ClientAddrsDelivery implements JsonSerializable
+class ClientAddrsDelivery implements \JsonSerializable
 {
     /** Возможность доставки */
     private bool $status;

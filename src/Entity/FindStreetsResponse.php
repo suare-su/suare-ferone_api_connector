@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class FindStreetsResponse implements JsonSerializable
+class FindStreetsResponse implements \JsonSerializable
 {
     private string $id;
     private string $city;

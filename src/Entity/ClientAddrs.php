@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class ClientAddrs implements JsonSerializable
+class ClientAddrs implements \JsonSerializable
 {
     /** Название города */
     private string $city;

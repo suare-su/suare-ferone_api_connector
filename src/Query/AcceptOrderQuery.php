@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Query;
 
-use DateTimeInterface;
-
 /**
  * Query object for AcceptOrder.
  */
@@ -69,11 +67,11 @@ class AcceptOrderQuery extends AbstractQuery
     /**
      * Set OnTime parameter.
      *
-     * @param DateTimeInterface $value
+     * @param \DateTimeInterface $value
      *
      * @return $this
      */
-    public function setOnTime(DateTimeInterface $value): self
+    public function setOnTime(\DateTimeInterface $value): self
     {
         return $this->add(self::PARAM_ON_TIME, $value->format('Y-m-d H:i:s'));
     }
