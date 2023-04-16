@@ -157,7 +157,9 @@ class EntitesGenerator extends AbstarctGeneartor
             } elseif ($propertyDescription['type'] === self::TYPE_ARRAY) {
                 $constructorBody .= "\n\$this->{$unifiedPropertyName} = [];\n";
                 $constructorBody .= "\$data = isset(\$apiResponse['{$lcName}']) && is_array(\$apiResponse['{$lcName}']) ? \$apiResponse['{$lcName}'] : [];\n";
-                $constructorBody .= "\$data = array_filter(\$data, fn (\$item): bool => is_array(\$item));\n";
+                if (!empty($type['class'])) {
+                    $constructorBody .= "\$data = array_filter(\$data, fn (\$item): bool => is_array(\$item));\n";
+                }
                 $constructorBody .= "foreach (\$data as \$tmpItem) {\n";
                 if (!empty($type['class'])) {
                     $jsonSerializeBody .= "    \"{$propertyName}\" => array_map(fn ({$type['class']} \$item): array => \$item->jsonSerialize(), \$this->{$unifiedPropertyName}),\n";

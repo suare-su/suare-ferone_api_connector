@@ -297,7 +297,6 @@ class Product implements JsonSerializable
 
         $this->stopShops = [];
         $data = isset($apiResponse['stopshops']) && \is_array($apiResponse['stopshops']) ? $apiResponse['stopshops'] : [];
-        $data = array_filter($data, fn ($item): bool => \is_array($item));
         foreach ($data as $tmpItem) {
             $this->stopShops[] = (int) $tmpItem;
         }
