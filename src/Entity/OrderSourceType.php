@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class OrderSourceType implements JsonSerializable
+class OrderSourceType implements \JsonSerializable
 {
     private string $type;
 

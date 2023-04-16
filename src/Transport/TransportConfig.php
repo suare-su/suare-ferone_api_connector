@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Transport;
 
-use InvalidArgumentException;
-
 /**
  * Object that contains all data required for transport.
  */
@@ -30,17 +28,17 @@ class TransportConfig
     ) {
         if (!preg_match('#^https?://[^\.]+\.[^\.]+.*#', $url)) {
             $message = sprintf('Correct absolute url is required. Got: %s', $url);
-            throw new InvalidArgumentException($message);
+            throw new \InvalidArgumentException($message);
         }
 
         if ($timeout <= 0) {
             $message = sprintf('Timeout must be more than 0. Got: %s', $timeout);
-            throw new InvalidArgumentException($message);
+            throw new \InvalidArgumentException($message);
         }
 
         if ($retries <= 0) {
             $message = sprintf('Retries must be more than 0. Got: %s', $timeout);
-            throw new InvalidArgumentException($message);
+            throw new \InvalidArgumentException($message);
         }
 
         $this->url = trim($url, " \n\r\t\v\0/\\") . '/';

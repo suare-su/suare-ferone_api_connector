@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Generator;
 
-use InvalidArgumentException;
-use JsonSerializable;
 use Nette\PhpGenerator\PhpFile;
-use RuntimeException;
 
 /**
  * Object that can create php classes by schemas from swagger.
@@ -45,10 +42,10 @@ class EntitesGenerator extends AbstarctGeneartor
         $phpFile->setStrictTypes();
 
         $namespace = $phpFile->addNamespace($namespaceName);
-        $namespace->addUse(InvalidArgumentException::class);
-        $namespace->addUse(JsonSerializable::class);
+        $namespace->addUse(\InvalidArgumentException::class);
+        $namespace->addUse(\JsonSerializable::class);
 
-        $class = $namespace->addClass($className)->addImplement(JsonSerializable::class);
+        $class = $namespace->addClass($className)->addImplement(\JsonSerializable::class);
 
         $constructorBody = "\$apiResponse = array_change_key_case(\$apiResponse, CASE_LOWER);\n\n";
         $jsonSerializeBody = '';
@@ -97,7 +94,7 @@ class EntitesGenerator extends AbstarctGeneartor
             }
 
             if ($type === null) {
-                throw new RuntimeException("Can't recognize '" . ($propertyDescription['type'] ?? '') . "' type");
+                throw new \RuntimeException("Can't recognize '" . ($propertyDescription['type'] ?? '') . "' type");
             }
 
             $unifiedPropertyName = $this->unifyFieldName($propertyName);

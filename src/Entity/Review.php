@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class Review implements JsonSerializable
+class Review implements \JsonSerializable
 {
     /** Id */
     private int $id;

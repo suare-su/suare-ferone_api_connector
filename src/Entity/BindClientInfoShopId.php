@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class BindClientInfoShopId implements JsonSerializable
+class BindClientInfoShopId implements \JsonSerializable
 {
     /** Id заказа */
     private int $orderId;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Tests\Connector;
 
-use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use SuareSu\FeroneApiConnector\Connector\Connector;
 use SuareSu\FeroneApiConnector\Entity\BindClientIdShopId;
@@ -34,7 +33,6 @@ use SuareSu\FeroneApiConnector\Tests\BaseTestCase;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 use SuareSu\FeroneApiConnector\Transport\TransportResponse;
-use Throwable;
 
 /**
  * @internal
@@ -533,7 +531,7 @@ class ConnectorTest extends BaseTestCase
         $hiddenMenu = false;
         $external = true;
         $query = OrdersListQuery::new()
-            ->setPeriod(new DateTimeImmutable($from), new DateTimeImmutable($to))
+            ->setPeriod(new \DateTimeImmutable($from), new \DateTimeImmutable($to))
             ->setCitiesIDs($cities)
             ->setOrdersTypes($types)
             ->setShopsIDs($shops)
@@ -1374,7 +1372,7 @@ class ConnectorTest extends BaseTestCase
         $confirm = true;
         $cashChange = 123123;
         $time = '2020-10-10 23:32:12';
-        $onTime = new DateTimeImmutable($time);
+        $onTime = new \DateTimeImmutable($time);
         $comment = 'test';
 
         $query = AcceptOrderQuery::new()
@@ -1479,9 +1477,9 @@ class ConnectorTest extends BaseTestCase
     /**
      * Create mock for transport object with set data.
      *
-     * @param string          $method
-     * @param array           $params
-     * @param Throwable|array $result
+     * @param string           $method
+     * @param array            $params
+     * @param \Throwable|array $result
      *
      * @return Transport
      */
@@ -1491,7 +1489,7 @@ class ConnectorTest extends BaseTestCase
         $transport = $this->getMockBuilder(Transport::class)->disableOriginalConstructor()->getMock();
 
         $sendRequestMethod = $transport->expects($this->once())->method('sendRequest');
-        if ($result instanceof Throwable) {
+        if ($result instanceof \Throwable) {
             $sendRequestMethod->willThrowException($result);
         } else {
             $sendRequestMethod->willReturnCallback(

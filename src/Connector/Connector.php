@@ -45,7 +45,6 @@ use SuareSu\FeroneApiConnector\Query\UpdateClientInfoQuery;
 use SuareSu\FeroneApiConnector\Transport\Transport;
 use SuareSu\FeroneApiConnector\Transport\TransportRequest;
 use SuareSu\FeroneApiConnector\Transport\TransportResponse;
-use Throwable;
 
 /**
  * Object that represents Ferone API methods.
@@ -81,12 +80,12 @@ class Connector
     /**
      * GetTokenExpiry method implementation.
      *
-     * @return DateTimeImmutable
+     * @return \DateTimeImmutable
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function getTokenExpiry(): DateTimeImmutable
+    public function getTokenExpiry(): \DateTimeImmutable
     {
         $data = $this->sendRequestInternal('GetTokenExpiry')->getData();
 
@@ -149,12 +148,12 @@ class Connector
     /**
      * GetCitiesLastChanged method implementation.
      *
-     * @return DateTimeImmutable
+     * @return \DateTimeImmutable
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function getCitiesLastChanged(): DateTimeImmutable
+    public function getCitiesLastChanged(): \DateTimeImmutable
     {
         $data = $this->sendRequestInternal('GetCitiesLastChanged')->getData();
 
@@ -204,12 +203,12 @@ class Connector
     /**
      * GetShopsLastChanged method implementation.
      *
-     * @return DateTimeImmutable
+     * @return \DateTimeImmutable
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function getShopsLastChanged(): DateTimeImmutable
+    public function getShopsLastChanged(): \DateTimeImmutable
     {
         $data = $this->sendRequestInternal('GetShopsLastChanged')->getData();
 
@@ -239,16 +238,16 @@ class Connector
     /**
      * GetMenuLastChanged method implementation.
      *
-     * @return DateTimeImmutable
+     * @return \DateTimeImmutable
      *
      * @throws ApiException
      * @throws TransportException
      */
-    public function getMenuLastChanged(): DateTimeImmutable
+    public function getMenuLastChanged(): \DateTimeImmutable
     {
         $data = $this->sendRequestInternal('GetMenuLastChanged')->getData();
 
-        return new DateTimeImmutable((string) ($data['Changed'] ?? ''));
+        return new \DateTimeImmutable((string) ($data['Changed'] ?? ''));
     }
 
     /**
@@ -942,13 +941,13 @@ class Connector
      *
      * @param string $dateTime
      *
-     * @return DateTimeImmutable
+     * @return \DateTimeImmutable
      */
-    private function instantiateDateTimeObject(string $dateTime): DateTimeImmutable
+    private function instantiateDateTimeObject(string $dateTime): \DateTimeImmutable
     {
         try {
-            return new DateTimeImmutable($dateTime);
-        } catch (Throwable $e) {
+            return new \DateTimeImmutable($dateTime);
+        } catch (\Throwable $e) {
             $message = sprintf('Error while dateTime instantiation: %s', $e->getMessage());
             throw new ApiException($message, 0, $e);
         }

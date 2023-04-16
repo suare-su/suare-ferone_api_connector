@@ -7,8 +7,6 @@ namespace SuareSu\FeroneApiConnector\Generator;
 use Marvin255\FileSystemHelper\FileSystemHelperInterface;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PsrPrinter;
-use RuntimeException;
-use SplFileInfo;
 
 /**
  * Abstarct class for generators.
@@ -47,7 +45,7 @@ abstract class AbstarctGeneartor
      */
     abstract protected function createFiles(array $entites, string $namespace): array;
 
-    public function generate(array $entites, SplFileInfo $destFolder, string $namespace): void
+    public function generate(array $entites, \SplFileInfo $destFolder, string $namespace): void
     {
         $files = $this->createFiles($entites, $this->unifyNamespace($namespace));
 
@@ -115,7 +113,7 @@ abstract class AbstarctGeneartor
                 $return['phpDoc'] = self::PHP_TYPE_MAP[$description['items']['type']] . '[]';
                 $return['primitive'] = self::PHP_TYPE_MAP[$description['items']['type']];
             } else {
-                throw new RuntimeException("Can't recognize array type");
+                throw new \RuntimeException("Can't recognize array type");
             }
 
             return $return;

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class Order implements JsonSerializable
+class Order implements \JsonSerializable
 {
     public const SHOP_TYPE_DELIVERY = 'delivery';
     public const SHOP_TYPE_STORE = 'store';

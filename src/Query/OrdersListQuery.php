@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Query;
 
-use DateTimeInterface;
-
 /**
  * Query object for getOrdersList.
  */
@@ -25,12 +23,12 @@ class OrdersListQuery extends PageredQuery
     /**
      * Set Period parameter.
      *
-     * @param DateTimeInterface $from
-     * @param DateTimeInterface $to
+     * @param \DateTimeInterface $from
+     * @param \DateTimeInterface $to
      *
      * @return $this
      */
-    public function setPeriod(DateTimeInterface $from, DateTimeInterface $to): self
+    public function setPeriod(\DateTimeInterface $from, \DateTimeInterface $to): self
     {
         $this->add(
             self::PARAM_PERIOD,

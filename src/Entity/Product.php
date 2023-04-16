@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class Product implements JsonSerializable
+class Product implements \JsonSerializable
 {
     public const TYPE_PRODUCT = 'product';
     public const TYPE_MODIFIER = 'modifier';

@@ -12,7 +12,6 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use SuareSu\FeroneApiConnector\Exception\ApiException;
 use SuareSu\FeroneApiConnector\Exception\TransportException;
-use Throwable;
 
 /**
  * Transport object that can create a request, send it to Ferone and parse a response.
@@ -109,7 +108,7 @@ class TransportGuzzle implements Transport
                 ->withHeader('Authorization', $this->config->getAuthKey())
                 ->withBody($payload);
             $response = $this->client->sendRequest($psrRequest);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             throw (new TransportException($e->getMessage(), 0, $e))
                 ->setRequest($request);
         }
@@ -152,7 +151,7 @@ class TransportGuzzle implements Transport
         try {
             /** @var mixed[] */
             $jsonPayload = json_decode($body, true, 512, \JSON_THROW_ON_ERROR);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             throw (new TransportException($e->getMessage(), 0, $e))
                 ->setResponse($body)
                 ->setRequest($request);

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class OrderChange implements JsonSerializable
+class OrderChange implements \JsonSerializable
 {
     public const STATUS_ACCEPTED = 'accepted';
     public const STATUS_PROCESS = 'process';

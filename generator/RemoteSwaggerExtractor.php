@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SuareSu\FeroneApiConnector\Generator;
 
 use GuzzleHttp\Client;
-use RuntimeException;
 
 /**
  * Object that extracts entites from remote swagger json.
@@ -25,7 +24,7 @@ class RemoteSwaggerExtractor
 
         $schemas = $swaggerArray['components']['schemas'] ?? null;
         if (!\is_array($schemas)) {
-            throw new RuntimeException("Schemas aren't found in swagger array");
+            throw new \RuntimeException("Schemas aren't found in swagger array");
         }
 
         return $schemas;
@@ -36,7 +35,7 @@ class RemoteSwaggerExtractor
         $response = $this->client->request('GET', $url);
 
         if ($response->getStatusCode() !== 200) {
-            throw new RuntimeException("Bad status in response {$response->getStatusCode()}");
+            throw new \RuntimeException("Bad status in response {$response->getStatusCode()}");
         }
 
         $payloadString = (string) $response->getBody();

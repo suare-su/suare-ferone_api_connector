@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class OrderFinal implements JsonSerializable
+class OrderFinal implements \JsonSerializable
 {
     public const TYPE_DELIVERY = 'delivery';
     public const TYPE_SELF = 'self';

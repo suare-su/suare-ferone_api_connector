@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class OrderFinalOnTimeHoursInterval implements JsonSerializable
+class OrderFinalOnTimeHoursInterval implements \JsonSerializable
 {
     /** Дата и время в формате MySQL в часовом поясе города */
     private string $value;

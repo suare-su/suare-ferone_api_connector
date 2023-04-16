@@ -6,7 +6,6 @@ namespace SuareSu\FeroneApiConnector\Transport;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
-use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -81,7 +80,7 @@ class TransportFactory
      *
      * @return Transport
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function createForGuzzleClient(Client $client): Transport
     {

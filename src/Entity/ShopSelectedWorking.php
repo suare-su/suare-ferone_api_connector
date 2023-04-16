@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace SuareSu\FeroneApiConnector\Entity;
 
-use JsonSerializable;
-
-class ShopSelectedWorking implements JsonSerializable
+class ShopSelectedWorking implements \JsonSerializable
 {
     private string $open;
     private string $close;
