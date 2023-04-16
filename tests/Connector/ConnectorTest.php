@@ -281,6 +281,8 @@ class ConnectorTest extends BaseTestCase
         $query = MenuQuery::new()->setCityId($cityId)->setOnlyVisible($onlyVisible);
         $id = 123;
         $id1 = 321;
+        $productId = 456;
+        $stopShops = [9, 8, 7];
         $transport = $this->createTransportMock(
             'GetMenu',
             [
@@ -297,6 +299,12 @@ class ConnectorTest extends BaseTestCase
                     'Group' => [
                         'ID' => $id1,
                     ],
+                    'Products' => [
+                        [
+                            'ID' => $productId,
+                            'StopShops' => $stopShops,
+                        ],
+                    ],
                 ],
             ]
         );
@@ -307,6 +315,9 @@ class ConnectorTest extends BaseTestCase
         $this->assertCount(2, $menuItems);
         $this->assertSame($id, $menuItems[0]->getGroup()->getId());
         $this->assertSame($id1, $menuItems[1]->getGroup()->getId());
+        $this->assertCount(1, $menuItems[1]->getProducts());
+        $this->assertSame($productId, $menuItems[1]->getProducts()[0]->getId());
+        $this->assertSame($stopShops, $menuItems[1]->getProducts()[0]->getStopShops());
     }
 
     /**
