@@ -42,7 +42,7 @@ class TransportGuzzle implements Transport
         ClientInterface $client,
         RequestFactoryInterface $requestFactory,
         StreamFactoryInterface $streamFactory,
-        ?LoggerInterface $logger = null
+        LoggerInterface $logger = null
     ) {
         $this->config = $config;
         $this->client = $client;
