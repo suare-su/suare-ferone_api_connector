@@ -1486,6 +1486,28 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testLastResponse(): void
+    {
+        $response = ['key' => 'value'];
+        $query = AcceptOrderQuery::new();
+
+        $transport = $this->createTransportMock(
+            'AcceptOrder',
+            [],
+            $response
+        );
+
+        $connector = new Connector($transport);
+        $connector->acceptOrder($query);
+        $lastResponse = $connector->getLastResponse();
+
+        $this->assertNotNull($lastResponse);
+        $this->assertSame($response, $lastResponse->getData());
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string           $method

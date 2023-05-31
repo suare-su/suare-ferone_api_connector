@@ -53,12 +53,15 @@ class Connector
 {
     private Transport $transport;
 
+    private ?TransportResponse $lastResponse;
+
     /**
      * @param Transport $transport
      */
     public function __construct(Transport $transport)
     {
         $this->transport = $transport;
+        $this->lastResponse = null;
     }
 
     /**
@@ -915,6 +918,14 @@ class Connector
     }
 
     /**
+     * Return last response that was made by connector.
+     */
+    public function getLastResponse(): ?TransportResponse
+    {
+        return $this->lastResponse;
+    }
+
+    /**
      * Create and send request using transport.
      *
      * @param string      $method
@@ -932,8 +943,9 @@ class Connector
         }
 
         $request = new TransportRequest($method, $params);
+        $this->lastResponse = $this->transport->sendRequest($request);
 
-        return $this->transport->sendRequest($request);
+        return $this->lastResponse;
     }
 
     /**

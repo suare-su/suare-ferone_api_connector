@@ -10,10 +10,17 @@ namespace SuareSu\FeroneApiConnector\Transport;
 class TransportResponse
 {
     private array $payload;
+    private string $rawResponse = '';
+    private string $rawRequest = '';
 
-    public function __construct(array $payload = [])
-    {
+    public function __construct(
+        array $payload,
+        string $rawResponse = '',
+        string $rawRequest = ''
+    ) {
         $this->payload = $payload;
+        $this->rawResponse = $rawResponse;
+        $this->rawRequest = $rawRequest;
     }
 
     /**
@@ -68,5 +75,21 @@ class TransportResponse
     public function getErrorDescription(): string
     {
         return (string) ($this->payload['errorDescription'] ?? '');
+    }
+
+    /**
+     * Return raw response text.
+     */
+    public function getRawResponse(): string
+    {
+        return $this->rawResponse;
+    }
+
+    /**
+     * Return raw request text.
+     */
+    public function getRawRequest(): string
+    {
+        return $this->rawRequest;
     }
 }
