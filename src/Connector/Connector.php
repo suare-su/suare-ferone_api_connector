@@ -53,7 +53,7 @@ class Connector
 {
     private Transport $transport;
 
-    private ?TransportResponse $lastResponse;
+    private ?TransportResponse $lastResponse = null;
 
     /**
      * @param Transport $transport
@@ -61,7 +61,6 @@ class Connector
     public function __construct(Transport $transport)
     {
         $this->transport = $transport;
-        $this->lastResponse = null;
     }
 
     /**
