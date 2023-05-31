@@ -13,9 +13,13 @@ class ApiException extends Exception
 {
     private ?TransportResponse $response = null;
 
-    public static function create(string $message, ?TransportResponse $response): self
+    public static function create(string $message, int $code = null, TransportResponse $response = null): self
     {
-        $exception = new self($message);
+        if ($code !== null) {
+            $exception = new self($message, $code);
+        } else {
+            $exception = new self($message);
+        }
         if ($response) {
             $exception->setResponse($response);
         }
