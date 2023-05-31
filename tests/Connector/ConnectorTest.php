@@ -1508,6 +1508,20 @@ class ConnectorTest extends BaseTestCase
     }
 
     /**
+     * @test
+     */
+    public function testLastResponseUninitialized(): void
+    {
+        /** @var MockObject&Transport */
+        $transport = $this->getMockBuilder(Transport::class)->disableOriginalConstructor()->getMock();
+
+        $connector = new Connector($transport);
+        $lastResponse = $connector->getLastResponse();
+
+        $this->assertNull($lastResponse);
+    }
+
+    /**
      * Create mock for transport object with set data.
      *
      * @param string           $method
